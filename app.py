@@ -2130,6 +2130,16 @@ def initialize_database(app_instance):
 
 app = create_app()
 
+# Rota para listar registros de ponto
+@app.route('/registros_ponto')
+def listar_registros_ponto():
+    if 'usuario_id' not in session:
+        flash('Você precisa estar logado para acessar esta página.', 'warning')
+        return redirect(url_for('login'))
+
+    registros = db.session.query(RegistroPonto).outerjoin(Funcionario).order_by(RegistroPonto.data_hora.desc()).all()
+    return render_template('registro_ponto.html', registros_ponto=registros)
+
 # Rota para registro de ponto:
 @app.route('/registro_ponto', methods=['GET', 'POST'])
 def registro_ponto():
