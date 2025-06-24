@@ -568,8 +568,11 @@ def create_app():
         funcionario = Funcionario.query.filter(
             or_(
                 Funcionario.cpf == ident_clean,
+                Funcionario.cpf == identifier,
                 Funcionario.pis == ident_clean,
+                Funcionario.pis == identifier,
                 Funcionario.id_face == ident_clean,
+                Funcionario.id_face == identifier,
             )
         ).first()
         if funcionario:
