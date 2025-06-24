@@ -1968,6 +1968,36 @@ def create_app():
         return Response(buffer.getvalue(), mimetype='application/pdf',
                         headers={'Content-Disposition': f'attachment;filename=ficha_cadastral_{funcionario.cpf}.pdf'})
 
+# Rota para listar registros de ponto
+    @app.route('/registros_ponto')
+    def listar_registros_ponto():
+        if 'usuario_id' not in session:
+            flash('Você precisa estar logado para acessar esta página.', 'warning')
+            return redirect(url_for('login'))
+
+        registros = db.session.query(RegistroPonto).outerjoin(Funcionario).order_by(RegistroPonto.data_hora.desc()).all()
+        return render_template('registro_ponto.html', registros_ponto=registros)
+
+    # Rota para registro de ponto:
+    @app.route('/registro_ponto', methods=['GET', 'POST'])
+    def registro_ponto():
+        # Validação de login
+        if 'usuario_id' not in session:
+            flash('Você precisa fazer login primeiro.', 'warning')
+            return redirect(url_for('login'))
+
+        if request.method == 'POST':
+            cpf = request.form.get('cpf', '').replace('.', '').replace('-', '')
+            agora = datetime.datetime.now()
+            novo_ponto = RegistroPonto(cpf_funcionario=cpf, data_hora=agora)
+            db.session.add(novo_ponto)
+            db.session.commit()
+
+            flash('Ponto registrado com sucesso!', 'success')
+            return redirect(url_for('registro_ponto'))
+
+        # GET: exibe o formulário
+        return render_template('registro_ponto_form.html', registro_ponto=None)
     return app # Fim da função create_app
 
 
@@ -2128,44 +2158,13 @@ def initialize_database(app_instance):
             print("Isso pode ocorrer se o banco de dados não estiver acessível ou já estiver populado.")
             print("O aplicativo tentará rodar mesmo assim.")
 
-app = create_app()
-
-# Rota para listar registros de ponto
-@app.route('/registros_ponto')
-def listar_registros_ponto():
-    if 'usuario_id' not in session:
-        flash('Você precisa estar logado para acessar esta página.', 'warning')
-        return redirect(url_for('login'))
-
-    registros = db.session.query(RegistroPonto).outerjoin(Funcionario).order_by(RegistroPonto.data_hora.desc()).all()
-    return render_template('registro_ponto.html', registros_ponto=registros)
-
-# Rota para registro de ponto:
-@app.route('/registro_ponto', methods=['GET', 'POST'])
-def registro_ponto():
-    # Validação de login
-    if 'usuario_id' not in session:
-        flash('Você precisa fazer login primeiro.', 'warning')
-        return redirect(url_for('login'))
-
-    if request.method == 'POST':
-        cpf = request.form.get('cpf', '').replace('.', '').replace('-', '')
-        agora = datetime.datetime.now()
-        novo_ponto = RegistroPonto(cpf_funcionario=cpf, data_hora=agora)
-        db.session.add(novo_ponto)
-        db.session.commit()
-
-        flash('Ponto registrado com sucesso!', 'success')
-        return redirect(url_for('registro_ponto'))
-
-    # GET: exibe o formulário
-    return render_template('registro_ponto_form.html', registro_ponto=None)
 
 
 # ------------------------------------------------------------------
 # Observação: não replique esta definição de 'index' aqui, pois já existe
 # no seu app.py original. Caso precise editar o template inicial, atualize
 # somente o arquivo 'index.html' e mantenha apenas UMA rota @app.route('/')
+app = create_app()
 # no seu projeto.
 
 if __name__ == '__main__':
