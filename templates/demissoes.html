@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGEP - Demissões</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Definição da Paleta de Cores como Variáveis CSS */
+        :root {
+            --clr-dark-blue: #1F3A5F;
+            --clr-light-blue: #4F83CC;
+            --clr-light-gray: #F4F6F8;
+            --clr-medium-gray: #A0AAB4;
+            --clr-white: #FFFFFF;
+            --clr-success: #27AE60;
+            --clr-attention: #F1C40F;
+            --clr-error: #E74C3C;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--clr-light-gray); /* Fundo da tela */
+        }
+        .flash-message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+        }
+        .flash-message.success {
+            background-color: var(--clr-success);
+            color: var(--clr-white); /* Texto branco para contraste */
+            border: 1px solid var(--clr-success);
+        }
+        .flash-message.danger {
+            background-color: var(--clr-error);
+            color: var(--clr-white); /* Texto branco para contraste */
+            border: 1px solid var(--clr-error);
+        }
+        .flash-message.warning {
+            background-color: var(--clr-attention);
+            color: var(--clr-dark-blue); /* Texto escuro para contraste */
+            border: 1px solid var(--clr-attention);
+        }
+
+        /* Aplicação das cores da paleta usando classes Tailwind customizadas via CSS */
+        .bg-dark-blue { background-color: var(--clr-dark-blue); }
+        .bg-light-blue { background-color: var(--clr-light-blue); }
+        .bg-light-gray { background-color: var(--clr-light-gray); }
+        .bg-medium-gray { background-color: var(--clr-medium-gray); }
+        .bg-white { background-color: var(--clr-white); }
+        .text-dark-blue { color: var(--clr-dark-blue); }
+        .text-light-blue { color: var(--clr-light-blue); }
+        .text-medium-gray { color: var(--clr-medium-gray); }
+
+        /* Cores de Destaque */
+        .bg-success { background-color: var(--clr-success); }
+        .bg-attention { background-color: var(--clr-attention); }
+        .bg-error { background-color: var(--clr-error); }
+
+        /* Cores para os botões e links */
+        .btn-primary {
+            background-color: var(--clr-light-blue);
+            color: var(--clr-white);
+        }
+        .btn-primary:hover {
+            background-color: var(--clr-dark-blue); /* Mais escuro no hover */
+        }
+        .btn-secondary {
+            background-color: var(--clr-medium-gray);
+            color: var(--clr-white);
+        }
+        .btn-secondary:hover {
+            background-color: color-mix(in srgb, var(--clr-medium-gray) 80%, black); /* Um pouco mais escuro no hover */
+        }
+        .btn-add {
+            background-color: var(--clr-success);
+            color: var(--clr-white);
+        }
+        .btn-add:hover {
+            background-color: color-mix(in srgb, var(--clr-success) 90%, black);
+        }
+        .text-link { /* Cor para links dentro de texto, por exemplo */
+            color: var(--clr-light-blue);
+        }
+        .text-link:hover {
+            color: var(--clr-dark-blue);
+        }
+        .text-error {
+            color: var(--clr-error);
+        }
+        .text-success {
+            color: var(--clr-success);
+        }
+
+
+        /* Estilos genéricos para a interface */
+        .rounded-lg { border-radius: 0.5rem; }
+        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
+        .border { border-width: 1px; }
+        .border-gray-300 { border-color: var(--clr-medium-gray); } /* Aplicado a inputs e bordas gerais */
+
+        /* Para a tabela */
+        .table-header-bg { background-color: var(--clr-dark-blue); color: var(--clr-white); } /* Cabeçalho da tabela */
+        .table-row-odd { background-color: var(--clr-white); }
+        .table-row-even { background-color: var(--clr-light-gray); }
+        .filter-input {
+            border-color: var(--clr-medium-gray);
+            color: var(--clr-dark-blue);
+        }
+        .filter-input:focus {
+            border-color: var(--clr-light-blue);
+            box-shadow: 0 0 0 1px var(--clr-light-blue);
+        }
+    </style>
+</head>
+<body class="bg-light-gray min-h-screen p-6">
+    <div class="max-w-7xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-4xl font-bold text-dark-blue">Registro de Demissões</h1>
+            <div class="flex space-x-3">
+                <a href="{{ url_for('adicionar_demissao') }}" class="btn-add text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center" title="Registrar Nova Demissão">
+                    <i class="fas fa-user-minus mr-2"></i> Registrar
+                </a>
+                <a href="{{ url_for('index') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center" title="Voltar ao Início">
+                    <i class="fas fa-home"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-6">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% if demissoes %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white rounded-lg overflow-hidden" id="demissoesTable">
+                    <thead class="bg-dark-blue text-white">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tl-lg">ID</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">CPF Funcionário</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Nome Funcionário</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Data Demissão</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Último Dia Trab.</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Tipo Desligamento</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Aviso Prévio</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tr-lg">Ações</th>
+                        </tr>
+                        <tr class="bg-light-gray">
+                            <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar ID..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="0"></th>
+                            <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar CPF..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="1"></th>
+                            <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Nome..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="2"></th>
+                            <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Data..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="3"></th>
+                            <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Último Dia..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="4"></th>
+                            <th class="px-4 py-2 border-b border-medium-gray">
+                                <select onchange="filterTable()" class="w-full px-2 py-1 border rounded text-sm filter-select" data-column="5">
+                                    <option value="">Todos</option>
+                                    <option value="pedido de demissão">Pedido de demissão</option>
+                                    <option value="dispensa sem justa causa">Dispensa sem justa causa</option>
+                                    <option value="dispensa com justa causa">Dispensa com justa causa</option>
+                                    <option value="acordo entre as partes">Acordo entre as partes</option>
+                                    <option value="término de contrato determinado">Término de contrato determinado</option>
+                                    <option value="aposentadoria">Aposentadoria</option>
+                                    <option value="falecimento">Falecimento</option>
+                                </select>
+                            </th>
+                            <th class="px-4 py-2 border-b border-medium-gray">
+                                <select onchange="filterTable()" class="w-full px-2 py-1 border rounded text-sm filter-select" data-column="6">
+                                    <option value="">Todos</option>
+                                    <option value="cumprido">Cumprido</option>
+                                    <option value="indenizado">Indenizado</option>
+                                    <option value="dispensado">Dispensado</option>
+                                </select>
+                            </th>
+                            <th class="px-4 py-2 border-b border-medium-gray"></th> <!-- Empty for Actions column -->
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-medium-gray">
+                        {% for demissao in demissoes %}
+                            <tr class="hover:bg-light-gray {% if loop.index is odd %}bg-white{% else %}bg-light-gray{% endif %}">
+                                <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.id }}</td>
+                                <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.cpf_funcionario }}</td>
+                                <td class="py-3 px-4 text-sm text-dark-blue">
+                                    {% if demissao.funcionario %}
+                                        <a href="{{ url_for('editar_funcionario', cpf=demissao.cpf_funcionario) }}" class="text-light-blue hover:text-dark-blue font-medium">
+                                            {{ demissao.funcionario.nome }}
+                                        </a>
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                                <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.data_demissao.strftime('%d/%m/%Y') }}</td>
+                                <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.ultimo_dia_trabalhado.strftime('%d/%m/%Y') }}</td>
+                                <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.tipo_desligamento }}</td>
+                                <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.aviso_previo }}</td>
+                                <td class="py-3 px-4 text-sm flex items-center space-x-3">
+                                    <a href="{{ url_for('editar_demissao', id=demissao.id) }}" class="text-light-blue hover:text-dark-blue font-medium" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ url_for('deletar_demissao', id=demissao.id) }}" method="POST" class="inline">
+                                        <button type="submit" onclick="return confirm('Tem certeza que deseja deletar este registro de demissão?')" class="text-error hover:text-dark-blue font-medium bg-transparent border-none cursor-pointer" title="Deletar">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-center text-medium-gray text-lg py-8">Nenhum registro de demissão cadastrado ainda.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function filterTable() {
+            const tableId = 'demissoesTable';
+            const table = document.getElementById(tableId);
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            const filterInputs = table.querySelectorAll('.filter-input');
+            const filterSelects = table.querySelectorAll('.filter-select');
+
+            const textFilters = Array.from(filterInputs).map(input => ({
+                column: parseInt(input.dataset.column),
+                value: input.value.toLowerCase()
+            }));
+
+            const selectFilters = Array.from(filterSelects).map(select => ({
+                column: parseInt(select.dataset.column),
+                value: select.value.toLowerCase()
+            }));
+
+            for (let i = 0; i < rows.length; i++) {
+                let rowDisplay = 'table-row';
+                
+                // Aplicar filtros de texto
+                for (let j = 0; j < textFilters.length; j++) {
+                    const cell = rows[i].getElementsByTagName('td')[textFilters[j].column];
+                    if (cell) {
+                        const cellText = cell.textContent || cell.innerText;
+                        if (textFilters[j].value && !cellText.toLowerCase().includes(textFilters[j].value)) {
+                            rowDisplay = 'none';
+                            break; 
+                        }
+                    }
+                }
+
+                // Aplicar filtros de seleção (apenas se a linha ainda estiver visível)
+                if (rowDisplay === 'table-row') {
+                    for (let j = 0; j < selectFilters.length; j++) {
+                        const cell = rows[i].getElementsByTagName('td')[selectFilters[j].column];
+                        if (cell) {
+                            const cellText = cell.textContent || cell.innerText;
+                            if (selectFilters[j].value !== "" && cellText.toLowerCase() !== selectFilters[j].value) {
+                                rowDisplay = 'none';
+                                break;
+                            }
+                        }
+                    }
+                }
+                rows[i].style.display = rowDisplay;
+            }
+        }
+    </script>
+</body>
+</html>

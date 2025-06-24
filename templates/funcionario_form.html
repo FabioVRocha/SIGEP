@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% if funcionario %}
+            Editar Funcionário: {{ funcionario.nome }}
+        {% else %}
+            Adicionar Funcionário
+        {% endif %}
+        - SIGEP
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Definição da Paleta de Cores como Variáveis CSS */
+        :root {
+            --clr-dark-blue: #1F3A5F;
+            --clr-light-blue: #4F83CC;
+            --clr-light-gray: #F4F6F8;
+            --clr-medium-gray: #A0AAB4;
+            --clr-white: #FFFFFF;
+            --clr-success: #27AE60;
+            --clr-attention: #F1C40F;
+            --clr-error: #E74C3C;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--clr-light-gray);
+        }
+        .flash-message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+        }
+        .flash-message.success {
+            background-color: var(--clr-success);
+            color: var(--clr-white);
+            border: 1px solid var(--clr-success);
+        }
+        .flash-message.danger {
+            background-color: var(--clr-error);
+            color: var(--clr-white);
+            border: 1px solid var(--clr-error);
+        }
+        .flash-message.warning {
+            background-color: var(--clr-attention);
+            color: var(--clr-dark-blue);
+            border: 1px solid var(--clr-attention);
+        }
+
+        .bg-blue-600 { background-color: var(--clr-light-blue); }
+        .hover\:bg-blue-700:hover { background-color: var(--clr-dark-blue); }
+        .bg-gray-500 { background-color: var(--clr-medium-gray); }
+        .hover\:bg-gray-600:hover { background-color: var(--clr-dark-blue); }
+        .text-gray-800 { color: var(--clr-dark-blue); }
+        .text-gray-700 { color: var(--clr-dark-blue); }
+        .text-gray-600 { color: var(--clr-medium-gray); }
+        .text-blue-600 { color: var(--clr-light-blue); }
+        .hover\:text-blue-800:hover { color: var(--clr-dark-blue); }
+        .bg-white { background-color: var(--clr-white); }
+        .border-gray-300 { border-color: var(--clr-medium-gray); }
+        .focus\:ring-blue-500:focus { --tw-ring-color: var(--clr-light-blue); }
+        .focus\:border-blue-500:focus { border-color: var(--clr-light-blue); }
+
+        /* Custom scrollbar for minimal appearance, if any scrollbar is unavoidable */
+        body::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        body::-webkit-scrollbar-thumb {
+            background-color: #cbd5e0;
+            border-radius: 4px;
+        }
+        body::-webkit-scrollbar-track {
+            background: transparent;
+        }
+    </style>
+</head>
+<body class="bg-light-gray min-h-screen p-6">
+    <div class="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">
+            {% if funcionario %}
+                Editar Funcionário
+            {% else %}
+                Adicionar Novo Funcionário
+            {% endif %}
+        </h1>
+
+        <!-- Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-6">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form id="funcionarioForm" action="{% if funcionario %}{{ url_for('editar_funcionario', cpf=funcionario.cpf) }}{% else %}{{ url_for('adicionar_funcionario') }}{% endif %}" method="POST" class="space-y-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Coluna de Foto (movida para o topo e à direita) -->
+                <div class="md:col-span-1 lg:col-span-1 order-first md:order-last">
+                    <label for="foto_option" class="block text-sm font-medium text-gray-700 mb-2">Foto do Funcionário</label>
+                    <div class="w-40 h-40 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden mb-4 shadow-inner mx-auto">
+                        <img id="photo-preview" class="w-full h-full object-cover" alt="Pré-visualização da foto"
+                             src="{{ funcionario.foto_base64 if funcionario.foto_base64 else 'https://placehold.co/160x160/cbd5e0/4a5568?text=Sem+Foto' }}">
+                    </div>
+
+                    <div class="flex items-center space-x-4 mb-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" class="form-radio" name="foto_option" value="upload" checked>
+                            <span class="ml-2 text-gray-700">Upload do PC</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" class="form-radio" name="foto_option" value="webcam">
+                            <span class="ml-2 text-gray-700">Tirar Foto (Webcam)</span>
+                        </label>
+                    </div>
+
+                    <div id="upload-section">
+                        <input type="file" id="foto_upload" name="foto_upload" accept="image/*"
+                               class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                    </div>
+
+                    <div id="webcam-section" class="hidden">
+                        <video id="webcam-video" class="w-full h-auto rounded-lg shadow-md mb-2"></video>
+                        <button type="button" id="take-photo-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out w-full mb-2">Tirar Foto</button>
+                        <canvas id="photo-canvas" class="w-full h-auto rounded-lg shadow-md hidden"></canvas>
+                        <button type="button" id="retake-photo-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out w-full mt-2 hidden">Refazer Foto</button>
+                    </div>
+
+                    {# Importante: este campo HIDDEN é onde a string Base64 será armazenada para envio. #}
+                    {# Ele NÃO deve ter o atributo 'disabled' pois valores desabilitados não são enviados. #}
+                    <input type="hidden" id="foto_base64" name="foto_base64" value="{{ funcionario.foto_base64 if funcionario.foto_base64 else '' }}">
+                </div>
+                <!-- Fim da Coluna de Foto -->
+
+
+                <!-- Campos de Dados Pessoais e Endereço -->
+                <div class="md:col-span-1 lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 order-first md:order-first">
+                    <div>
+                        <label for="cpf" class="block text-sm font-medium text-gray-700">CPF <span class="text-red-500">*</span></label>
+                        <input type="text" id="cpf" name="cpf" value="{{ funcionario.cpf if funcionario else '' }}" {% if funcionario %}readonly{% endif %} required
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm {% if funcionario %}bg-gray-100 cursor-not-allowed{% endif %}">
+                    </div>
+                    <div>
+                        <label for="nome" class="block text-sm font-medium text-gray-700">Nome <span class="text-red-500">*</span></label>
+                        <input type="text" id="nome" name="nome" value="{{ funcionario.nome if funcionario else '' }}" required
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="data_nascimento" class="block text-sm font-medium text-gray-700">Data de Nascimento <span class="text-red-500">*</span></label>
+                        <input type="date" id="data_nascimento" name="data_nascimento" value="{{ funcionario.data_nascimento.strftime('%Y-%m-%d') if funcionario else '' }}" required
+                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="pis" class="block text-sm font-medium text-gray-700">PIS <span class="text-red-500">*</span></label>
+                        <input type="text" id="pis" name="pis" value="{{ funcionario.pis if funcionario else '' }}" required
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="id_face" class="block text-sm font-medium text-gray-700">IDFace <span class="text-red-500">*</span></label>
+                        <input type="text" id="id_face" name="id_face" value="{{ funcionario.id_face if funcionario else '' }}" required
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone <span class="text-red-500">*</span></label>
+                        <input type="text" id="telefone" name="telefone" value="{{ funcionario.telefone if funcionario else '' }}" required
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label for="endereco" class="block text-sm font-medium text-gray-700">Endereço Completo <span class="text-red-500">*</span></label>
+                        <input type="text" id="endereco" name="endereco" value="{{ funcionario.endereco if funcionario else '' }}" required
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="bairro" class="block text-sm font-medium text-gray-700">Bairro <span class="text-red-500">*</span></label> {# NOVO CAMPO: BAIRRO #}
+                        <input type="text" id="bairro" name="bairro" value="{{ funcionario.bairro if funcionario else '' }}" required
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="estado" class="block text-sm font-medium text-gray-700">Estado <span class="text-red-500">*</span></label>
+                        <select id="estado" name="estado" required onchange="loadCities()"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="">Selecione o Estado</option>
+                            {% for uf in estados_uf %}
+                                <option value="{{ uf }}" {% if funcionario and funcionario.estado == uf %}selected{% endif %}>{{ uf }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="cidade" class="block text-sm font-medium text-gray-700">Cidade <span class="text-red-500">*</span></label>
+                        <select id="cidade" name="cidade" required
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <option value="">Selecione a Cidade</option>
+                            {# Cidades serão carregadas via JavaScript #}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="cep" class="block text-sm font-medium text-gray-700">CEP <span class="text-red-500">*</span></label>
+                        <input type="text" id="cep" name="cep" value="{{ funcionario.cep if funcionario else '' }}" required
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-xl font-semibold text-gray-800 mt-6 mb-4">Dados Bancários</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div>
+                    <label for="codigo_banco" class="block text-sm font-medium text-gray-700">Cód. Banco <span id="req-bank-code" class="text-red-500">*</span></label>
+                    <input type="text" id="codigo_banco" name="codigo_banco" value="{{ funcionario.codigo_banco if funcionario else '' }}"
+                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="nome_banco" class="block text-sm font-medium text-gray-700">Nome Banco <span id="req-bank-name" class="text-red-500">*</span></label>
+                    <input type="text" id="nome_banco" name="nome_banco" value="{{ funcionario.nome_banco if funcionario else '' }}"
+                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="codigo_agencia" class="block text-sm font-medium text-gray-700">Cód. Agência <span id="req-agency-code" class="text-red-500">*</span></label>
+                    <input type="text" id="codigo_agencia" name="codigo_agencia" value="{{ funcionario.codigo_agencia if funcionario else '' }}"
+                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="numero_conta" class="block text-sm font-medium text-gray-700">Nº Conta <span id="req-account-num" class="text-red-500">*</span></label>
+                    <input type="text" id="numero_conta" name="numero_conta" value="{{ funcionario.numero_conta if funcionario else '' }}"
+                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div class="lg:col-span-1">
+                    <label for="variacao_conta" class="block text-sm font-medium text-gray-700">Variação</label>
+                    <input type="text" id="variacao_conta" name="variacao_conta" value="{{ funcionario.variacao_conta if funcionario else '' }}"
+                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div class="lg:col-span-1">
+                    <label for="chave_pix" class="block text-sm font-medium text-gray-700">Chave PIX <span id="req-pix" class="text-red-500 hidden">*</span></label>
+                    <input type="text" id="chave_pix" name="chave_pix" value="{{ funcionario.chave_pix if funcionario else '' }}"
+                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+            </div>
+
+            <div class="col-span-1 md:col-span-2 lg:col-span-3">
+                <label for="observacao" class="block text-sm font-medium text-gray-700">Observação</label>
+                <textarea id="observacao" name="observacao" rows="3"
+                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">{{ funcionario.observacao if funcionario else '' }}</textarea>
+            </div>
+
+            <div class="flex justify-end space-x-3 mt-6">
+                <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center">
+                    {% if funcionario %}
+                        <i class="fas fa-save mr-2"></i> Atualizar Funcionário
+                    {% else %}
+                        <i class="fas fa-plus mr-2"></i> Adicionar Funcionário
+                    {% endif %}
+                </button>
+                <a href="{{ url_for('listar_funcionarios') }}"
+                   class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center">
+                    <i class="fas fa-arrow-left mr-2"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const form = document.getElementById('funcionarioForm');
+        const pixField = document.getElementById('chave_pix');
+        const bankFields = [
+            document.getElementById('codigo_banco'),
+            document.getElementById('nome_banco'),
+            document.getElementById('codigo_agencia'),
+            document.getElementById('numero_conta')
+        ];
+        const bankRequiredSpans = [
+            document.getElementById('req-bank-code'),
+            document.getElementById('req-bank-name'),
+            document.getElementById('req-agency-code'),
+            document.getElementById('req-account-num')
+        ];
+        const pixRequiredSpan = document.getElementById('req-pix');
+
+        const estadoSelect = document.getElementById('estado');
+        const cidadeSelect = document.getElementById('cidade');
+
+        const fotoOptionRadios = document.querySelectorAll('input[name="foto_option"]');
+        const uploadSection = document.getElementById('upload-section');
+        const webcamSection = document.getElementById('webcam-section');
+        const webcamVideo = document.getElementById('webcam-video');
+        const photoCanvas = document.getElementById('photo-canvas');
+        const photoPreview = document.getElementById('photo-preview');
+        const takePhotoBtn = document.getElementById('take-photo-btn');
+        const retakePhotoBtn = document.getElementById('retake-photo-btn');
+        const fotoUploadInput = document.getElementById('foto_upload');
+        const fotoBase64Input = document.getElementById('foto_base64');
+
+        let currentStream; // To store the webcam stream
+
+        function stopWebcamStream() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+            }
+            webcamVideo.srcObject = null; // Clear video source
+        }
+
+        function startWebcamStream() {
+            if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                navigator.mediaDevices.getUserMedia({ video: { width: { ideal: 640 }, height: { ideal: 480 } } }) // Request a lower resolution
+                    .then(stream => {
+                        currentStream = stream;
+                        webcamVideo.srcObject = stream;
+                        webcamVideo.play();
+                        takePhotoBtn.classList.remove('hidden');
+                        retakePhotoBtn.classList.add('hidden');
+                        photoCanvas.classList.add('hidden');
+                        photoPreview.classList.add('hidden');
+                        webcamVideo.classList.remove('hidden');
+                    })
+                    .catch(error => {
+                        console.error("Erro ao acessar a webcam:", error);
+                        alert("Não foi possível acessar a webcam. Por favor, verifique as permissões e tente novamente.");
+                        takePhotoBtn.classList.add('hidden');
+                    });
+            } else {
+                alert("Seu navegador não suporta acesso à webcam.");
+                takePhotoBtn.classList.add('hidden');
+            }
+        }
+
+        function handleFotoOptionChange() {
+            if (this.value === 'upload') {
+                uploadSection.classList.remove('hidden');
+                webcamSection.classList.add('hidden');
+                stopWebcamStream();
+                fotoUploadInput.required = true;
+                fotoBase64Input.value = ''; // Clear base64 if switching to upload
+                photoPreview.src = 'https://placehold.co/160x160/cbd5e0/4a5568?text=Sem+Foto'; // Placeholder
+            } else {
+                uploadSection.classList.add('hidden');
+                webcamSection.classList.remove('hidden');
+                startWebcamStream();
+                fotoUploadInput.required = false;
+            }
+        }
+
+        fotoOptionRadios.forEach(radio => {
+            radio.addEventListener('change', handleFotoOptionChange);
+        });
+
+        // Function to resize image and convert to Base64
+        function resizeImage(imgDataURL, maxWidth, maxHeight, quality = 0.8) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => {
+                    let width = img.width;
+                    let height = img.height;
+
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width *= maxHeight / height;
+                            height = maxHeight;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+                    resolve(canvas.toDataURL('image/jpeg', quality)); // Use JPEG for smaller size
+                };
+                img.src = imgDataURL;
+            });
+        }
+
+        // Take photo from webcam
+        takePhotoBtn.addEventListener('click', async () => {
+            const context = photoCanvas.getContext('2d');
+            photoCanvas.width = webcamVideo.videoWidth;
+            photoCanvas.height = webcamVideo.videoHeight;
+            context.drawImage(webcamVideo, 0, 0, photoCanvas.width, photoCanvas.height);
+            
+            // Convert canvas content to Base64 and resize
+            const originalDataURL = photoCanvas.toDataURL('image/png');
+            const resizedDataURL = await resizeImage(originalDataURL, 400, 400, 0.7); // Resize to 400px max, 70% quality
+            
+            fotoBase64Input.value = resizedDataURL; // Store in hidden input
+            photoPreview.src = resizedDataURL;
+
+            webcamVideo.classList.add('hidden');
+            photoCanvas.classList.add('hidden'); // Hide canvas after drawing to prevent double display
+            photoPreview.classList.remove('hidden');
+            takePhotoBtn.classList.add('hidden');
+            retakePhotoBtn.classList.remove('hidden');
+            stopWebcamStream(); // Stop the live stream after taking photo
+        });
+
+        retakePhotoBtn.addEventListener('click', () => {
+            startWebcamStream(); // Restart stream to retake photo
+            fotoBase64Input.value = ''; // Clear stored photo
+            photoPreview.src = 'https://placehold.co/160x160/cbd5e0/4a5568?text=Sem+Foto'; // Reset to placeholder
+        });
+
+        // Handle file input change for direct upload
+        fotoUploadInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const originalDataURL = e.target.result;
+                    const resizedDataURL = await resizeImage(originalDataURL, 400, 400, 0.7); // Resize uploaded image
+                    fotoBase64Input.value = resizedDataURL; // Store Base64 of uploaded file
+                    photoPreview.src = resizedDataURL; // Update preview
+                };
+                reader.readAsDataURL(file);
+            } else {
+                fotoBase64Input.value = '';
+                photoPreview.src = 'https://placehold.co/160x160/cbd5e0/4a5568?text=Sem+Foto'; // Reset to placeholder
+            }
+        });
+
+
+        // Function to update required/disabled states for payment fields
+        function updatePaymentFieldsState() {
+            const isPixFilled = pixField.value.trim() !== '';
+            const isAnyBankFieldFilled = bankFields.some(field => field.value.trim() !== '');
+
+            // Reset all states first
+            pixField.required = false;
+            pixField.disabled = false;
+            pixRequiredSpan.classList.add('hidden');
+
+            bankFields.forEach((field, index) => {
+                field.required = false;
+                field.disabled = false;
+                bankRequiredSpans[index].classList.add('hidden');
+            });
+
+            if (isPixFilled) {
+                // If PIX is filled, disable bank fields
+                bankFields.forEach(field => {
+                    field.disabled = true;
+                    if (field.value.trim() !== '') {
+                        field.setAttribute('data-original-value', field.value); // Store original value
+                        field.value = ''; // Clear value only if it was filled
+                    }
+                });
+                pixField.required = true; // PIX itself is now required if it has content
+                pixRequiredSpan.classList.remove('hidden'); // Show required for PIX
+            } else if (isAnyBankFieldFilled) {
+                // If any bank field is filled, disable PIX field
+                pixField.disabled = true;
+                if (pixField.value.trim() !== '') {
+                    pixField.setAttribute('data-original-value', pixField.value); // Store original value
+                    pixField.value = ''; // Clear PIX field if bank details are used
+                }
+                pixRequiredSpan.classList.add('hidden'); // Hide required for PIX
+
+                // All bank fields become required
+                bankFields.forEach((field, index) => {
+                    field.required = true;
+                    bankRequiredSpans[index].classList.remove('hidden');
+                });
+            } else {
+                // If neither PIX nor any bank field is filled, both become required and enabled
+                pixField.required = true;
+                pixRequiredSpan.classList.remove('hidden');
+
+                bankFields.forEach((field, index) => {
+                    field.required = true;
+                    bankRequiredSpans[index].classList.remove('hidden');
+                });
+            }
+            
+            // Re-populate original values if fields become enabled again
+            bankFields.forEach(field => {
+                if (!field.disabled && field.getAttribute('data-original-value')) {
+                    field.value = field.getAttribute('data-original-value');
+                    field.removeAttribute('data-original-value');
+                }
+            });
+            if (!pixField.disabled && pixField.getAttribute('data-original-value')) {
+                pixField.value = pixField.getAttribute('data-original-value');
+                pixField.removeAttribute('data-original-value');
+            }
+        }
+
+
+        // Add event listeners for real-time state updates
+        pixField.addEventListener('input', updatePaymentFieldsState);
+        bankFields.forEach(field => field.addEventListener('input', updatePaymentFieldsState));
+
+        // Logic for State and City dynamic comboboxes
+        async function loadCities(selectedState = null) {
+            cidadeSelect.innerHTML = '<option value="">Carregando Cidades...</option>';
+            cidadeSelect.disabled = true;
+
+            const estadoUF = estadoSelect.value;
+            if (estadoUF) {
+                try {
+                    const response = await fetch(`/api/cities_by_state/${estadoUF}`);
+                    const cities = await response.json();
+                    
+                    cidadeSelect.innerHTML = '<option value="">Selecione a Cidade</option>';
+                    cities.forEach(city => {
+                        const option = document.createElement('option');
+                        option.value = city;
+                        option.textContent = city;
+                        cidadeSelect.appendChild(option);
+                    });
+
+                    // If in edit mode and a city was previously selected, re-select it
+                    // Use a separate variable for the initial city to avoid issues with select.value changing
+                    if (funcionarioCidade && estadoUF === funcionarioEstado) { // Only set if current state matches initial state
+                         cidadeSelect.value = funcionarioCidade;
+                    }
+                    cidadeSelect.disabled = false;
+
+                } catch (error) {
+                    console.error("Erro ao carregar cidades:", error);
+                    cidadeSelect.innerHTML = '<option value="">Erro ao carregar cidades</option>';
+                    cidadeSelect.disabled = true;
+                }
+            } else {
+                cidadeSelect.innerHTML = '<option value="">Selecione primeiro o Estado</option>';
+                cidadeSelect.disabled = true;
+            }
+        }
+
+        // Global variables to store initial funcionario.cidade and funcionario.estado for edit mode
+        const funcionarioCidade = "{{ funcionario.cidade if funcionario else '' }}";
+        const funcionarioEstado = "{{ funcionario.estado if funcionario else '' }}";
+
+
+        // Initial check on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            updatePaymentFieldsState();
+            // Trigger change event on the initially checked radio button to set up correctly
+            const checkedRadio = document.querySelector('input[name="foto_option"]:checked');
+            if (checkedRadio) {
+                handleFotoOptionChange.call(checkedRadio);
+            }
+            // If editing and there's an existing photo, display it
+            if (fotoBase64Input.value) {
+                photoPreview.src = fotoBase64Input.value;
+                photoPreview.classList.remove('hidden');
+                webcamVideo.classList.add('hidden');
+                takePhotoBtn.classList.add('hidden');
+                retakePhotoBtn.classList.remove('hidden');
+            } else {
+                // Ensure initial photo is a placeholder if no photo exists
+                photoPreview.src = 'https://placehold.co/160x160/cbd5e0/4a5568?text=Sem+Foto';
+                photoPreview.classList.remove('hidden');
+            }
+
+            // Load cities on page load if an state is already selected (edit mode)
+            if (estadoSelect.value) {
+                loadCities(estadoSelect.value); // Pass the selected state to ensure correct city load
+            }
+        });
+
+        // Form submission validation (can remain as is, or be simplified if JS handles everything)
+        form.addEventListener('submit', function(event) {
+            const pixValue = pixField.value.trim();
+            const isAnyBankFieldFilled = bankFields.some(field => field.value.trim() !== '');
+
+            // Restore required attribute for potentially disabled fields before submission if they contain data
+            bankFields.forEach(field => {
+                if (field.disabled && field.getAttribute('data-original-value')) {
+                    field.value = field.getAttribute('data-original-value');
+                    field.disabled = false; // Temporarily enable to send value
+                }
+                field.required = !pixField.value.trim(); // Ensure required state is correct for submission
+            });
+
+            if (pixField.disabled && pixField.getAttribute('data-original-value')) {
+                pixField.value = pixField.getAttribute('data-original-value');
+                pixField.disabled = false; // Temporarily enable to send value
+            }
+            pixField.required = !isAnyBankFieldFilled; // Ensure required state is correct for submission
+
+            // Final check before preventing default submit
+            if (pixValue === '' && !isAnyBankFieldFilled) {
+                event.preventDefault();
+                alert('Por favor, preencha a Chave PIX OU todos os campos bancários (Código do Banco, Nome do Banco, Agência, Número da Conta).');
+                if (!pixField.disabled) {
+                    pixField.focus();
+                } else if (!bankFields[0].disabled) {
+                    bankFields[0].focus();
+                }
+            }
+            
+            // Re-apply disabled state after potential submission
+            setTimeout(() => {
+                updatePaymentFieldsState(); // Re-evaluate state after submission attempt
+            }, 0);
+        });
+    </script>
+</body>
+</html>

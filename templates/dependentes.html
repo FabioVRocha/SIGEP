@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGEP - Dependentes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .flash-message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+        }
+        .flash-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .flash-message.danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .flash-message.warning {
+            background-color: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeeba;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen p-6">
+    <div class="max-w-7xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-4xl font-bold text-gray-800">Cadastro de Dependentes</h1>
+            <div class="flex space-x-3">
+                <a href="{{ url_for('adicionar_dependente') }}" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center" title="Adicionar Novo Dependente">
+                    <i class="fas fa-plus mr-2"></i> Adicionar
+                </a>
+                <a href="{{ url_for('index') }}" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center" title="Voltar ao Início">
+                    <i class="fas fa-home"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Mensagens Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-6">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% if dependentes %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full bg-white rounded-lg overflow-hidden" id="dependentesTable">
+                    <thead class="bg-gray-200">
+                        <tr>
+                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider rounded-tl-lg">CPF Dependente</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Nome Dependente</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Data Nasc.</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">Status</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider">CPF Funcionário</th>
+                            <th class="py-3 px-4 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider rounded-tr-lg">Ações</th>
+                        </tr>
+                        <tr class="bg-gray-100">
+                            <th class="px-4 py-2 border-b border-gray-200"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar CPF..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="0"></th>
+                            <th class="px-4 py-2 border-b border-gray-200"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Nome..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="1"></th>
+                            <th class="px-4 py-2 border-b border-gray-200"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Data..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="2"></th>
+                            <th class="px-4 py-2 border-b border-gray-200">
+                                <select onchange="filterTable()" class="w-full px-2 py-1 border rounded text-sm filter-select" data-column="3">
+                                    <option value="">Todos</option>
+                                    <option value="Ativo">Ativo</option>
+                                    <option value="Inativo">Inativo</option>
+                                </select>
+                            </th>
+                            <th class="px-4 py-2 border-b border-gray-200"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar CPF Func..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="4"></th>
+                            <th class="px-4 py-2 border-b border-gray-200"></th> <!-- Empty for Actions column -->
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200">
+                        {% for dependente in dependentes %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="py-3 px-4 text-sm text-gray-800">{{ dependente.cpf_dependente }}</td>
+                                <td class="py-3 px-4 text-sm text-gray-800">{{ dependente.nome_dependente }}</td>
+                                <td class="py-3 px-4 text-sm text-gray-800">{{ dependente.data_nascimento.strftime('%d/%m/%Y') }}</td>
+                                <td class="py-3 px-4 text-sm text-gray-800">
+                                    {% if dependente.status %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Ativo</span>
+                                    {% else %}
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Inativo</span>
+                                    {% endif %}
+                                </td>
+                                <td class="py-3 px-4 text-sm text-gray-800">
+                                    {% if dependente.funcionario %}
+                                        <a href="{{ url_for('editar_funcionario', cpf=dependente.cpf_funcionario) }}" class="text-blue-600 hover:text-blue-800 font-medium">
+                                            {{ dependente.cpf_funcionario }} - {{ dependente.funcionario.nome }}
+                                        </a>
+                                    {% else %}
+                                        {{ dependente.cpf_funcionario }} - N/A
+                                    {% endif %}
+                                </td>
+                                <td class="py-3 px-4 text-sm flex items-center space-x-3">
+                                    <a href="{{ url_for('editar_dependente', cpf_dependente=dependente.cpf_dependente) }}" class="text-blue-600 hover:text-blue-800 font-medium" title="Editar">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <form action="{{ url_for('deletar_dependente', cpf_dependente=dependente.cpf_dependente) }}" method="POST" class="inline">
+                                        <button type="submit" onclick="return confirm('Tem certeza que deseja deletar este dependente?')" class="text-red-600 hover:text-red-800 font-medium bg-transparent border-none cursor-pointer" title="Deletar">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-center text-gray-600 text-lg py-8">Nenhum dependente cadastrado ainda.</p>
+        {% endif %}
+    </div>
+
+    <script>
+        function filterTable() {
+            const tableId = 'dependentesTable'; // Change to the correct table ID
+            const table = document.getElementById(tableId);
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            const filterInputs = table.querySelectorAll('.filter-input');
+            const filterSelects = table.querySelectorAll('.filter-select');
+
+            // Collect filter values from text inputs
+            const textFilters = Array.from(filterInputs).map(input => ({
+                column: parseInt(input.dataset.column),
+                value: input.value.toLowerCase()
+            }));
+
+            // Collect filter values from select inputs
+            const selectFilters = Array.from(filterSelects).map(select => ({
+                column: parseInt(select.dataset.column),
+                value: select.value.toLowerCase()
+            }));
+
+            for (let i = 0; i < rows.length; i++) {
+                let rowDisplay = 'table-row'; // Assume row is visible by default
+                
+                // Apply text filters
+                for (let j = 0; j < textFilters.length; j++) {
+                    const cell = rows[i].getElementsByTagName('td')[textFilters[j].column];
+                    if (cell) {
+                        const cellText = cell.textContent || cell.innerText;
+                        if (textFilters[j].value && !cellText.toLowerCase().includes(textFilters[j].value)) {
+                            rowDisplay = 'none';
+                            break; 
+                        }
+                    }
+                }
+
+                // Apply select filters (only if row is still visible)
+                if (rowDisplay === 'table-row') {
+                    for (let j = 0; j < selectFilters.length; j++) {
+                        const cell = rows[i].getElementsByTagName('td')[selectFilters[j].column];
+                        if (cell) {
+                            const cellText = cell.textContent || cell.innerText;
+                            // For select filters, we need an exact match, or check if "Todos" is selected
+                            if (selectFilters[j].value !== "" && cellText.toLowerCase() !== selectFilters[j].value) {
+                                rowDisplay = 'none';
+                                break;
+                            }
+                        }
+                    }
+                }
+                rows[i].style.display = rowDisplay;
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        {% if demissao %}
+            Editar Demissão: {{ demissao.id }}
+        {% else %}
+            Registrar Demissão
+        {% endif %}
+        - SIGEP
+    </title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Definição da Paleta de Cores como Variáveis CSS */
+        :root {
+            --clr-dark-blue: #1F3A5F;
+            --clr-light-blue: #4F83CC;
+            --clr-light-gray: #F4F6F8;
+            --clr-medium-gray: #A0AAB4;
+            --clr-white: #FFFFFF;
+            --clr-success: #27AE60;
+            --clr-attention: #F1C40F;
+            --clr-error: #E74C3C;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--clr-light-gray);
+        }
+        .flash-message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+        }
+        .flash-message.success {
+            background-color: var(--clr-success);
+            color: var(--clr-white);
+            border: 1px solid var(--clr-success);
+        }
+        .flash-message.danger {
+            background-color: var(--clr-error);
+            color: var(--clr-white);
+            border: 1px solid var(--clr-error);
+        }
+        .flash-message.warning {
+            background-color: var(--clr-attention);
+            color: var(--clr-dark-blue);
+            border: 1px solid var(--clr-attention);
+        }
+
+        .bg-blue-600 { background-color: var(--clr-light-blue); }
+        .hover\:bg-blue-700:hover { background-color: var(--clr-dark-blue); }
+        .bg-gray-500 { background-color: var(--clr-medium-gray); }
+        .hover\:bg-gray-600:hover { background-color: var(--clr-dark-blue); }
+        .text-gray-800 { color: var(--clr-dark-blue); }
+        .text-gray-700 { color: var(--clr-dark-blue); }
+        .text-gray-600 { color: var(--clr-medium-gray); }
+        .text-blue-600 { color: var(--clr-light-blue); }
+        .hover\:text-blue-800:hover { color: var(--clr-dark-blue); }
+        .bg-white { background-color: var(--clr-white); }
+        .border-gray-300 { border-color: var(--clr-medium-gray); }
+        .focus\:ring-blue-500:focus { --tw-ring-color: var(--clr-light-blue); }
+        .focus\:border-blue-500:focus { border-color: var(--clr-light-blue); }
+
+        /* Ajustes específicos para Font Awesome e padding de botões */
+        .btn-icon-spacing {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-light-gray min-h-screen p-6">
+    <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">
+            {% if demissao %}
+                Editar Registro de Demissão #{{ demissao.id }}
+            {% else %}
+                Registrar Nova Demissão
+            {% endif %}
+        </h1>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-6">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form action="{% if demissao %}{{ url_for('editar_demissao', id=demissao.id) }}{% else %}{{ url_for('adicionar_demissao') }}{% endif %}" method="POST" class="space-y-4">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Dados do Funcionário</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="md:col-span-2">
+                    <label for="cpf_funcionario" class="block text-sm font-medium text-gray-700">CPF do Funcionário <span class="text-red-500">*</span></label>
+                    <input type="text" id="cpf_funcionario" name="cpf_funcionario" value="{{ demissao.cpf_funcionario if demissao else '' }}" required {% if demissao %}readonly{% endif %}
+                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm {% if demissao %}bg-gray-100 cursor-not-allowed{% endif %}"
+                           onkeyup="buscarFuncionario()">
+                    <div id="funcionario_info" class="mt-2 text-sm text-gray-600 space-y-1">
+                        {% if demissao and demissao.funcionario %}
+                            <p>Nome: <span id="funcionario_nome_display" class="font-semibold">{{ demissao.funcionario.nome }}</span></p>
+                            <p>Matrícula: <span id="funcionario_matricula_display">N/A</span></p> {# Matrícula ainda não implementada no modelo #}
+                            <p>CPF: <span id="funcionario_cpf_display">{{ demissao.cpf_funcionario }}</span></p>
+                            <p>Cargo: <span id="funcionario_cargo_display">{{ demissao.funcionario.contratos[0].funcao if demissao.funcionario.contratos else 'N/A' }}</span></p>
+                            <p>Setor: <span id="funcionario_setor_display">{{ demissao.funcionario.contratos[0].setor if demissao.funcionario.contratos else 'N/A' }}</span></p>
+                            <p>Data de Admissão: <span id="funcionario_admissao_display">{{ demissao.funcionario.contratos[0].data_admissao.strftime('%d/%m/%Y') if demissao.funcionario.contratos else 'N/A' }}</span></p>
+                        {% else %}
+                            <p>Digite o CPF para buscar os dados do funcionário.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <h2 class="text-xl font-semibold text-gray-800 mt-6 mb-4">Informações da Demissão</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="data_demissao" class="block text-sm font-medium text-gray-700">Data da Demissão <span class="text-red-500">*</span></label>
+                    <input type="date" id="data_demissao" name="data_demissao" value="{{ demissao.data_demissao.strftime('%Y-%m-%d') if demissao else '' }}" required
+                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div>
+                    <label for="ultimo_dia_trabalhado" class="block text-sm font-medium text-gray-700">Último Dia Trabalhado <span class="text-red-500">*</span></label>
+                    <input type="date" id="ultimo_dia_trabalhado" name="ultimo_dia_trabalhado" value="{{ demissao.ultimo_dia_trabalhado.strftime('%Y-%m-%d') if demissao else '' }}" required
+                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                </div>
+                <div class="md:col-span-2">
+                    <label for="tipo_desligamento" class="block text-sm font-medium text-gray-700">Tipo de Desligamento <span class="text-red-500">*</span></label>
+                    <select id="tipo_desligamento" name="tipo_desligamento" required
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="">Selecione o Tipo</option>
+                        <option value="Pedido de demissão" {% if demissao and demissao.tipo_desligamento == 'Pedido de demissão' %}selected{% endif %}>Pedido de demissão</option>
+                        <option value="Dispensa sem justa causa" {% if demissao and demissao.tipo_desligamento == 'Dispensa sem justa causa' %}selected{% endif %}>Dispensa sem justa causa</option>
+                        <option value="Dispensa com justa causa" {% if demissao and demissao.tipo_desligamento == 'Dispensa com justa causa' %}selected{% endif %}>Dispensa com justa causa</option>
+                        <option value="Acordo entre as partes (art. 484-A CLT)" {% if demissao and demissao.tipo_desligamento == 'Acordo entre as partes (art. 484-A CLT)' %}selected{% endif %}>Acordo entre as partes (art. 484-A CLT)</option>
+                        <option value="Término de contrato determinado" {% if demissao and demissao.tipo_desligamento == 'Término de contrato determinado' %}selected{% endif %}>Término de contrato determinado</option>
+                        <option value="Aposentadoria" {% if demissao and demissao.tipo_desligamento == 'Aposentadoria' %}selected{% endif %}>Aposentadoria</option>
+                        <option value="Falecimento" {% if demissao and demissao.tipo_desligamento == 'Falecimento' %}selected{% endif %}>Falecimento</option>
+                    </select>
+                </div>
+                <div class="md:col-span-2">
+                    <label for="motivo_demissao" class="block text-sm font-medium text-gray-700">Motivo da Demissão <span class="text-red-500">*</span></label>
+                    <textarea id="motivo_demissao" name="motivo_demissao" rows="3" required minlength="50"
+                              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">{{ demissao.motivo_demissao if demissao else '' }}</textarea>
+                </div>
+                <div class="md:col-span-2">
+                    <label for="aviso_previo" class="block text-sm font-medium text-gray-700">Aviso Prévio <span class="text-red-500">*</span></label>
+                    <select id="aviso_previo" name="aviso_previo" required onchange="toggleAvisoPrevioFields()"
+                            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="">Selecione o Tipo de Aviso</option>
+                        <option value="Cumprido" {% if demissao and demissao.aviso_previo == 'Cumprido' %}selected{% endif %}>Cumprido</option>
+                        <option value="Indenizado" {% if demissao and demissao.aviso_previo == 'Indenizado' %}selected{% endif %}>Indenizado</option>
+                        <option value="Dispensado" {% if demissao and demissao.aviso_previo == 'Dispensado' %}selected{% endif %}>Dispensado</option>
+                    </select>
+                </div>
+                <div id="aviso_previo_details" class="grid grid-cols-1 md:grid-cols-2 gap-4 md:col-span-2">
+                    <div>
+                        <label for="data_aviso_previo" class="block text-sm font-medium text-gray-700">Data do Aviso Prévio</label>
+                        <input type="date" id="data_aviso_previo" name="data_aviso_previo" value="{{ demissao.data_aviso_previo.strftime('%Y-%m-%d') if demissao.data_aviso_previo else '' }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="quantidade_dias_aviso" class="block text-sm font-medium text-gray-700">Quantidade de Dias do Aviso</label>
+                        <input type="number" step="1" id="quantidade_dias_aviso" name="quantidade_dias_aviso" value="{{ demissao.quantidade_dias_aviso if demissao else '' }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    <div>
+                        <label for="data_termino_aviso" class="block text-sm font-medium text-gray-700">Data de Término do Aviso</label>
+                        <input type="date" id="data_termino_aviso" name="data_termino_aviso" value="{{ demissao.data_termino_aviso.strftime('%Y-%m-%d') if demissao.data_termino_aviso else '' }}"
+                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 mt-6">
+                <button type="submit"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center">
+                    {% if demissao %}
+                        <i class="fas fa-save mr-2"></i> Atualizar Demissão
+                    {% else %}
+                        <i class="fas fa-plus mr-2"></i> Registrar Demissão
+                    {% endif %}
+                </button>
+                <a href="{{ url_for('listar_demissoes') }}"
+                   class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center">
+                    <i class="fas fa-arrow-left mr-2"></i> Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Função para buscar os dados do funcionário via API
+        async function buscarFuncionario() {
+            const cpfFuncionarioInput = document.getElementById('cpf_funcionario');
+            const funcionarioInfoDiv = document.getElementById('funcionario_info');
+            const cpf = cpfFuncionarioInput.value.replace(/\./g, '').replace(/\-/g, ''); // Limpa o CPF
+
+            funcionarioInfoDiv.innerHTML = '<p class="text-medium-gray">Buscando dados do funcionário...</p>';
+            funcionarioInfoDiv.classList.remove('text-error', 'text-success');
+
+            if (cpf.length === 11) {
+                try {
+                    const response = await fetch(`/api/contratos_ativos/${cpf}`);
+                    const data = await response.json(); // Este endpoint já traz dados do funcionário e contrato
+                    
+                    if (data.nome) {
+                        const matricula = data.matricula || 'N/A'; // Assumindo que matrícula seria um campo no futuro
+                        const cargo = data.cargo || 'N/A';
+                        const setor = data.setor || 'N/A';
+                        const dataAdmissao = data.data_admissao || 'N/A';
+
+                        funcionarioInfoDiv.innerHTML = `
+                            <p class="text-dark-blue">Nome: <span id="funcionario_nome_display" class="font-semibold">${data.nome}</span></p>
+                            <p class="text-dark-blue">Matrícula: <span id="funcionario_matricula_display">${matricula}</span></p>
+                            <p class="text-dark-blue">CPF: <span id="funcionario_cpf_display">${cpfFuncionarioInput.value}</span></p>
+                            <p class="text-dark-blue">Cargo: <span id="funcionario_cargo_display">${cargo}</span></p>
+                            <p class="text-dark-blue">Setor: <span id="funcionario_setor_display">${setor}</span></p>
+                            <p class="text-dark-blue">Data de Admissão: <span id="funcionario_admissao_display">${dataAdmissao}</span></p>
+                        `;
+                        funcionarioInfoDiv.classList.add('text-success');
+                    } else {
+                        funcionarioInfoDiv.innerHTML = '<p class="text-error">Funcionário não encontrado ou sem contrato ativo.</p>';
+                        funcionarioInfoDiv.classList.add('text-error');
+                    }
+                } catch (error) {
+                    console.error('Erro ao buscar funcionário ou contrato:', error);
+                    funcionarioInfoDiv.innerHTML = '<p class="text-error">Erro ao buscar dados do funcionário.</p>';
+                    funcionarioInfoDiv.classList.add('text-error');
+                }
+            } else {
+                funcionarioInfoDiv.innerHTML = '<p class="text-medium-gray">Digite o CPF para buscar os dados do funcionário.</p>';
+                funcionarioInfoDiv.classList.remove('text-error', 'text-success');
+            }
+        }
+
+        // Função para alternar visibilidade dos campos de Aviso Prévio
+        function toggleAvisoPrevioFields() {
+            const avisoPrevioSelect = document.getElementById('aviso_previo');
+            const avisoPrevioDetails = document.getElementById('aviso_previo_details');
+            const dataAvisoPrevioInput = document.getElementById('data_aviso_previo');
+            const quantidadeDiasAvisoInput = document.getElementById('quantidade_dias_aviso');
+            const dataTerminoAvisoInput = document.getElementById('data_termino_aviso');
+
+            if (avisoPrevioSelect.value === 'Cumprido' || avisoPrevioSelect.value === 'Indenizado') {
+                avisoPrevioDetails.classList.remove('hidden');
+                dataAvisoPrevioInput.required = true;
+                quantidadeDiasAvisoInput.required = true;
+                // data_termino_aviso é obrigatório APENAS se o aviso for "Cumprido"
+                dataTerminoAvisoInput.required = (avisoPrevioSelect.value === 'Cumprido');
+            } else {
+                avisoPrevioDetails.classList.add('hidden');
+                dataAvisoPrevioInput.required = false;
+                quantidadeDiasAvisoInput.required = false;
+                dataTerminoAvisoInput.required = false;
+                // Limpar valores quando os campos são ocultados
+                dataAvisoPrevioInput.value = '';
+                quantidadeDiasAvisoInput.value = '';
+                dataTerminoAvisoInput.value = '';
+            }
+        }
+
+        // Chamar buscarFuncionario e toggleAvisoPrevioFields ao carregar a página (para modo edição)
+        document.addEventListener('DOMContentLoaded', (event) => {
+            const cpfFuncionarioInput = document.getElementById('cpf_funcionario');
+            if (cpfFuncionarioInput && cpfFuncionarioInput.value && !cpfFuncionarioInput.readOnly) {
+                // Só busca automaticamente se não estiver em modo de edição (readonly)
+                buscarFuncionario();
+            } else if (cpfFuncionarioInput.readOnly && cpfFuncionarioInput.value) {
+                // Em modo de edição, recarrega as informações do funcionário se o CPF já está lá
+                buscarFuncionario(); 
+            }
+            toggleAvisoPrevioFields(); // Chamar para ajustar visibilidade inicial
+        });
+    </script>
+</body>
+</html>
