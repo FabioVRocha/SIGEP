@@ -2082,6 +2082,75 @@ def create_app():
 
         return redirect(url_for('listar_registros_ponto'))
 
+    @app.route('/registros_ponto/edit/<int:id>', methods=['GET', 'POST'])
+    def editar_registro_ponto(id):
+        if 'usuario_id' not in session:
+            flash('Você precisa fazer login primeiro.', 'warning')
+            return redirect(url_for('login'))
+
+        registro = RegistroPonto.query.get_or_404(id)
+
+        if request.method == 'POST':
+            cpf = request.form.get('cpf_funcionario', '').replace('.', '').replace('-', '')
+            pis = request.form.get('pis')
+            id_face = request.form.get('id_face')
+            data_hora_str = request.form.get('data_hora')
+            tipo_lancamento = request.form.get('tipo_lancamento')
+            observacao = request.form.get('observacao')
+
+            try:
+                data_hora = datetime.datetime.strptime(data_hora_str, '%Y-%m-%dT%H:%M')
+            except ValueError:
+                flash('Data e hora inválidas.', 'danger')
+                return render_template('registro_ponto_form.html', registro_ponto=registro)
+
+            dados_antigos = {
+                'cpf_funcionario': registro.cpf_funcionario,
+                'pis': registro.pis,
+                'id_face': registro.id_face,
+                'data_hora': registro.data_hora.strftime('%Y-%m-%dT%H:%M'),
+                'tipo_lancamento': registro.tipo_lancamento,
+                'observacao': registro.observacao,
+            }
+
+            registro.cpf_funcionario = cpf
+            registro.pis = pis
+            registro.id_face = id_face
+            registro.data_hora = data_hora
+            registro.tipo_lancamento = tipo_lancamento
+            registro.observacao = observacao
+
+            try:
+                db.session.commit()
+                dados_novos = {
+                    'cpf_funcionario': registro.cpf_funcionario,
+                    'pis': registro.pis,
+                    'id_face': registro.id_face,
+                    'data_hora': registro.data_hora.strftime('%Y-%m-%dT%H:%M'),
+                    'tipo_lancamento': registro.tipo_lancamento,
+                    'observacao': registro.observacao,
+                }
+                log_entry = LogAuditoria(
+                    usuario_id=session['usuario_id'],
+                    acao=f"Registro de ponto ID {id} editado.",
+                    tabela_afetada='registro_ponto',
+                    registro_id=id,
+                    dados_antigos=dados_antigos,
+                    dados_novos=dados_novos
+                )
+                db.session.add(log_entry)
+                db.session.commit()
+                flash('Registro de ponto atualizado com sucesso!', 'success')
+            except Exception as e:
+                db.session.rollback()
+                print(f"ERROR: Erro ao atualizar registro de ponto: {e}")
+                flash(f'Erro ao atualizar registro de ponto: {e}', 'danger')
+                return render_template('registro_ponto_form.html', registro_ponto=registro)
+
+            return redirect(url_for('listar_registros_ponto'))
+
+        return render_template('registro_ponto_form.html', registro_ponto=registro)
+
     return app # Fim da função create_app
 
 
