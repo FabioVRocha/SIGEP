@@ -13,6 +13,8 @@
     </title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Definição da Paleta de Cores como Variáveis CSS */
         :root {
@@ -24,71 +26,247 @@
             --clr-success: #27AE60;
             --clr-attention: #F1C40F;
             --clr-error: #E74C3C;
+            --clr-purple: #8A2BE2;
+            --clr-orange: #FF8C00;
+            --clr-yellow: #F1C40F;
+            --clr-teal: #008080;
+            --clr-indigo: #4B0082;
+            --clr-pink: #FF69B4;
+            --clr-dashboard-bg: #F0F2F5; /* Cor de fundo do painel principal, similar à imagem */
+            --clr-sidebar-bg: #1F3A5F; /* Cor de fundo da sidebar, azul escuro */
+            --clr-card-bg: #FFFFFF; /* Cor de fundo dos cards */
+            --clr-text-main: #333333; /* Cor principal do texto */
+            --clr-text-secondary: #666666; /* Cor secundária do texto */
+            --clr-border: #E0E0E0; /* Cor da borda para elementos */
         }
 
         body {
             font-family: 'Inter', sans-serif;
+            background-color: var(--clr-dashboard-bg); /* Fundo geral */
+        }
+
+        .flash-message { padding: 1rem; margin-bottom: 1rem; border-radius: 0.5rem; font-weight: 600; }
+        .flash-message.success { background-color: var(--clr-success); color: var(--clr-white); border: 1px solid var(--clr-success); }
+        .flash-message.danger { background-color: var(--clr-error); color: var(--clr-white); border: 1px solid var(--clr-error); }
+        .flash-message.warning { background-color: var(--clr-attention); color: var(--clr-dark-blue); border: 1px solid var(--clr-attention); }
+
+        /* Estilos da Sidebar */
+        .sidebar {
+            background-color: var(--clr-sidebar-bg);
+            color: var(--clr-white);
+            width: 280px; /* Largura da sidebar */
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            position: fixed; /* Fixa a sidebar na tela */
+            height: 100vh; /* Altura total da viewport */
+            overflow-y: auto; /* Adiciona scroll se o conteúdo for maior que a tela */
+        }
+
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            color: var(--clr-white);
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .sidebar-nav-item:hover, .sidebar-nav-item.active {
+            background-color: var(--clr-light-blue); /* Cor de hover/ativo */
+            color: var(--clr-white);
+        }
+
+        .sidebar-nav-item i {
+            margin-right: 1rem;
+            font-size: 1.25rem;
+        }
+
+        /* Estilos do Conteúdo Principal */
+        .main-content {
+            margin-left: 280px; /* Margem para acomodar a sidebar */
+            padding: 2rem;
+            flex-grow: 1;
+            background-color: var(--clr-dashboard-bg);
+        }
+
+        .main-header {
+            background-color: var(--clr-card-bg);
+            padding: 1.5rem 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--clr-dark-blue);
+        }
+
+        .main-header .search-bar {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--clr-border);
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
             background-color: var(--clr-light-gray);
         }
-        .flash-message {
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
+
+        .main-header .search-bar input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 1rem;
+            color: var(--clr-text-main);
         }
-        .flash-message.success {
+
+        .main-header .search-bar i {
+            color: var(--clr-medium-gray);
+            margin-right: 0.5rem;
+        }
+
+        /* Conteúdo principal de uma seção (o formulário será um content-section) */
+        .content-section {
+            background-color: var(--clr-card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Cores para os botões e links */
+        .btn-primary {
+            background-color: var(--clr-light-blue);
+            color: var(--clr-white);
+        }
+        .btn-primary:hover {
+            background-color: var(--clr-dark-blue); /* Mais escuro no hover */
+        }
+        .btn-secondary {
+            background-color: var(--clr-medium-gray);
+            color: var(--clr-white);
+        }
+        .btn-secondary:hover {
+            background-color: color-mix(in srgb, var(--clr-medium-gray) 80%, black); /* Um pouco mais escuro no hover */
+        }
+        .btn-add {
             background-color: var(--clr-success);
             color: var(--clr-white);
-            border: 1px solid var(--clr-success);
         }
-        .flash-message.danger {
-            background-color: var(--clr-error);
-            color: var(--clr-white);
-            border: 1px solid var(--clr-error);
-        }
-        .flash-message.warning {
-            background-color: var(--clr-attention);
-            color: var(--clr-dark-blue);
-            border: 1px solid var(--clr-attention);
+        .btn-add:hover {
+            background-color: color-mix(in srgb, var(--clr-success) 90%, black);
         }
 
-        .bg-blue-600 { background-color: var(--clr-light-blue); }
-        .hover\:bg-blue-700:hover { background-color: var(--clr-dark-blue); }
-        .bg-gray-500 { background-color: var(--clr-medium-gray); }
-        .hover\:bg-gray-600:hover { background-color: var(--clr-dark-blue); }
-        .text-gray-800 { color: var(--clr-dark-blue); }
-        .text-gray-700 { color: var(--clr-dark-blue); }
-        .text-gray-600 { color: var(--clr-medium-gray); }
-        .text-blue-600 { color: var(--clr-light-blue); }
-        .hover\:text-blue-800:hover { color: var(--clr-dark-blue); }
-        .bg-white { background-color: var(--clr-white); }
-        .border-gray-300 { border-color: var(--clr-medium-gray); }
-        .focus\:ring-blue-500:focus { --tw-ring-color: var(--clr-light-blue); }
-        .focus\:border-blue-500:focus { border-color: var(--clr-light-blue); }
+        /* Estilos de input/select/textarea para consistência */
+        input[type="text"], input[type="date"], select, textarea {
+            @apply mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3
+                   focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
+            color: var(--clr-dark-blue); /* Cor do texto dentro do input */
+            background-color: var(--clr-light-gray); /* Fundo do input */
+        }
 
-        /* Custom scrollbar for minimal appearance, if any scrollbar is unavoidable */
-        body::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+        input[type="text"]:read-only {
+            background-color: var(--clr-medium-gray);
+            cursor: not-allowed;
         }
-        body::-webkit-scrollbar-thumb {
-            background-color: #cbd5e0;
-            border-radius: 4px;
+
+        label {
+            color: var(--clr-text-main); /* Cor do label */
         }
-        body::-webkit-scrollbar-track {
-            background: transparent;
+
+        /* Responsividade básica */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                margin-bottom: 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .main-header .search-bar {
+                width: 100%;
+                margin-top: 1rem;
+            }
         }
     </style>
 </head>
-<body class="bg-light-gray min-h-screen p-6">
-    <div class="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-lg">
-        <h1 class="text-3xl font-bold text-gray-800 mb-6 text-center">
-            {% if funcionario %}
-                Editar Funcionário
-            {% else %}
-                Adicionar Novo Funcionário
-            {% endif %}
-        </h1>
+<body class="flex flex-col md:flex-row min-h-screen">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-cubes mr-3 text-2xl"></i> SIGEP
+        </div>
+        <nav>
+            <ul>
+                <li>
+                    <a href="{{ url_for('index') }}" class="sidebar-nav-item">
+                        <i class="fas fa-home"></i> Visão Geral
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('listar_funcionarios') }}" class="sidebar-nav-item active">
+                        <i class="fas fa-edit"></i> Cadastros
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-nav-item">
+                        <i class="fas fa-calendar-alt"></i> Lançamentos
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-nav-item">
+                        <i class="fas fa-chart-bar"></i> Relatórios
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-nav-item">
+                        <i class="fas fa-cogs"></i> Gerencial
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="flex justify-end mt-8">
+            <a href="{{ url_for('logout') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md flex items-center">
+                <i class="fas fa-sign-out-alt mr-2"></i> Sair
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Main Header -->
+        <div class="main-header">
+            <h1 class="text-2xl font-bold text-dark-blue">
+                {% if funcionario %}
+                    Editar Funcionário: {{ funcionario.nome }}
+                {% else %}
+                    Adicionar Novo Funcionário
+                {% endif %}
+            </h1>
+            <div class="flex space-x-3">
+                <a href="{{ url_for('listar_funcionarios') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center">
+                    <i class="fas fa-arrow-left mr-2"></i> Voltar
+                </a>
+            </div>
+        </div>
 
         <!-- Mensagens Flash -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -101,169 +279,154 @@
             {% endif %}
         {% endwith %}
 
-        <form id="funcionarioForm" action="{% if funcionario %}{{ url_for('editar_funcionario', cpf=funcionario.cpf) }}{% else %}{{ url_for('adicionar_funcionario') }}{% endif %}" method="POST" class="space-y-4">
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <!-- Coluna de Foto (movida para o topo e à direita) -->
-                <div class="md:col-span-1 lg:col-span-1 order-first md:order-last">
-                    <label for="foto_option" class="block text-sm font-medium text-gray-700 mb-2">Foto do Funcionário</label>
-                    <div class="w-40 h-40 bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden mb-4 shadow-inner mx-auto">
-                        <img id="photo-preview" class="w-full h-full object-cover" alt="Pré-visualização da foto"
-                             src="{{ funcionario.foto_base64 if funcionario.foto_base64 else 'https://placehold.co/160x160/cbd5e0/4a5568?text=Sem+Foto' }}">
-                    </div>
+        <div class="content-section">
+            <form id="funcionarioForm" action="{% if funcionario %}{{ url_for('editar_funcionario', cpf=funcionario.cpf) }}{% else %}{{ url_for('adicionar_funcionario') }}{% endif %}" method="POST" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6"> {# Adjusted grid for better photo positioning #}
+                    <!-- Coluna de Foto -->
+                    <div class="md:col-span-1 flex flex-col items-center">
+                        <label for="foto_option" class="block text-base font-medium text-gray-700 mb-4">Foto do Funcionário</label>
+                        <div class="w-48 h-48 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden mb-4 shadow-inner"> {# Increased size and made it circular #}
+                            <img id="photo-preview" class="w-full h-full object-cover" alt="Pré-visualização da foto"
+                                src="{{ funcionario.foto_base64 if funcionario.foto_base64 else 'https://placehold.co/192x192/cbd5e0/4a5568?text=Sem+Foto' }}">
+                        </div>
 
-                    <div class="flex items-center space-x-4 mb-4">
-                        <label class="inline-flex items-center">
-                            <input type="radio" class="form-radio" name="foto_option" value="upload" checked>
-                            <span class="ml-2 text-gray-700">Upload do PC</span>
-                        </label>
-                        <label class="inline-flex items-center">
-                            <input type="radio" class="form-radio" name="foto_option" value="webcam">
-                            <span class="ml-2 text-gray-700">Tirar Foto (Webcam)</span>
-                        </label>
-                    </div>
+                        <div class="flex flex-col space-y-2 mb-4">
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="radio" class="form-radio text-blue-600 focus:ring-blue-500" name="foto_option" value="upload" checked>
+                                <span class="ml-2 text-gray-700 font-medium">Upload do PC</span>
+                            </label>
+                            <label class="inline-flex items-center cursor-pointer">
+                                <input type="radio" class="form-radio text-blue-600 focus:ring-blue-500" name="foto_option" value="webcam">
+                                <span class="ml-2 text-gray-700 font-medium">Tirar Foto (Webcam)</span>
+                            </label>
+                        </div>
 
-                    <div id="upload-section">
-                        <input type="file" id="foto_upload" name="foto_upload" accept="image/*"
-                               class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-                    </div>
+                        <div id="upload-section" class="w-full px-4">
+                            <input type="file" id="foto_upload" name="foto_upload" accept="image/*"
+                                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 cursor-pointer">
+                        </div>
 
-                    <div id="webcam-section" class="hidden">
-                        <video id="webcam-video" class="w-full h-auto rounded-lg shadow-md mb-2"></video>
-                        <button type="button" id="take-photo-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out w-full mb-2">Tirar Foto</button>
-                        <canvas id="photo-canvas" class="w-full h-auto rounded-lg shadow-md hidden"></canvas>
-                        <button type="button" id="retake-photo-btn" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out w-full mt-2 hidden">Refazer Foto</button>
-                    </div>
+                        <div id="webcam-section" class="hidden w-full px-4">
+                            <video id="webcam-video" class="w-full rounded-lg shadow-md mb-2 border border-gray-300"></video>
+                            <button type="button" id="take-photo-btn" class="btn-primary py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out w-full mb-2 flex items-center justify-center">
+                                <i class="fas fa-camera mr-2"></i> Tirar Foto
+                            </button>
+                            <canvas id="photo-canvas" class="w-full rounded-lg shadow-md hidden border border-gray-300"></canvas>
+                            <button type="button" id="retake-photo-btn" class="btn-secondary py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out w-full mt-2 flex items-center justify-center hidden">
+                                <i class="fas fa-redo-alt mr-2"></i> Refazer Foto
+                            </button>
+                        </div>
 
-                    {# Importante: este campo HIDDEN é onde a string Base64 será armazenada para envio. #}
-                    {# Ele NÃO deve ter o atributo 'disabled' pois valores desabilitados não são enviados. #}
-                    <input type="hidden" id="foto_base64" name="foto_base64" value="{{ funcionario.foto_base64 if funcionario.foto_base64 else '' }}">
-                </div>
-                <!-- Fim da Coluna de Foto -->
+                        {# Importante: este campo HIDDEN é onde a string Base64 será armazenada para envio. #}
+                        <input type="hidden" id="foto_base64" name="foto_base64" value="{{ funcionario.foto_base64 if funcionario.foto_base64 else '' }}">
+                    </div>
+                    <!-- Fim da Coluna de Foto -->
 
-
-                <!-- Campos de Dados Pessoais e Endereço -->
-                <div class="md:col-span-1 lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4 order-first md:order-first">
-                    <div>
-                        <label for="cpf" class="block text-sm font-medium text-gray-700">CPF <span class="text-red-500">*</span></label>
-                        <input type="text" id="cpf" name="cpf" value="{{ funcionario.cpf if funcionario else '' }}" {% if funcionario %}readonly{% endif %} required
-                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm {% if funcionario %}bg-gray-100 cursor-not-allowed{% endif %}">
-                    </div>
-                    <div>
-                        <label for="nome" class="block text-sm font-medium text-gray-700">Nome <span class="text-red-500">*</span></label>
-                        <input type="text" id="nome" name="nome" value="{{ funcionario.nome if funcionario else '' }}" required
-                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="data_nascimento" class="block text-sm font-medium text-gray-700">Data de Nascimento <span class="text-red-500">*</span></label>
-                        <input type="date" id="data_nascimento" name="data_nascimento" value="{{ funcionario.data_nascimento.strftime('%Y-%m-%d') if funcionario else '' }}" required
-                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="pis" class="block text-sm font-medium text-gray-700">PIS <span class="text-red-500">*</span></label>
-                        <input type="text" id="pis" name="pis" value="{{ funcionario.pis if funcionario else '' }}" required
-                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="id_face" class="block text-sm font-medium text-gray-700">IDFace <span class="text-red-500">*</span></label>
-                        <input type="text" id="id_face" name="id_face" value="{{ funcionario.id_face if funcionario else '' }}" required
-                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone <span class="text-red-500">*</span></label>
-                        <input type="text" id="telefone" name="telefone" value="{{ funcionario.telefone if funcionario else '' }}" required
-                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label for="endereco" class="block text-sm font-medium text-gray-700">Endereço Completo <span class="text-red-500">*</span></label>
-                        <input type="text" id="endereco" name="endereco" value="{{ funcionario.endereco if funcionario else '' }}" required
-                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="bairro" class="block text-sm font-medium text-gray-700">Bairro <span class="text-red-500">*</span></label> {# NOVO CAMPO: BAIRRO #}
-                        <input type="text" id="bairro" name="bairro" value="{{ funcionario.bairro if funcionario else '' }}" required
-                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                    </div>
-                    <div>
-                        <label for="estado" class="block text-sm font-medium text-gray-700">Estado <span class="text-red-500">*</span></label>
-                        <select id="estado" name="estado" required onchange="loadCities()"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                            <option value="">Selecione o Estado</option>
-                            {% for uf in estados_uf %}
-                                <option value="{{ uf }}" {% if funcionario and funcionario.estado == uf %}selected{% endif %}>{{ uf }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div>
-                        <label for="cidade" class="block text-sm font-medium text-gray-700">Cidade <span class="text-red-500">*</span></label>
-                        <select id="cidade" name="cidade" required
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                            <option value="">Selecione a Cidade</option>
-                            {# Cidades serão carregadas via JavaScript #}
-                        </select>
-                    </div>
-                    <div>
-                        <label for="cep" class="block text-sm font-medium text-gray-700">CEP <span class="text-red-500">*</span></label>
-                        <input type="text" id="cep" name="cep" value="{{ funcionario.cep if funcionario else '' }}" required
-                               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <!-- Campos de Dados Pessoais e Endereço -->
+                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="cpf" class="block text-sm font-medium text-gray-700">CPF <span class="text-red-500">*</span></label>
+                            <input type="text" id="cpf" name="cpf" value="{{ funcionario.cpf if funcionario else '' }}" {% if funcionario %}readonly{% endif %} required
+                                class="{% if funcionario %}bg-gray-200 cursor-not-allowed{% endif %}">
+                        </div>
+                        <div>
+                            <label for="nome" class="block text-sm font-medium text-gray-700">Nome <span class="text-red-500">*</span></label>
+                            <input type="text" id="nome" name="nome" value="{{ funcionario.nome if funcionario else '' }}" required>
+                        </div>
+                        <div>
+                            <label for="data_nascimento" class="block text-sm font-medium text-gray-700">Data de Nascimento <span class="text-red-500">*</span></label>
+                            <input type="date" id="data_nascimento" name="data_nascimento" value="{{ funcionario.data_nascimento.strftime('%Y-%m-%d') if funcionario else '' }}" required>
+                        </div>
+                        <div>
+                            <label for="pis" class="block text-sm font-medium text-gray-700">PIS <span class="text-red-500">*</span></label>
+                            <input type="text" id="pis" name="pis" value="{{ funcionario.pis if funcionario else '' }}" required>
+                        </div>
+                        <div>
+                            <label for="id_face" class="block text-sm font-medium text-gray-700">IDFace <span class="text-red-500">*</span></label>
+                            <input type="text" id="id_face" name="id_face" value="{{ funcionario.id_face if funcionario else '' }}" required>
+                        </div>
+                        <div>
+                            <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone <span class="text-red-500">*</span></label>
+                            <input type="text" id="telefone" name="telefone" value="{{ funcionario.telefone if funcionario else '' }}" required>
+                        </div>
+                        <div class="md:col-span-2">
+                            <label for="endereco" class="block text-sm font-medium text-gray-700">Endereço Completo <span class="text-red-500">*</span></label>
+                            <input type="text" id="endereco" name="endereco" value="{{ funcionario.endereco if funcionario else '' }}" required>
+                        </div>
+                        <div>
+                            <label for="bairro" class="block text-sm font-medium text-gray-700">Bairro <span class="text-red-500">*</span></label>
+                            <input type="text" id="bairro" name="bairro" value="{{ funcionario.bairro if funcionario else '' }}" required>
+                        </div>
+                        <div>
+                            <label for="estado" class="block text-sm font-medium text-gray-700">Estado <span class="text-red-500">*</span></label>
+                            <select id="estado" name="estado" required onchange="loadCities()">
+                                <option value="">Selecione o Estado</option>
+                                {% for uf in estados_uf %}
+                                    <option value="{{ uf }}" {% if funcionario and funcionario.estado == uf %}selected{% endif %}>{{ uf }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="cidade" class="block text-sm font-medium text-gray-700">Cidade <span class="text-red-500">*</span></label>
+                            <select id="cidade" name="cidade" required>
+                                <option value="">Selecione a Cidade</option>
+                                {# Cidades serão carregadas via JavaScript #}
+                            </select>
+                        </div>
+                        <div>
+                            <label for="cep" class="block text-sm font-medium text-gray-700">CEP <span class="text-red-500">*</span></label>
+                            <input type="text" id="cep" name="cep" value="{{ funcionario.cep if funcionario else '' }}" required>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <h2 class="text-xl font-semibold text-gray-800 mt-6 mb-4">Dados Bancários</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div>
-                    <label for="codigo_banco" class="block text-sm font-medium text-gray-700">Cód. Banco <span id="req-bank-code" class="text-red-500">*</span></label>
-                    <input type="text" id="codigo_banco" name="codigo_banco" value="{{ funcionario.codigo_banco if funcionario else '' }}"
-                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                <h2 class="text-xl font-semibold text-dark-blue mt-6 mb-4">Dados Bancários</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div>
+                        <label for="codigo_banco" class="block text-sm font-medium text-gray-700">Cód. Banco <span id="req-bank-code" class="text-red-500">*</span></label>
+                        <input type="text" id="codigo_banco" name="codigo_banco" value="{{ funcionario.codigo_banco if funcionario else '' }}">
+                    </div>
+                    <div>
+                        <label for="nome_banco" class="block text-sm font-medium text-gray-700">Nome Banco <span id="req-bank-name" class="text-red-500">*</span></label>
+                        <input type="text" id="nome_banco" name="nome_banco" value="{{ funcionario.nome_banco if funcionario else '' }}">
+                    </div>
+                    <div>
+                        <label for="codigo_agencia" class="block text-sm font-medium text-gray-700">Cód. Agência <span id="req-agency-code" class="text-red-500">*</span></label>
+                        <input type="text" id="codigo_agencia" name="codigo_agencia" value="{{ funcionario.codigo_agencia if funcionario else '' }}">
+                    </div>
+                    <div>
+                        <label for="numero_conta" class="block text-sm font-medium text-gray-700">Nº Conta <span id="req-account-num" class="text-red-500">*</span></label>
+                        <input type="text" id="numero_conta" name="numero_conta" value="{{ funcionario.numero_conta if funcionario else '' }}">
+                    </div>
+                    <div class="lg:col-span-1">
+                        <label for="variacao_conta" class="block text-sm font-medium text-gray-700">Variação</label>
+                        <input type="text" id="variacao_conta" name="variacao_conta" value="{{ funcionario.variacao_conta if funcionario else '' }}">
+                    </div>
+                    <div class="lg:col-span-1">
+                        <label for="chave_pix" class="block text-sm font-medium text-gray-700">Chave PIX <span id="req-pix" class="text-red-500 hidden">*</span></label>
+                        <input type="text" id="chave_pix" name="chave_pix" value="{{ funcionario.chave_pix if funcionario else '' }}">
+                    </div>
                 </div>
-                <div>
-                    <label for="nome_banco" class="block text-sm font-medium text-gray-700">Nome Banco <span id="req-bank-name" class="text-red-500">*</span></label>
-                    <input type="text" id="nome_banco" name="nome_banco" value="{{ funcionario.nome_banco if funcionario else '' }}"
-                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                </div>
-                <div>
-                    <label for="codigo_agencia" class="block text-sm font-medium text-gray-700">Cód. Agência <span id="req-agency-code" class="text-red-500">*</span></label>
-                    <input type="text" id="codigo_agencia" name="codigo_agencia" value="{{ funcionario.codigo_agencia if funcionario else '' }}"
-                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                </div>
-                <div>
-                    <label for="numero_conta" class="block text-sm font-medium text-gray-700">Nº Conta <span id="req-account-num" class="text-red-500">*</span></label>
-                    <input type="text" id="numero_conta" name="numero_conta" value="{{ funcionario.numero_conta if funcionario else '' }}"
-                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                </div>
-                <div class="lg:col-span-1">
-                    <label for="variacao_conta" class="block text-sm font-medium text-gray-700">Variação</label>
-                    <input type="text" id="variacao_conta" name="variacao_conta" value="{{ funcionario.variacao_conta if funcionario else '' }}"
-                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                </div>
-                <div class="lg:col-span-1">
-                    <label for="chave_pix" class="block text-sm font-medium text-gray-700">Chave PIX <span id="req-pix" class="text-red-500 hidden">*</span></label>
-                    <input type="text" id="chave_pix" name="chave_pix" value="{{ funcionario.chave_pix if funcionario else '' }}"
-                           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                </div>
-            </div>
 
-            <div class="col-span-1 md:col-span-2 lg:col-span-3">
-                <label for="observacao" class="block text-sm font-medium text-gray-700">Observação</label>
-                <textarea id="observacao" name="observacao" rows="3"
-                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">{{ funcionario.observacao if funcionario else '' }}</textarea>
-            </div>
+                <div class="col-span-1 md:col-span-2 lg:col-span-3">
+                    <label for="observacao" class="block text-sm font-medium text-gray-700">Observação</label>
+                    <textarea id="observacao" name="observacao" rows="3"></textarea>
+                </div>
 
-            <div class="flex justify-end space-x-3 mt-6">
-                <button type="submit"
-                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center">
-                    {% if funcionario %}
-                        <i class="fas fa-save mr-2"></i> Atualizar Funcionário
-                    {% else %}
-                        <i class="fas fa-plus mr-2"></i> Adicionar Funcionário
-                    {% endif %}
-                </button>
-                <a href="{{ url_for('listar_funcionarios') }}"
-                   class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center">
-                    <i class="fas fa-arrow-left mr-2"></i> Cancelar
-                </a>
-            </div>
-        </form>
+                <div class="flex justify-end space-x-3 mt-6">
+                    <button type="submit" class="btn-primary py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center">
+                        {% if funcionario %}
+                            <i class="fas fa-save mr-2"></i> Atualizar Funcionário
+                        {% else %}
+                            <i class="fas fa-plus mr-2"></i> Adicionar Funcionário
+                        {% endif %}
+                    </button>
+                    <a href="{{ url_for('listar_funcionarios') }}" class="btn-secondary py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center">
+                        <i class="fas fa-arrow-left mr-2"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -322,11 +485,12 @@
                     })
                     .catch(error => {
                         console.error("Erro ao acessar a webcam:", error);
-                        alert("Não foi possível acessar a webcam. Por favor, verifique as permissões e tente novamente.");
+                        // Using a more subtle message for webcam error
+                        console.log("Não foi possível acessar a webcam. Por favor, verifique as permissões e tente novamente.");
                         takePhotoBtn.classList.add('hidden');
                     });
             } else {
-                alert("Seu navegador não suporta acesso à webcam.");
+                console.log("Seu navegador não suporta acesso à webcam.");
                 takePhotoBtn.classList.add('hidden');
             }
         }
@@ -338,7 +502,8 @@
                 stopWebcamStream();
                 fotoUploadInput.required = true;
                 fotoBase64Input.value = ''; // Clear base64 if switching to upload
-                photoPreview.src = 'https://placehold.co/160x160/cbd5e0/4a5568?text=Sem+Foto'; // Placeholder
+                photoPreview.src = 'https://placehold.co/192x192/cbd5e0/4a5568?text=Sem+Foto'; // Placeholder
+                photoPreview.classList.remove('hidden'); // Ensure preview is visible with placeholder
             } else {
                 uploadSection.classList.add('hidden');
                 webcamSection.classList.remove('hidden');
@@ -407,7 +572,8 @@
         retakePhotoBtn.addEventListener('click', () => {
             startWebcamStream(); // Restart stream to retake photo
             fotoBase64Input.value = ''; // Clear stored photo
-            photoPreview.src = 'https://placehold.co/160x160/cbd5e0/4a5568?text=Sem+Foto'; // Reset to placeholder
+            photoPreview.src = 'https://placehold.co/192x192/cbd5e0/4a5568?text=Sem+Foto'; // Reset to placeholder
+            photoPreview.classList.remove('hidden'); // Ensure preview is visible
         });
 
         // Handle file input change for direct upload
@@ -424,7 +590,7 @@
                 reader.readAsDataURL(file);
             } else {
                 fotoBase64Input.value = '';
-                photoPreview.src = 'https://placehold.co/160x160/cbd5e0/4a5568?text=Sem+Foto'; // Reset to placeholder
+                photoPreview.src = 'https://placehold.co/192x192/cbd5e0/4a5568?text=Sem+Foto'; // Reset to placeholder
             }
         });
 
@@ -521,7 +687,7 @@
                     // If in edit mode and a city was previously selected, re-select it
                     // Use a separate variable for the initial city to avoid issues with select.value changing
                     if (funcionarioCidade && estadoUF === funcionarioEstado) { // Only set if current state matches initial state
-                         cidadeSelect.value = funcionarioCidade;
+                           cidadeSelect.value = funcionarioCidade;
                     }
                     cidadeSelect.disabled = false;
 
@@ -558,7 +724,7 @@
                 retakePhotoBtn.classList.remove('hidden');
             } else {
                 // Ensure initial photo is a placeholder if no photo exists
-                photoPreview.src = 'https://placehold.co/160x160/cbd5e0/4a5568?text=Sem+Foto';
+                photoPreview.src = 'https://placehold.co/192x192/cbd5e0/4a5568?text=Sem+Foto';
                 photoPreview.classList.remove('hidden');
             }
 
@@ -566,6 +732,11 @@
             if (estadoSelect.value) {
                 loadCities(estadoSelect.value); // Pass the selected state to ensure correct city load
             }
+             // Set the initial value of the textarea from the Jinja variable
+             const observacaoTextarea = document.getElementById('observacao');
+             if (observacaoTextarea) {
+                 observacaoTextarea.value = `{{ funcionario.observacao if funcionario else '' }}`;
+             }
         });
 
         // Form submission validation (can remain as is, or be simplified if JS handles everything)
@@ -591,7 +762,8 @@
             // Final check before preventing default submit
             if (pixValue === '' && !isAnyBankFieldFilled) {
                 event.preventDefault();
-                alert('Por favor, preencha a Chave PIX OU todos os campos bancários (Código do Banco, Nome do Banco, Agência, Número da Conta).');
+                console.log('Por favor, preencha a Chave PIX OU todos os campos bancários (Código do Banco, Nome do Banco, Agência, Número da Conta).');
+                // Instead of alert, you might show a visual error message on the page
                 if (!pixField.disabled) {
                     pixField.focus();
                 } else if (!bankFields[0].disabled) {
