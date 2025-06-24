@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGEP - Início</title>
+    <title>SIGEP - Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome para ícones -->
@@ -24,23 +24,166 @@
             --clr-yellow: #F1C40F;
             --clr-teal: #008080;
             --clr-indigo: #4B0082;
-            --clr-pink: #FF69B4; /* Adicionando uma cor para Férias */
+            --clr-pink: #FF69B4;
+            --clr-dashboard-bg: #F0F2F5; /* Cor de fundo do painel principal, similar à imagem */
+            --clr-sidebar-bg: #1F3A5F; /* Cor de fundo da sidebar, azul escuro */
+            --clr-card-bg: #FFFFFF; /* Cor de fundo dos cards */
+            --clr-text-main: #333333; /* Cor principal do texto */
+            --clr-text-secondary: #666666; /* Cor secundária do texto */
+            --clr-border: #E0E0E0; /* Cor da borda para elementos */
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--clr-light-gray);
+            background-color: var(--clr-dashboard-bg); /* Fundo geral */
         }
+
         .flash-message { padding: 1rem; margin-bottom: 1rem; border-radius: 0.5rem; font-weight: 600; }
         .flash-message.success { background-color: var(--clr-success); color: var(--clr-white); border: 1px solid var(--clr-success); }
         .flash-message.danger { background-color: var(--clr-error); color: var(--clr-white); border: 1px solid var(--clr-error); }
         .flash-message.warning { background-color: var(--clr-attention); color: var(--clr-dark-blue); border: 1px solid var(--clr-attention); }
 
-        .bg-light-gray { background-color: var(--clr-light-gray); }
-        .bg-white { background-color: var(--clr-white); }
-        .text-dark-blue { color: var(--clr-dark-blue); }
-        .text-medium-gray { color: var(--clr-medium-gray); }
+        /* Estilos da Sidebar */
+        .sidebar {
+            background-color: var(--clr-sidebar-bg);
+            color: var(--clr-white);
+            width: 280px; /* Largura da sidebar */
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            position: fixed; /* Fixa a sidebar na tela */
+            height: 100vh; /* Altura total da viewport */
+            overflow-y: auto; /* Adiciona scroll se o conteúdo for maior que a tela */
+        }
 
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            color: var(--clr-white);
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .sidebar-nav-item:hover, .sidebar-nav-item.active {
+            background-color: var(--clr-light-blue); /* Cor de hover/ativo */
+            color: var(--clr-white);
+        }
+
+        .sidebar-nav-item i {
+            margin-right: 1rem;
+            font-size: 1.25rem;
+        }
+
+        /* Estilos do Conteúdo Principal */
+        .main-content {
+            margin-left: 280px; /* Margem para acomodar a sidebar */
+            padding: 2rem;
+            flex-grow: 1;
+            background-color: var(--clr-dashboard-bg);
+        }
+
+        .main-header {
+            background-color: var(--clr-card-bg);
+            padding: 1.5rem 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--clr-dark-blue);
+        }
+
+        .main-header .search-bar {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--clr-border);
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--clr-light-gray);
+        }
+
+        .main-header .search-bar input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 1rem;
+            color: var(--clr-text-main);
+        }
+
+        .main-header .search-bar i {
+            color: var(--clr-medium-gray);
+            margin-right: 0.5rem;
+        }
+
+        /* Cards do Dashboard e conteúdo das categorias */
+        .content-section {
+            background-color: var(--clr-card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem; /* Ajustado padding */
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+            margin-bottom: 1.5rem; /* Adicionado margin para separar as seções */
+        }
+
+        .dashboard-card-header {
+            display: flex;
+            align-items: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--clr-dark-blue);
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-card-header i {
+            margin-right: 0.75rem;
+            font-size: 1.5rem;
+        }
+
+        .alert-card .dashboard-card-header i { color: var(--clr-error); } /* Ícone de alerta vermelho */
+        .notice-card .dashboard-card-header i { color: var(--clr-attention); } /* Ícone de aviso amarelo */
+        .new-enrollment-card .dashboard-card-header i { color: var(--clr-dark-blue); } /* Ícone de novas inscrições azul escuro */
+
+
+        /* Estilos para os cards internos das categorias (Funcionários, Dependentes, etc.) */
+        .card {
+            background-color: var(--clr-light-gray); /* Fundo dos cards internos */
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+            transition: transform 0.2s ease-in-out;
+            border: 1px solid var(--clr-border); /* Borda sutil */
+            height: 100%; /* Garante que todos os cards na grade tenham a mesma altura */
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+
+        .card h2 {
+            color: var(--clr-dark-blue);
+        }
+
+        .card p {
+            color: var(--clr-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Cores dos ícones dos cards */
         .text-icon-blue { color: var(--clr-light-blue); }
         .text-icon-green { color: var(--clr-success); }
         .text-icon-purple { color: var(--clr-purple); }
@@ -52,31 +195,87 @@
         .text-icon-pink { color: var(--clr-pink); }
         .text-icon-gray { color: var(--clr-medium-gray); }
 
-        .btn-primary { background-color: var(--clr-light-blue); color: var(--clr-white); }
-        .btn-primary:hover { background-color: var(--clr-dark-blue); }
-        .btn-secondary { background-color: var(--clr-medium-gray); color: var(--clr-white); }
-        .btn-secondary:hover { background-color: color-mix(in srgb, var(--clr-medium-gray) 80%, black); }
-        .btn-add { background-color: var(--clr-success); color: var(--clr-white); }
-        .btn-add:hover { background-color: color-mix(in srgb, var(--clr-success) 90%, black); }
+        .btn-secondary {
+            background-color: var(--clr-medium-gray);
+            color: var(--clr-white);
+        }
+        .btn-secondary:hover {
+            background-color: color-mix(in srgb, var(--clr-medium-gray) 80%, black);
+        }
 
-        .rounded-lg { border-radius: 0.5rem; }
-        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05); }
-        .border { border-width: 1px; }
-        .border-gray-300 { border-color: var(--clr-medium-gray); }
-
-        .category-header { background-color: var(--clr-dark-blue); color: var(--clr-white); padding: 1.5rem; border-radius: 0.75rem; margin-bottom: 1.5rem; cursor: pointer; transition: background-color 0.2s; display: flex; justify-content: space-between; align-items: center; font-size: 1.75rem; font-weight: 700; }
-        .category-header:hover { background-color: color-mix(in srgb, var(--clr-dark-blue) 90%, white); }
-        .category-header .arrow-icon { transition: transform 0.2s; }
-        .category-header.expanded .arrow-icon { transform: rotate(90deg); }
-        .category-content { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 1.5rem; margin-top: -1rem; padding: 2rem 1.5rem 1.5rem; border-bottom-left-radius: 0.75rem; border-bottom-right-radius: 0.75rem; background-color: var(--clr-white); box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 1.5rem; }
-        .category-content.hidden { display: none; }
+        /* Responsividade básica */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                margin-bottom: 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .main-header .search-bar {
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
     </style>
 </head>
-<body class="bg-light-gray min-h-screen flex flex-col items-center justify-center p-6">
-    <div class="w-full max-w-7xl bg-white p-8 rounded-lg shadow-lg">
-        <div class="flex flex-col items-center mb-6">
-            <img src="{{ url_for('static', filename='Logo.png') }}" alt="Logo da Empresa" class="h-24 w-24 mb-4 rounded-full">
-            <p class="text-center text-medium-gray">Seu Sistema de Gestão de Pessoal para a indústria de móveis.</p>
+<body class="flex flex-col md:flex-row min-h-screen">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-cubes mr-3 text-2xl"></i> SIGEP
+        </div>
+        <nav>
+            <ul>
+                <li>
+                    <a href="#" data-target="dashboard-content" class="sidebar-nav-item active">
+                        <i class="fas fa-home"></i> Visão Geral
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-target="cadastros-content" class="sidebar-nav-item">
+                        <i class="fas fa-edit"></i> Cadastros
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-target="lancamentos-content" class="sidebar-nav-item">
+                        <i class="fas fa-calendar-alt"></i> Lançamentos
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-target="relatorios-content" class="sidebar-nav-item">
+                        <i class="fas fa-chart-bar"></i> Relatórios
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-target="gerencial-content" class="sidebar-nav-item">
+                        <i class="fas fa-cogs"></i> Gerencial
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="flex justify-end mt-8">
+            <a href="{{ url_for('logout') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md flex items-center">
+                <i class="fas fa-sign-out-alt mr-2"></i> Sair
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Main Header -->
+        <div class="main-header">
+            <h1>SETOR PESSOAL</h1>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Pesquisar...">
+            </div>
         </div>
 
         <!-- Mensagens Flash -->
@@ -90,127 +289,188 @@
             {% endif %}
         {% endwith %}
 
-        {# Cadastros #}
-        <div class="category-header" id="cadastros-header">
-            <span><i class="fas fa-edit mr-3"></i> Cadastros</span><i class="fas fa-chevron-right arrow-icon"></i>
-        </div>
-        <div class="category-content hidden" id="cadastros-content">
-            <a href="{{ url_for('listar_funcionarios') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                <div class="text-icon-blue mb-4"><i class="fas fa-users fa-3x"></i></div>
-                <h2 class="text-xl font-semibold text-dark-blue mb-2">Funcionários</h2>
-                <p class="text-medium-gray">Gerencie informações e cadastros de funcionários.</p>
-            </a>
-            <a href="{{ url_for('listar_dependentes') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                <div class="text-icon-green mb-4"><i class="fas fa-child fa-3x"></i></div>
-                <h2 class="text-xl font-semibold text-dark-blue mb-2">Dependentes</h2>
-                <p class="text-medium-gray">Cadastre e acompanhe os dependentes dos funcionários.</p>
-            </a>
-            <a href="{{ url_for('listar_cidades') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                <div class="text-icon-yellow mb-4"><i class="fas fa-city fa-3x"></i></div>
-                <h2 class="text-xl font-semibold text-dark-blue mb-2">Cidades</h2>
-                <p class="text-medium-gray">Gerencie o cadastro de cidades.</p>
-            </a>
-            <a href="{{ url_for('listar_setores') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                <div class="text-icon-teal mb-4"><i class="fas fa-building fa-3x"></i></div>
-                <h2 class="text-xl font-semibold text-dark-blue mb-2">Setores</h2>
-                <p class="text-medium-gray">Cadastre e organize os setores da empresa.</p>
-            </a>
-            <a href="{{ url_for('listar_funcoes') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                <div class="text-icon-indigo mb-4"><i class="fas fa-briefcase fa-3x"></i></div>
-                <h2 class="text-xl font-semibold text-dark-blue mb-2">Funções</h2>
-                <p class="text-medium-gray">Defina e gerencie as funções dos cargos.</p>
-            </a>
+        <!-- Conteúdo do Dashboard (Visão Geral) -->
+        <div id="dashboard-content" class="content-section">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="dashboard-card alert-card">
+                    <div class="dashboard-card-header">
+                        <i class="fas fa-exclamation-triangle"></i> Alertas
+                    </div>
+                    <p class="text-sm text-gray-700">6 verificações de antecedentes a serem concluídas</p>
+                </div>
+
+                <div class="dashboard-card notice-card">
+                    <div class="dashboard-card-header">
+                        <i class="fas fa-info-circle"></i> Avisos
+                    </div>
+                    <ul class="text-sm text-gray-700 space-y-2">
+                        <li class="flex items-center">
+                            <span class="w-2 h-2 bg-gray-500 rounded-full mr-2"></span> Há 10 minutos: Atualização da política de férias
+                        </li>
+                        <li class="flex items-center">
+                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span> Há 2 horas: Relatório de desempenho disponível
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="dashboard-card new-enrollment-card">
+                    <div class="dashboard-card-header">
+                        <i class="fas fa-user-plus"></i> Novas Inscrições
+                    </div>
+                    <div class="flex items-end h-32 mt-4 space-x-1">
+                        <div class="flex-1 bg-blue-200 rounded-sm h-1/4"></div>
+                        <div class="flex-1 bg-blue-200 rounded-sm h-1/2"></div>
+                        <div class="flex-1 bg-blue-200 rounded-sm h-3/4"></div>
+                        <div class="flex-1 bg-blue-200 rounded-sm h-1/3"></div>
+                        <div class="flex-1 bg-blue-200 rounded-sm h-2/3"></div>
+                        <div class="flex-1 bg-blue-200 rounded-sm h-full"></div>
+                    </div>
+                    <div class="flex justify-between text-xs text-gray-500 mt-2">
+                        <span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        {# Lançamentos #}
-        <div class="category-header" id="lancamentos-header">
-            <span><i class="fas fa-calendar-alt mr-3"></i> Lançamentos</span><i class="fas fa-chevron-right arrow-icon"></i>
-        </div>
-        <div class="category-content hidden" id="lancamentos-content">
-            <a href="{{ url_for('listar_registros_ponto') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                <div class="text-icon-gray mb-4"><i class="fas fa-clock fa-3x"></i></div>
-                <h2 class="text-xl font-semibold text-dark-blue mb-2">Registro de Ponto</h2>
-                <p class="text-medium-gray">Registre o ponto dos funcionários.</p>
-            </a>
-            <a href="{{ url_for('listar_contratos') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                <div class="text-icon-purple mb-4"><i class="fas fa-file-signature fa-3x"></i></div>
-                <h2 class="text-xl font-semibold text-dark-blue mb-2">Contratos de Trabalho</h2>
-                <p class="text-medium-gray">Administre os detalhes de contratação.</p>
-            </a>
-            <a href="{{ url_for('listar_reajustes') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                <div class="text-icon-orange mb-4"><i class="fas fa-money-bill-wave fa-3x"></i></div>
-                <h2 class="text-xl font-semibold text-dark-blue mb-2">Reajustes Salariais</h2>
-                <p class="text-medium-gray">Registre e consulte reajustes de salários e bônus.</p>
-            </a>
-            <a href="{{ url_for('listar_demissoes') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                <div class="text-icon-error mb-4"><i class="fas fa-user-minus fa-3x"></i></div>
-                <h2 class="text-xl font-semibold text-dark-blue mb-2">Demissões</h2>
-                <p class="text-medium-gray">Gerencie o processo de desligamento de funcionários.</p>
-            </a>
-            <a href="{{ url_for('listar_ferias') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                <div class="text-icon-pink mb-4"><i class="fas fa-plane-departure fa-3x"></i></div>
-                <h2 class="text-xl font-semibold text-dark-blue mb-2">Controle de Férias</h2>
-                <p class="text-medium-gray">Gerencie os períodos aquisitivos e de usufruto de férias.</p>
-            </a>
-        </div>
-
-        {# Relatórios #}
-        <div class="category-header" id="relatorios-header">
-            <span><i class="fas fa-chart-bar mr-3"></i> Relatórios</span><i class="fas fa-chevron-right arrow-icon"></i>
-        </div>
-        <div class="category-content hidden" id="relatorios-content">
-            <a href="{{ url_for('listar_funcionarios') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                <div class="text-icon-blue mb-4"><i class="fas fa-file-pdf fa-3x"></i></div>
-                <h2 class="text-xl font-semibold text-dark-blue mb-2">Ficha Cadastral (PDF)</h2>
-                <p class="text-medium-gray">Gere relatórios da ficha cadastral dos funcionários.</p>
-            </a>
-            <a href="#" class="card p-6 text-center flex flex-col items-center justify-center opacity-60 cursor-not-allowed">
-                <div class="text-icon-gray mb-4"><i class="fas fa-file-alt fa-3x"></i></div>
-                <h2 class="text-xl font-semibold text-dark-blue mb-2">Relatórios Gerenciais</h2>
-                <p class="text-medium-gray">Em desenvolvimento...</p>
-            </a>
+        <!-- Conteúdo de Cadastros -->
+        <div id="cadastros-content" class="content-section hidden">
+            <h2 class="text-2xl font-semibold text-dark-blue mb-6">Cadastros</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <a href="{{ url_for('listar_funcionarios') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-blue mb-4"><i class="fas fa-users fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Funcionários</h2>
+                    <p class="text-medium-gray">Gerencie informações e cadastros de funcionários.</p>
+                </a>
+                <a href="{{ url_for('listar_dependentes') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-green mb-4"><i class="fas fa-child fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Dependentes</h2>
+                    <p class="text-medium-gray">Cadastre e acompanhe os dependentes dos funcionários.</p>
+                </a>
+                <a href="{{ url_for('listar_cidades') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-yellow mb-4"><i class="fas fa-city fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Cidades</h2>
+                    <p class="text-medium-gray">Gerencie o cadastro de cidades.</p>
+                </a>
+                <a href="{{ url_for('listar_setores') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-teal mb-4"><i class="fas fa-building fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Setores</h2>
+                    <p class="text-medium-gray">Cadastre e organize os setores da empresa.</p>
+                </a>
+                <a href="{{ url_for('listar_funcoes') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-indigo mb-4"><i class="fas fa-briefcase fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Funções</h2>
+                    <p class="text-medium-gray">Defina e gerencie as funções dos cargos.</p>
+                </a>
+            </div>
         </div>
 
-        {# Gerencial #}
-        <div class="category-header" id="gerencial-header">
-            <span><i class="fas fa-cogs mr-3"></i> Gerencial</span><i class="fas fa-chevron-right arrow-icon"></i>
-        </div>
-        <div class="category-content hidden" id="gerencial-content">
-            <a href="{{ url_for('login') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                <div class="text-icon-gray mb-4"><i class="fas fa-user-circle fa-3x"></i></div>
-                <h2 class="text-xl font-semibold text-dark-blue mb-2">Gerenciar Usuários</h2>
-                <p class="text-medium-gray">Adicionar/editar usuários do sistema.</p>
-            </a>
-            <a href="#" class="card p-6 text-center flex flex-col items-center justify-center opacity-60 cursor-not-allowed">
-                <div class="text-icon-gray mb-4"><i class="fas fa-clipboard-list fa-3x"></i></div>
-                <h2 class="text-xl font-semibold text-dark-blue mb-2">Logs de Auditoria</h2>
-                <p class="text-medium-gray">Acompanhe as ações realizadas no sistema.</p>
-            </a>
+        <!-- Conteúdo de Lançamentos -->
+        <div id="lancamentos-content" class="content-section hidden">
+            <h2 class="text-2xl font-semibold text-dark-blue mb-6">Lançamentos</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <a href="{{ url_for('listar_registros_ponto') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-gray mb-4"><i class="fas fa-clock fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Registro de Ponto</h2>
+                    <p class="text-medium-gray">Registre o ponto dos funcionários.</p>
+                </a>
+                <a href="{{ url_for('listar_contratos') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-purple mb-4"><i class="fas fa-file-signature fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Contratos de Trabalho</h2>
+                    <p class="text-medium-gray">Administre os detalhes de contratação.</p>
+                </a>
+                <a href="{{ url_for('listar_reajustes') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-orange mb-4"><i class="fas fa-money-bill-wave fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Reajustes Salariais</h2>
+                    <p class="text-medium-gray">Registre e consulte reajustes de salários e bônus.</p>
+                </a>
+                <a href="{{ url_for('listar_demissoes') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-error mb-4"><i class="fas fa-user-minus fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Demissões</h2>
+                    <p class="text-medium-gray">Gerencie o processo de desligamento de funcionários.</p>
+                </a>
+                <a href="{{ url_for('listar_ferias') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-pink mb-4"><i class="fas fa-plane-departure fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Controle de Férias</h2>
+                    <p class="text-medium-gray">Gerencie os períodos aquisitivos e de usufruto de férias.</p>
+                </a>
+            </div>
         </div>
 
-        <div class="flex justify-end mt-8">
-            <a href="{{ url_for('logout') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md flex items-center">
-                <i class="fas fa-sign-out-alt mr-2"></i> Sair
-            </a>
+        <!-- Conteúdo de Relatórios -->
+        <div id="relatorios-content" class="content-section hidden">
+            <h2 class="text-2xl font-semibold text-dark-blue mb-6">Relatórios</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <a href="{{ url_for('listar_funcionarios') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-blue mb-4"><i class="fas fa-file-pdf fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Ficha Cadastral (PDF)</h2>
+                    <p class="text-medium-gray">Gere relatórios da ficha cadastral dos funcionários.</p>
+                </a>
+                <a href="#" class="card p-6 text-center flex flex-col items-center justify-center opacity-60 cursor-not-allowed">
+                    <div class="text-icon-gray mb-4"><i class="fas fa-file-alt fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Relatórios Gerenciais</h2>
+                    <p class="text-medium-gray">Em desenvolvimento...</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- Conteúdo de Gerencial -->
+        <div id="gerencial-content" class="content-section hidden">
+            <h2 class="text-2xl font-semibold text-dark-blue mb-6">Gerencial</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <a href="{{ url_for('login') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-gray mb-4"><i class="fas fa-user-circle fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Gerenciar Usuários</h2>
+                    <p class="text-medium-gray">Adicionar/editar usuários do sistema.</p>
+                </a>
+                <a href="#" class="card p-6 text-center flex flex-col items-center justify-center opacity-60 cursor-not-allowed">
+                    <div class="text-icon-gray mb-4"><i class="fas fa-clipboard-list fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Logs de Auditoria</h2>
+                    <p class="text-medium-gray">Acompanhe as ações realizadas no sistema.</p>
+                </a>
+            </div>
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const headers = document.querySelectorAll('.category-header');
-            headers.forEach(h => h.addEventListener('click', () => {
-                const content = document.getElementById(h.id.replace('-header','-content'));
-                headers.forEach(o => {
-                    if(o!==h && o.classList.contains('expanded')){
-                        o.classList.remove('expanded');
-                        document.getElementById(o.id.replace('-header','-content')).classList.add('hidden');
+            const sidebarItems = document.querySelectorAll('.sidebar-nav-item');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            // Função para esconder todas as seções de conteúdo
+            const hideAllContentSections = () => {
+                contentSections.forEach(section => {
+                    section.classList.add('hidden');
+                });
+            };
+
+            // Função para remover a classe 'active' de todos os itens da sidebar
+            const deactivateAllSidebarItems = () => {
+                sidebarItems.forEach(item => {
+                    item.classList.remove('active');
+                });
+            };
+
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', (event) => {
+                    event.preventDefault(); // Previne o comportamento padrão do link
+
+                    deactivateAllSidebarItems();
+                    item.classList.add('active'); // Ativa o item clicado
+
+                    hideAllContentSections();
+                    const targetId = item.dataset.target;
+                    const targetSection = document.getElementById(targetId);
+                    if (targetSection) {
+                        targetSection.classList.remove('hidden'); // Mostra a seção de conteúdo correspondente
                     }
                 });
-                h.classList.toggle('expanded'); content.classList.toggle('hidden');
-            }));
-            const first = document.getElementById('cadastros-header');
-            const firstContent = document.getElementById('cadastros-content');
-            if(first && firstContent){ first.classList.add('expanded'); firstContent.classList.remove('hidden'); }
+            });
+
+            // Ativa a "Visão Geral" e exibe seu conteúdo ao carregar a página
+            const initialSidebarItem = document.querySelector('.sidebar-nav-item[data-target="dashboard-content"]');
+            if (initialSidebarItem) {
+                initialSidebarItem.click(); // Simula um clique para ativar e exibir o conteúdo
+            }
         });
     </script>
 </body>
