@@ -2041,6 +2041,47 @@ def create_app():
 
         # GET: exibe o formulário
         return render_template('registro_ponto_form.html', registro_ponto=None)
+
+    @app.route('/registros_ponto/delete/<int:id>', methods=['POST'])
+    def deletar_registro_ponto(id):
+        if 'usuario_id' not in session or session.get('tipo_usuario') not in ['Master']:
+            flash('Acesso negado. Apenas usuários Master podem deletar registros de ponto.', 'danger')
+            return redirect(url_for('login'))
+
+        registro = RegistroPonto.query.get_or_404(id)
+        dados_antigos = {
+            'id': registro.id,
+            'cpf_funcionario': registro.cpf_funcionario,
+            'pis': registro.pis,
+            'id_face': registro.id_face,
+            'data_hora': registro.data_hora.strftime('%Y-%m-%d %H:%M:%S'),
+            'tipo_lancamento': registro.tipo_lancamento,
+            'observacao': registro.observacao,
+        }
+
+        db.session.delete(registro)
+        try:
+            db.session.commit()
+            flash('Registro de ponto deletado com sucesso!', 'success')
+
+            log_entry = LogAuditoria(
+                usuario_id=session['usuario_id'],
+                acao=f"Registro de ponto ID {id} deletado.",
+                tabela_afetada='registro_ponto',
+                registro_id=id,
+                dados_antigos=dados_antigos,
+                dados_novos=None
+            )
+            db.session.add(log_entry)
+            db.session.commit()
+
+        except Exception as e:
+            db.session.rollback()
+            print(f"ERROR: Erro ao deletar registro de ponto: {e}")
+            flash(f'Erro ao deletar registro de ponto: {e}', 'danger')
+
+        return redirect(url_for('listar_registros_ponto'))
+
     return app # Fim da função create_app
 
 
