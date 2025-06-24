@@ -127,7 +127,7 @@
         <div class="flex justify-between items-center mb-6">
             <h1 class="text-4xl font-bold text-dark-blue">Registros de Ponto</h1>
             <div class="flex space-x-3">
-                <a href="{{ url_for('adicionar_registro_ponto') }}" class="btn-add text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center" title="Adicionar Novo Registro de Ponto">
+                <a href="{{ url_for('registro_ponto') }}" class="btn-add text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center" title="Adicionar Novo Registro de Ponto">
                     <i class="fas fa-plus mr-2"></i> Adicionar
                 </a>
                 <a href="{{ url_for('index') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center" title="Voltar ao Início">
@@ -199,10 +199,10 @@
                                 <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.data_hora.strftime('%d/%m/%Y %H:%M:%S') }}</td>
                                 <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.tipo_lancamento }}</td>
                                 <td class="py-3 px-4 text-sm flex items-center space-x-3">
-                                    <a href="{{ url_for('editar_registro_ponto', id=registro.id) }}" class="text-light-blue hover:text-dark-blue font-medium" title="Editar">
+                                    <a href="#" class="text-light-blue hover:text-dark-blue font-medium" title="Editar">
                                         <i class="fas fa-edit"></i>
                                     </a>
-                                    <form action="{{ url_for('deletar_registro_ponto', id=registro.id) }}" method="POST" class="inline">
+                                    <form action="#" method="POST" class="inline">
                                         <button type="submit" onclick="return confirm('Tem certeza que deseja deletar este registro de ponto?')" class="text-error hover:text-dark-blue font-medium bg-transparent border-none cursor-pointer" title="Deletar">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>

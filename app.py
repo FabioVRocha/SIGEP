@@ -2128,9 +2128,6 @@ def initialize_database(app_instance):
             print("Isso pode ocorrer se o banco de dados não estiver acessível ou já estiver populado.")
             print("O aplicativo tentará rodar mesmo assim.")
 
-if __name__ == '__main__':
-
-
 app = create_app()
 
 # Rota para registro de ponto:
@@ -2152,7 +2149,7 @@ def registro_ponto():
         return redirect(url_for('registro_ponto'))
 
     # GET: exibe o formulário
-    return render_template('registro_ponto_form.html')
+    return render_template('registro_ponto_form.html', registro_ponto=None)
 
 
 # ------------------------------------------------------------------

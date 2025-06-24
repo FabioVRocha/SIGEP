@@ -99,15 +99,15 @@
             {% endif %}
         {% endwith %}
 
-        <form action="{% if registro_ponto %}{{ url_for('editar_registro_ponto', id=registro_ponto.id) }}{% else %}{{ url_for('adicionar_registro_ponto') }}{% endif %}" method="POST" class="space-y-4">
+        <form action="{% if registro_ponto %}{{ url_for('editar_registro_ponto', id=registro_ponto.id) }}{% else %}{{ url_for('registro_ponto') }}{% endif %}" method="POST" class="space-y-4">
             <div>
                 <label for="id_input" class="block text-sm font-medium text-gray-700">CPF / PIS / IDFace <span class="text-red-500">*</span></label>
-                <input type="text" id="id_input" name="id_input" value="{{ registro_ponto.cpf_funcionario if registro_ponto.cpf_funcionario else registro_ponto.pis if registro_ponto.pis else registro_ponto.id_face if registro_ponto.id_face else '' }}"
+                <input type="text" id="id_input" name="id_input" value="{{ registro_ponto.cpf_funcionario if registro_ponto and registro_ponto.cpf_funcionario else registro_ponto.pis if registro_ponto and registro_ponto.pis else registro_ponto.id_face if registro_ponto and registro_ponto.id_face else '' }}"
                        required {% if registro_ponto %}readonly{% endif %}
                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm {% if registro_ponto %}bg-gray-100 cursor-not-allowed{% endif %}"
                        onkeyup="buscarFuncionarioPorIdentificador()">
                 <p id="funcionario_info" class="mt-2 text-sm text-gray-600">
-                    {% if registro_ponto.funcionario %}
+                    {% if registro_ponto and registro_ponto.funcionario %}
                         Funcionário: {{ registro_ponto.funcionario.nome }} (CPF: {{ registro_ponto.funcionario.cpf }})
                     {% else %}
                         Digite CPF, PIS ou IDFace para buscar o funcionário.
@@ -121,7 +121,7 @@
 
             <div>
                 <label for="data_hora" class="block text-sm font-medium text-gray-700">Data/Hora <span class="text-red-500">*</span></label>
-                <input type="datetime-local" id="data_hora" name="data_hora" value="{{ (registro_ponto.data_hora.strftime('%Y-%m-%dT%H:%M') if registro_ponto.data_hora else '') }}" required
+                <input type="datetime-local" id="data_hora" name="data_hora" value="{{ (registro_ponto.data_hora.strftime('%Y-%m-%dT%H:%M') if registro_ponto and registro_ponto.data_hora else '') }}" required
                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
             </div>
 
@@ -154,7 +154,7 @@
                         <i class="fas fa-plus mr-2"></i> Adicionar Registro
                     {% endif %}
                 </button>
-                <a href="{{ url_for('listar_registros_ponto') }}"
+                <a href="{{ url_for('index') }}"
                    class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center">
                     <i class="fas fa-arrow-left mr-2"></i> Cancelar
                 </a>
