@@ -1,4 +1,5 @@
 from flask import Flask, render_template, session, redirect, url_for, request, flash, jsonify, Response
+from sqlalchemy import or_
 from extensions import db
 from config import Config
 import os
@@ -557,6 +558,27 @@ def create_app():
         funcionario = Funcionario.query.get(cpf)
         if funcionario:
             return jsonify({'nome': funcionario.nome})
+        else:
+            return jsonify({'nome': None}), 404
+
+# --- API para buscar funcionário por CPF, PIS ou IDFace ---
+    @app.route('/api/buscar_funcionario_identificador/<string:identifier>', methods=['GET'])
+    def api_buscar_funcionario_identificador(identifier):
+        ident_clean = identifier.replace('.', '').replace('-', '').strip()
+        funcionario = Funcionario.query.filter(
+            or_(
+                Funcionario.cpf == ident_clean,
+                Funcionario.pis == ident_clean,
+                Funcionario.id_face == ident_clean,
+            )
+        ).first()
+        if funcionario:
+            return jsonify({
+                'nome': funcionario.nome,
+                'cpf': funcionario.cpf,
+                'pis': funcionario.pis,
+                'id_face': funcionario.id_face,
+            })
         else:
             return jsonify({'nome': None}), 404
 
@@ -1987,14 +2009,32 @@ def create_app():
             return redirect(url_for('login'))
 
         if request.method == 'POST':
-            cpf = request.form.get('cpf', '').replace('.', '').replace('-', '')
-            agora = datetime.datetime.now()
-            novo_ponto = RegistroPonto(cpf_funcionario=cpf, data_hora=agora)
+            cpf = request.form.get('cpf_funcionario', '').replace('.', '').replace('-', '')
+            pis = request.form.get('pis')
+            id_face = request.form.get('id_face')
+            data_hora_str = request.form.get('data_hora')
+            tipo_lancamento = request.form.get('tipo_lancamento')
+            observacao = request.form.get('observacao')
+
+            try:
+                data_hora = datetime.datetime.strptime(data_hora_str, '%Y-%m-%dT%H:%M') if data_hora_str else datetime.datetime.now()
+            except ValueError:
+                flash('Data e hora inválidas.', 'danger')
+                return render_template('registro_ponto_form.html', registro_ponto=None)
+
+            novo_ponto = RegistroPonto(
+                cpf_funcionario=cpf,
+                pis=pis,
+                id_face=id_face,
+                data_hora=data_hora,
+                tipo_lancamento=tipo_lancamento,
+                observacao=observacao
+            )
             db.session.add(novo_ponto)
             db.session.commit()
 
             flash('Ponto registrado com sucesso!', 'success')
-            return redirect(url_for('registro_ponto'))
+            return redirect(url_for('listar_registros_ponto'))
 
         # GET: exibe o formulário
         return render_template('registro_ponto_form.html', registro_ponto=None)
