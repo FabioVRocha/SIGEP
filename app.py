@@ -2041,10 +2041,14 @@ def create_app():
                     continue
 
                 funcionario = Funcionario.query.filter_by(cpf=cpf).first()
+                if not funcionario:
+                    # pulamos registros sem funcionário correspondente
+                    continue
+                
                 novo = RegistroPonto(
                     cpf_funcionario=cpf,
-                    pis=funcionario.pis if funcionario else None,
-                    id_face=funcionario.id_face if funcionario else None,
+                    pis=funcionario.pis,
+                    id_face=funcionario.id_face,
                     data_hora=data_hora,
                     tipo_lancamento='Importação PIS'
                 )
