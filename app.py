@@ -2030,7 +2030,12 @@ def create_app():
 
                 # AFD: DDMMYYYYHHMM a partir da posição 10
                 data_str = linha[10:22]
-                pis = linha[22:34].strip()
+                pis_campo = linha[22:34].strip()
+                # Alguns relógios registram o CPF no campo PIS com zeros
+                # à esquerda. Removemos esses zeros para comparar com o CPF
+                # salvo no banco, mas mantemos o valor original para salvar
+                # no registro de ponto.
+                cpf_possivel = pis_campo.lstrip('0')
 
                 try:
                     data_hora = datetime.datetime.strptime(data_str, '%d%m%Y%H%M')
@@ -2041,7 +2046,7 @@ def create_app():
                 # Caso não encontre, tenta localizar usando o CPF, pois muitos
                 # registros antigos usam o CPF no campo destinado ao PIS.
                 funcionario = Funcionario.query.filter(
-                    or_(Funcionario.pis == pis, Funcionario.cpf == pis)
+                    or_(Funcionario.pis == pis_campo, Funcionario.cpf == cpf_possivel)
                 ).first()
                 if not funcionario:
                     # pulamos registros sem funcionário correspondente
@@ -2052,7 +2057,7 @@ def create_app():
                 
                 novo = RegistroPonto(
                     cpf_funcionario=funcionario.cpf,
-                    pis=pis,
+                    pis=pis_campo,
                     id_face=funcionario.id_face,
                     data_hora=data_hora,
                     tipo_lancamento='Importação PIS'
