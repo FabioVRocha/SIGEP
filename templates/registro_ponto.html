@@ -375,7 +375,7 @@
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.data_hora.strftime('%d/%m/%Y %H:%M:%S') }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.tipo_lancamento }}</td>
                                     <td class="py-3 px-4 text-sm flex items-center space-x-3">
-                                        <a href="#" class="text-light-blue hover:text-dark-blue font-medium" title="Editar">
+                                        <a href="{{ url_for('editar_registro_ponto', id=registro.id) }}" class="text-light-blue hover:text-dark-blue font-medium" title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
                                         <button type="button" onclick="showConfirmModal('{{ url_for('deletar_registro_ponto', id=registro.id) }}')" class="text-error hover:text-dark-blue font-medium bg-transparent border-none cursor-pointer" title="Deletar">
