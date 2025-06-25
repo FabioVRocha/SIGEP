@@ -2003,6 +2003,57 @@ def create_app():
         registros = db.session.query(RegistroPonto).outerjoin(Funcionario).order_by(RegistroPonto.data_hora.desc()).all()
         return render_template('registro_ponto.html', registros_ponto=registros)
 
+    @app.route('/registros_ponto/importar', methods=['GET', 'POST'])
+    def importar_registros_ponto():
+        if 'usuario_id' not in session:
+            flash('Você precisa fazer login primeiro.', 'warning')
+            return redirect(url_for('login'))
+
+        if request.method == 'POST':
+            arquivo = request.files.get('arquivo_afd')
+            if not arquivo or arquivo.filename == '':
+                flash('Nenhum arquivo selecionado.', 'danger')
+                return redirect(request.url)
+
+            linhas = arquivo.stream.read().decode('latin-1').splitlines()
+            inseridos = 0
+            for linha in linhas:
+                if len(linha) < 46:
+                    continue
+                tipo = linha[9]
+                if tipo not in ('3', '7'):
+                    continue
+                data_str = linha[10:34]
+                cpf = linha[34:46].strip()
+                try:
+                    try:
+                        data_hora = datetime.datetime.strptime(data_str, '%Y-%m-%dT%H:%M:%S%z')
+                    except ValueError:
+                        data_hora = datetime.datetime.strptime(data_str, '%Y-%m-%dT%H:%M%z')
+                except ValueError:
+                    continue
+                data_hora = data_hora.replace(tzinfo=None)
+
+                if RegistroPonto.query.filter_by(cpf_funcionario=cpf, data_hora=data_hora).first():
+                    continue
+
+                funcionario = Funcionario.query.filter_by(cpf=cpf).first()
+                novo = RegistroPonto(
+                    cpf_funcionario=cpf,
+                    pis=funcionario.pis if funcionario else None,
+                    id_face=funcionario.id_face if funcionario else None,
+                    data_hora=data_hora,
+                    tipo_lancamento='Importação PIS'
+                )
+                db.session.add(novo)
+                inseridos += 1
+
+            db.session.commit()
+            flash(f'{inseridos} registros importados com sucesso!', 'success')
+            return redirect(url_for('listar_registros_ponto'))
+
+        return render_template('importar_registro_ponto.html')
+    
     # Rota para registro de ponto:
     @app.route('/registro_ponto', methods=['GET', 'POST'])
     def registro_ponto():

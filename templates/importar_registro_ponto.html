@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Importar Registros de Ponto - SIGEP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
+    <h1 class="text-2xl font-bold mb-6">Importar Arquivo AFD</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="mb-4 w-full max-w-md">
+                {% for category, message in messages %}
+                    <div class="p-2 mb-2 rounded text-white {{ 'bg-green-600' if category == 'success' else 'bg-red-600' if category == 'danger' else 'bg-yellow-500' }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    <form method="POST" enctype="multipart/form-data" class="bg-white p-6 rounded shadow-md w-full max-w-md space-y-4">
+        <input type="file" name="arquivo_afd" required class="border p-2 w-full">
+        <div class="flex justify-end space-x-3">
+            <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Importar</button>
+            <a href="{{ url_for('listar_registros_ponto') }}" class="bg-gray-500 text-white px-4 py-2 rounded">Cancelar</a>
+        </div>
+    </form>
+</body>
+</html>
