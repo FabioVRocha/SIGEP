@@ -19,51 +19,125 @@
             --clr-success: #27AE60;
             --clr-attention: #F1C40F;
             --clr-error: #E74C3C;
+            --clr-purple: #8A2BE2;
+            --clr-orange: #FF8C00;
+            --clr-yellow: #F1C40F;
+            --clr-teal: #008080;
+            --clr-indigo: #4B0082;
+            --clr-pink: #FF69B4;
+            --clr-dashboard-bg: #F0F2F5; /* Cor de fundo do painel principal, similar à imagem */
+            --clr-sidebar-bg: #1F3A5F; /* Cor de fundo da sidebar, azul escuro */
+            --clr-card-bg: #FFFFFF; /* Cor de fundo dos cards */
+            --clr-text-main: #333333; /* Cor principal do texto */
+            --clr-text-secondary: #666666; /* Cor secundária do texto */
+            --clr-border: #E0E0E0; /* Cor da borda para elementos */
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: var(--clr-light-gray); /* Fundo da tela */
+            background-color: var(--clr-dashboard-bg); /* Fundo geral */
         }
-        .flash-message {
-            padding: 1rem;
-            margin-bottom: 1rem;
+
+        .flash-message { padding: 1rem; margin-bottom: 1rem; border-radius: 0.5rem; font-weight: 600; }
+        .flash-message.success { background-color: var(--clr-success); color: var(--clr-white); border: 1px solid var(--clr-success); }
+        .flash-message.danger { background-color: var(--clr-error); color: var(--clr-white); border: 1px solid var(--clr-error); }
+        .flash-message.warning { background-color: var(--clr-attention); color: var(--clr-dark-blue); border: 1px solid var(--clr-attention); }
+
+        /* Estilos da Sidebar */
+        .sidebar {
+            background-color: var(--clr-sidebar-bg);
+            color: var(--clr-white);
+            width: 280px; /* Largura da sidebar */
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            position: fixed; /* Fixa a sidebar na tela */
+            height: 100vh; /* Altura total da viewport */
+            overflow-y: auto; /* Adiciona scroll se o conteúdo for maior que a tela */
+        }
+
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
             border-radius: 0.5rem;
-            font-weight: 600;
-        }
-        .flash-message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .flash-message.danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .flash-message.warning {
-            background-color: #fff3cd;
-            color: #856404;
-            border: 1px solid #ffeeba;
+            color: var(--clr-white);
+            transition: background-color 0.2s, color 0.2s;
         }
 
-        /* Aplicação das cores da paleta usando classes Tailwind customizadas via CSS */
-        .bg-dark-blue { background-color: var(--clr-dark-blue); }
-        .bg-light-blue { background-color: var(--clr-light-blue); }
-        .bg-light-gray { background-color: var(--clr-light-gray); }
-        .bg-medium-gray { background-color: var(--clr-medium-gray); }
-        .bg-white { background-color: var(--clr-white); }
-        .text-dark-blue { color: var(--clr-dark-blue); }
-        .text-light-blue { color: var(--clr-light-blue); }
-        .text-medium-gray { color: var(--clr-medium-gray); }
+        .sidebar-nav-item:hover, .sidebar-nav-item.active {
+            background-color: var(--clr-light-blue); /* Cor de hover/ativo */
+            color: var(--clr-white);
+        }
 
-        /* Cores de Destaque */
-        .bg-success { background-color: var(--clr-success); }
-        .bg-attention { background-color: var(--clr-attention); }
-        .bg-error { background-color: var(--clr-error); }
-        .text-error { color: var(--clr-error); }
-        .text-success { color: var(--clr-success); }
+        .sidebar-nav-item i {
+            margin-right: 1rem;
+            font-size: 1.25rem;
+        }
 
+        /* Estilos do Conteúdo Principal */
+        .main-content {
+            margin-left: 280px; /* Margem para acomodar a sidebar */
+            padding: 2rem;
+            flex-grow: 1;
+            background-color: var(--clr-dashboard-bg);
+        }
+
+        .main-header {
+            background-color: var(--clr-card-bg);
+            padding: 1.5rem 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--clr-dark-blue);
+        }
+
+        .main-header .search-bar {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--clr-border);
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--clr-light-gray);
+        }
+
+        .main-header .search-bar input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 1rem;
+            color: var(--clr-text-main);
+        }
+
+        .main-header .search-bar i {
+            color: var(--clr-medium-gray);
+            margin-right: 0.5rem;
+        }
+
+        /* Conteúdo principal de uma seção (a tabela será um content-section) */
+        .content-section {
+            background-color: var(--clr-card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+            margin-bottom: 1.5rem;
+        }
 
         /* Cores para os botões e links */
         .btn-primary {
@@ -87,27 +161,13 @@
         .btn-add:hover {
             background-color: color-mix(in srgb, var(--clr-success) 90%, black);
         }
-        .text-link { /* Cor para links dentro de texto, por exemplo */
-            color: var(--clr-light-blue);
-        }
-        .text-link:hover {
-            color: var(--clr-dark-blue);
-        }
-        /* Cor específica para o botão de PDF */
-        .btn-pdf {
-            background-color: #DC3545; /* Vermelho mais para PDF */
+        .btn-delete {
+            background-color: var(--clr-error);
             color: var(--clr-white);
         }
-        .btn-pdf:hover {
-            background-color: #C82333; /* Vermelho mais escuro no hover */
+        .btn-delete:hover {
+            background-color: color-mix(in srgb, var(--clr-error) 90%, black);
         }
-
-
-        /* Estilos genéricos para a interface */
-        .rounded-lg { border-radius: 0.5rem; }
-        .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); }
-        .border { border-width: 1px; }
-        .border-gray-300 { border-color: var(--clr-medium-gray); } /* Aplicado a inputs e bordas gerais */
 
         /* Para a tabela */
         .table-header-bg { background-color: var(--clr-dark-blue); color: var(--clr-white); } /* Cabeçalho da tabela */
@@ -116,17 +176,130 @@
         .filter-input {
             border-color: var(--clr-medium-gray);
             color: var(--clr-dark-blue);
+            background-color: var(--clr-light-gray);
         }
-        .filter-input:focus {
+        .filter-input:focus, .filter-select:focus {
             border-color: var(--clr-light-blue);
             box-shadow: 0 0 0 1px var(--clr-light-blue);
+            outline: none;
+        }
+        .filter-select {
+            border-color: var(--clr-medium-gray);
+            color: var(--clr-dark-blue);
+            background-color: var(--clr-light-gray);
+        }
+
+        /* Estilos do Modal de Confirmação */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: var(--clr-white);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            font-size: 1.5rem;
+            color: var(--clr-dark-blue);
+            margin-bottom: 1rem;
+        }
+
+        .modal-content p {
+            color: var(--clr-text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+
+        /* Responsividade básica */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                margin-bottom: 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .main-header .search-bar {
+                width: 100%;
+                margin-top: 1rem;
+            }
         }
     </style>
 </head>
-<body class="bg-light-gray min-h-screen p-6">
-    <div class="max-w-7xl mx-auto bg-white p-8 rounded-lg shadow-lg">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-4xl font-bold text-dark-blue">Controle de Férias</h1>
+<body class="flex flex-col md:flex-row min-h-screen">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-cubes mr-3 text-2xl"></i> SIGEP
+        </div>
+        <nav>
+            <ul>
+                <li>
+                    <a href="{{ url_for('index') }}" class="sidebar-nav-item">
+                        <i class="fas fa-home"></i> Visão Geral
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('listar_funcionarios') }}" class="sidebar-nav-item">
+                        <i class="fas fa-edit"></i> Cadastros
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('listar_registros_ponto') }}" class="sidebar-nav-item active">
+                        <i class="fas fa-calendar-alt"></i> Lançamentos
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-nav-item">
+                        <i class="fas fa-chart-bar"></i> Relatórios
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-nav-item">
+                        <i class="fas fa-cogs"></i> Gerencial
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="flex justify-end mt-8">
+            <a href="{{ url_for('logout') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md flex items-center">
+                <i class="fas fa-sign-out-alt mr-2"></i> Sair
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Main Header -->
+        <div class="main-header">
+            <h1 class="text-2xl font-bold text-dark-blue">Controle de Férias</h1>
             <div class="flex space-x-3">
                 <a href="{{ url_for('adicionar_ferias') }}" class="btn-add text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center" title="Adicionar Novo Registro de Férias">
                     <i class="fas fa-plus mr-2"></i> Adicionar
@@ -148,86 +321,125 @@
             {% endif %}
         {% endwith %}
 
-        {% if ferias_registros %}
-            <div class="overflow-x-auto">
-                <table class="min-w-full bg-white rounded-lg overflow-hidden" id="feriasTable">
-                    <thead class="bg-dark-blue text-white">
-                        <tr>
-                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tl-lg">ID</th>
-                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">CPF Funcionário</th>
-                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Nome Funcionário</th>
-                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Período Aquisitivo Início</th>
-                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Período Aquisitivo Fim</th>
-                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Férias Gozadas Início</th>
-                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Férias Gozadas Fim</th>
-                            <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tr-lg">Ações</th>
-                        </tr>
-                        <tr class="bg-light-gray">
-                            <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar ID..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="0"></th>
-                            <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar CPF..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="1"></th>
-                            <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Nome..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="2"></th>
-                            <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Início AQ..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="3"></th>
-                            <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Fim AQ..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="4"></th>
-                            <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Início GO..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="5"></th>
-                            <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Fim GO..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="6"></th>
-                            <th class="px-4 py-2 border-b border-medium-gray"></th> <!-- Empty for Actions column -->
-                        </tr>
-                    </thead>
-                    <tbody class="divide-y divide-medium-gray">
-                        {% for registro in ferias_registros %}
-                            <tr class="hover:bg-light-gray {% if loop.index is odd %}bg-white{% else %}bg-light-gray{% endif %}">
-                                <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.id }}</td>
-                                <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.cpf_funcionario }}</td>
-                                <td class="py-3 px-4 text-sm text-dark-blue">
-                                    {% if registro.funcionario %}
-                                        <a href="{{ url_for('editar_funcionario', cpf=registro.cpf_funcionario) }}" class="text-light-blue hover:text-dark-blue font-medium">
-                                            {{ registro.funcionario.nome }}
+        <div class="content-section">
+            {% if ferias_registros %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg overflow-hidden" id="feriasTable">
+                        <thead class="table-header-bg">
+                            <tr>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tl-lg">ID</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">CPF Funcionário</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Nome Funcionário</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Período Aquisitivo Início</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Período Aquisitivo Fim</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Férias Gozadas Início</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Férias Gozadas Fim</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tr-lg">Ações</th>
+                            </tr>
+                            <tr class="bg-light-gray">
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar ID..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="0"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar CPF..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="1"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Nome..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="2"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Início AQ..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="3"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Fim AQ..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="4"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Início GO..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="5"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Fim GO..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="6"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"></th> <!-- Empty for Actions column -->
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-medium-gray">
+                            {% for registro in ferias_registros %}
+                                <tr class="hover:bg-light-gray {% if loop.index is odd %}table-row-odd{% else %}table-row-even{% endif %}">
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.id }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.cpf_funcionario }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">
+                                        {% if registro.funcionario %}
+                                            <a href="{{ url_for('editar_funcionario', cpf=registro.cpf_funcionario) }}" class="text-light-blue hover:text-dark-blue font-medium">
+                                                {{ registro.funcionario.nome }}
+                                            </a>
+                                        {% else %}
+                                            N/A
+                                        {% endif %}
+                                    </td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.periodo_aquisitivo_inicio.strftime('%d/%m/%Y') }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.periodo_aquisitivo_fim.strftime('%d/%m/%Y') }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.ferias_gozadas_inicio.strftime('%d/%m/%Y') if registro.ferias_gozadas_inicio else 'N/A' }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.ferias_gozadas_fim.strftime('%d/%m/%Y') if registro.ferias_gozadas_fim else 'N/A' }}</td>
+                                    <td class="py-3 px-4 text-sm flex items-center space-x-3">
+                                        <a href="{{ url_for('editar_ferias', id=registro.id) }}" class="text-light-blue hover:text-dark-blue font-medium" title="Editar">
+                                            <i class="fas fa-edit"></i>
                                         </a>
-                                    {% else %}
-                                        N/A
-                                    {% endif %}
-                                </td>
-                                <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.periodo_aquisitivo_inicio.strftime('%d/%m/%Y') }}</td>
-                                <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.periodo_aquisitivo_fim.strftime('%d/%m/%Y') }}</td>
-                                <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.ferias_gozadas_inicio.strftime('%d/%m/%Y') if registro.ferias_gozadas_inicio else 'N/A' }}</td>
-                                <td class="py-3 px-4 text-sm text-dark-blue">{{ registro.ferias_gozadas_fim.strftime('%d/%m/%Y') if registro.ferias_gozadas_fim else 'N/A' }}</td>
-                                <td class="py-3 px-4 text-sm flex items-center space-x-3">
-                                    <a href="{{ url_for('editar_ferias', id=registro.id) }}" class="text-light-blue hover:text-dark-blue font-medium" title="Editar">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ url_for('deletar_ferias', id=registro.id) }}" method="POST" class="inline">
-                                        <button type="submit" onclick="return confirm('Tem certeza que deseja deletar este registro de férias?')" class="text-error hover:text-dark-blue font-medium bg-transparent border-none cursor-pointer" title="Deletar">
+                                        <button type="button" onclick="showConfirmModal('{{ url_for('deletar_ferias', id=registro.id) }}')" class="text-error hover:text-dark-blue font-medium bg-transparent border-none cursor-pointer" title="Deletar">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
-                                    </form>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-center text-medium-gray text-lg py-8">Nenhum registro de férias cadastrado ainda.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação (Hidden by default) -->
+    <div id="confirmModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="font-bold">Confirmar Ação</h3>
+            <p>Tem certeza que deseja deletar este registro de férias?</p>
+            <div class="modal-buttons">
+                <button id="cancelButton" class="btn-secondary py-2 px-4 rounded-lg">Cancelar</button>
+                <button id="confirmButton" class="btn-delete py-2 px-4 rounded-lg">Confirmar</button>
             </div>
-        {% else %}
-            <p class="text-center text-medium-gray text-lg py-8">Nenhum registro de férias cadastrado ainda.</p>
-        {% endif %}
+        </div>
     </div>
 
     <script>
+        // Variável para armazenar a URL de exclusão
+        let deleteUrl = '';
+
+        function showConfirmModal(url) {
+            deleteUrl = url;
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        document.getElementById('cancelButton').addEventListener('click', () => {
+            document.getElementById('confirmModal').classList.add('hidden');
+            deleteUrl = ''; // Limpa a URL após cancelar
+        });
+
+        document.getElementById('confirmButton').addEventListener('click', () => {
+            if (deleteUrl) {
+                // Cria um formulário temporário e o submete
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = deleteUrl;
+                document.body.appendChild(form);
+                form.submit();
+            }
+            document.getElementById('confirmModal').classList.add('hidden');
+            deleteUrl = ''; // Limpa a URL
+        });
+
         function filterTable() {
             const tableId = 'feriasTable';
             const table = document.getElementById(tableId);
             const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
             const filterInputs = table.querySelectorAll('.filter-input');
-            const filterSelects = table.querySelectorAll('.filter-select');
+            const filterSelects = table.querySelectorAll('.filter-select'); // This line is not used in the original filterTable, but kept for consistency if needed later
 
             const textFilters = Array.from(filterInputs).map(input => ({
                 column: parseInt(input.dataset.column),
                 value: input.value.toLowerCase()
             }));
 
-            const selectFilters = Array.from(filterSelects).map(select => ({
-                column: parseInt(select.dataset.column),
-                value: select.value.toLowerCase()
-            }));
+            // The original script doesn't use select filters for this table, so this part is commented out for now.
+            // const selectFilters = Array.from(filterSelects).map(select => ({
+            //     column: parseInt(select.dataset.column),
+            //     value: select.value.toLowerCase()
+            // }));
 
             for (let i = 0; i < rows.length; i++) {
                 let rowDisplay = 'table-row';
@@ -244,19 +456,19 @@
                     }
                 }
 
-                // Aplicar filtros de seleção (apenas se a linha ainda estiver visível)
-                if (rowDisplay === 'table-row') {
-                    for (let j = 0; j < selectFilters.length; j++) {
-                        const cell = rows[i].getElementsByTagName('td')[selectFilters[j].column];
-                        if (cell) {
-                            const cellText = cell.textContent || cell.innerText;
-                            if (selectFilters[j].value !== "" && cellText.toLowerCase() !== selectFilters[j].value) {
-                                rowDisplay = 'none';
-                                break;
-                            }
-                        }
-                    }
-                }
+                // // Aplicar filtros de seleção (apenas se a linha ainda estiver visível) - This part is also commented as per original
+                // if (rowDisplay === 'table-row') {
+                //     for (let j = 0; j < selectFilters.length; j++) {
+                //         const cell = rows[i].getElementsByTagName('td')[selectFilters[j].column];
+                //         if (cell) {
+                //             const cellText = cell.textContent || cell.innerText;
+                //             if (selectFilters[j].value !== "" && cellText.toLowerCase() !== selectFilters[j].value) {
+                //                 rowDisplay = 'none';
+                //                 break;
+                //             }
+                //         }
+                //     }
+                // }
                 rows[i].style.display = rowDisplay;
             }
         }
