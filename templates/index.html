@@ -130,13 +130,12 @@
             margin-right: 0.5rem;
         }
 
-        /* Cards do Dashboard e conteúdo das categorias */
-        .content-section {
+        /* Cards do Dashboard */
+        .dashboard-card {
             background-color: var(--clr-card-bg);
             border-radius: 0.75rem;
-            padding: 1.5rem; /* Ajustado padding */
+            padding: 1.5rem;
             box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
-            margin-bottom: 1.5rem; /* Adicionado margin para separar as seções */
         }
 
         .dashboard-card-header {
@@ -156,9 +155,41 @@
         .alert-card .dashboard-card-header i { color: var(--clr-error); } /* Ícone de alerta vermelho */
         .notice-card .dashboard-card-header i { color: var(--clr-attention); } /* Ícone de aviso amarelo */
         .new-enrollment-card .dashboard-card-header i { color: var(--clr-dark-blue); } /* Ícone de novas inscrições azul escuro */
+        .active-employees-card .dashboard-card-header i { color: var(--clr-success); } /* Ícone de funcionários ativos verde */
 
 
-        /* Estilos para os cards internos das categorias (Funcionários, Dependentes, etc.) */
+        /* Estilos para as categorias expansíveis existentes */
+        .category-header {
+            background-color: var(--clr-light-blue); /* Alterado para combinar mais com a sidebar */
+            color: var(--clr-white);
+            padding: 1rem 1.5rem; /* Ajustado padding */
+            border-radius: 0.75rem;
+            margin-bottom: 1rem; /* Ajustado margin */
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.25rem; /* Ajustado tamanho da fonte */
+            font-weight: 600; /* Ajustado peso da fonte */
+        }
+        .category-header:hover { background-color: var(--clr-dark-blue); } /* Darker on hover */
+        .category-header .arrow-icon { transition: transform 0.2s; }
+        .category-header.expanded .arrow-icon { transform: rotate(90deg); }
+        .category-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+            gap: 1.5rem;
+            margin-top: -0.5rem; /* Ajustado para sobrepor um pouco */
+            padding: 1.5rem; /* Ajustado padding */
+            border-bottom-left-radius: 0.75rem;
+            border-bottom-right-radius: 0.75rem;
+            background-color: var(--clr-card-bg); /* Cor de fundo dos cards */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+        .category-content.hidden { display: none; }
+
         .card {
             background-color: var(--clr-light-gray); /* Fundo dos cards internos */
             border-radius: 0.5rem;
@@ -166,7 +197,6 @@
             box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
             transition: transform 0.2s ease-in-out;
             border: 1px solid var(--clr-border); /* Borda sutil */
-            height: 100%; /* Garante que todos os cards na grade tenham a mesma altura */
         }
 
         .card:hover {
@@ -297,6 +327,7 @@
                         <i class="fas fa-exclamation-triangle"></i> Alertas
                     </div>
                     <p class="text-sm text-gray-700">6 verificações de antecedentes a serem concluídas</p>
+                    <!-- Pode adicionar mais lógica aqui se necessário -->
                 </div>
 
                 <div class="dashboard-card notice-card">
@@ -317,6 +348,7 @@
                     <div class="dashboard-card-header">
                         <i class="fas fa-user-plus"></i> Novas Inscrições
                     </div>
+                    <!-- Simulação de um gráfico simples com classes Tailwind, como na imagem -->
                     <div class="flex items-end h-32 mt-4 space-x-1">
                         <div class="flex-1 bg-blue-200 rounded-sm h-1/4"></div>
                         <div class="flex-1 bg-blue-200 rounded-sm h-1/2"></div>
@@ -329,10 +361,19 @@
                         <span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span>
                     </div>
                 </div>
+
+                <!-- Novo Card: Funcionários Ativos -->
+                <div class="dashboard-card active-employees-card">
+                    <div class="dashboard-card-header">
+                        <i class="fas fa-user-check"></i> Funcionários Ativos
+                    </div>
+                    <p class="text-3xl font-bold text-dark-blue">{{ total_funcionarios_ativos }}</p>
+                    <p class="text-sm text-gray-700">Total de funcionários ativos no sistema.</p>
+                </div>
             </div>
         </div>
 
-        <!-- Conteúdo de Cadastros -->
+        <!-- Conteúdo de Cadastros (Mantido, mas oculto por padrão) -->
         <div id="cadastros-content" class="content-section hidden">
             <h2 class="text-2xl font-semibold text-dark-blue mb-6">Cadastros</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -364,7 +405,7 @@
             </div>
         </div>
 
-        <!-- Conteúdo de Lançamentos -->
+        {# Lançamentos #}
         <div id="lancamentos-content" class="content-section hidden">
             <h2 class="text-2xl font-semibold text-dark-blue mb-6">Lançamentos</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -396,7 +437,7 @@
             </div>
         </div>
 
-        <!-- Conteúdo de Relatórios -->
+        {# Relatórios #}
         <div id="relatorios-content" class="content-section hidden">
             <h2 class="text-2xl font-semibold text-dark-blue mb-6">Relatórios</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -413,7 +454,7 @@
             </div>
         </div>
 
-        <!-- Conteúdo de Gerencial -->
+        {# Gerencial #}
         <div id="gerencial-content" class="content-section hidden">
             <h2 class="text-2xl font-semibold text-dark-blue mb-6">Gerencial</h2>
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
