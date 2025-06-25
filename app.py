@@ -2016,24 +2016,38 @@ def create_app():
                 flash('Nenhum arquivo selecionado.', 'danger')
                 return redirect(request.url)
 
-            linhas = arquivo.stream.read().decode('latin-1').splitlines()
+            linhas = arquivo.read().decode('latin-1').splitlines()
             inseridos = 0
+
+            formatos_data = [
+                '%Y-%m-%dT%H:%M:%S%z', '%Y-%m-%dT%H:%M%z',
+                '%Y-%m-%d %H:%M:%S%z', '%Y-%m-%d %H:%M:%S',
+                '%Y-%m-%d %H:%M%z', '%Y-%m-%d %H:%M'
+            ]
+
             for linha in linhas:
+                linha = linha.rstrip('\r\n')
                 if len(linha) < 46:
                     continue
+
                 tipo = linha[9]
                 if tipo not in ('3', '7'):
                     continue
-                data_str = linha[10:34]
+
+                data_str = linha[10:34].strip()
                 cpf = linha[34:46].strip()
-                try:
+
+                data_hora = None
+                for fmt in formatos_data:
                     try:
-                        data_hora = datetime.datetime.strptime(data_str, '%Y-%m-%dT%H:%M:%S%z')
+                        data_hora = datetime.datetime.strptime(data_str, fmt)
+                        break
                     except ValueError:
-                        data_hora = datetime.datetime.strptime(data_str, '%Y-%m-%dT%H:%M%z')
-                except ValueError:
+                        continue
+                if not data_hora:
                     continue
-                data_hora = data_hora.replace(tzinfo=None)
+                if data_hora.tzinfo:
+                    data_hora = data_hora.replace(tzinfo=None)
 
                 if RegistroPonto.query.filter_by(cpf_funcionario=cpf, data_hora=data_hora).first():
                     continue
