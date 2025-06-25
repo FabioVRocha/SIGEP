@@ -2037,7 +2037,12 @@ def create_app():
                 except ValueError:
                     continue
 
-                funcionario = Funcionario.query.filter_by(pis=pis).first()
+                # Busca funcionário utilizando o PIS informado no arquivo.
+                # Caso não encontre, tenta localizar usando o CPF, pois muitos
+                # registros antigos usam o CPF no campo destinado ao PIS.
+                funcionario = Funcionario.query.filter(
+                    or_(Funcionario.pis == pis, Funcionario.cpf == pis)
+                ).first()
                 if not funcionario:
                     # pulamos registros sem funcionário correspondente
                     continue
