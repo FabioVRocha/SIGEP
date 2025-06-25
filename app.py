@@ -2018,36 +2018,24 @@ def create_app():
 
             linhas = arquivo.read().decode('latin-1').splitlines()
             inseridos = 0
-
-            formatos_data = [
-                '%Y-%m-%dT%H:%M:%S%z', '%Y-%m-%dT%H:%M%z',
-                '%Y-%m-%d %H:%M:%S%z', '%Y-%m-%d %H:%M:%S',
-                '%Y-%m-%d %H:%M%z', '%Y-%m-%d %H:%M'
-            ]
-
+            
             for linha in linhas:
-                linha = linha.rstrip('\r\n')
-                if len(linha) < 46:
+                linha = linha.strip()
+                if len(linha) < 34:
                     continue
 
                 tipo = linha[9]
                 if tipo not in ('3', '7'):
                     continue
 
-                data_str = linha[10:34].strip()
-                cpf = linha[34:46].strip()
+                # AFD: DDMMYYYYHHMM a partir da posição 10
+                data_str = linha[10:22]
+                cpf = linha[22:34].strip()
 
-                data_hora = None
-                for fmt in formatos_data:
-                    try:
-                        data_hora = datetime.datetime.strptime(data_str, fmt)
-                        break
-                    except ValueError:
-                        continue
-                if not data_hora:
+                try:
+                    data_hora = datetime.datetime.strptime(data_str, '%d%m%Y%H%M')
+                except ValueError:
                     continue
-                if data_hora.tzinfo:
-                    data_hora = data_hora.replace(tzinfo=None)
 
                 if RegistroPonto.query.filter_by(cpf_funcionario=cpf, data_hora=data_hora).first():
                     continue
