@@ -89,7 +89,8 @@ def create_app():
         """
         if 'usuario_id' not in session:
             return redirect(url_for('login'))
-        return render_template('index.html')
+        total_funcionarios_ativos = db.session.query(ContratoTrabalho).filter_by(status=True).count()
+        return render_template('index.html', total_funcionarios_ativos=total_funcionarios_ativos)
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
