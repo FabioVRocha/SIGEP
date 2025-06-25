@@ -2030,24 +2030,24 @@ def create_app():
 
                 # AFD: DDMMYYYYHHMM a partir da posição 10
                 data_str = linha[10:22]
-                cpf = linha[22:34].strip()
+                pis = linha[22:34].strip()
 
                 try:
                     data_hora = datetime.datetime.strptime(data_str, '%d%m%Y%H%M')
                 except ValueError:
                     continue
 
-                if RegistroPonto.query.filter_by(cpf_funcionario=cpf, data_hora=data_hora).first():
-                    continue
-
-                funcionario = Funcionario.query.filter_by(cpf=cpf).first()
+                funcionario = Funcionario.query.filter_by(pis=pis).first()
                 if not funcionario:
                     # pulamos registros sem funcionário correspondente
                     continue
+
+                if RegistroPonto.query.filter_by(cpf_funcionario=funcionario.cpf, data_hora=data_hora).first():
+                    continue
                 
                 novo = RegistroPonto(
-                    cpf_funcionario=cpf,
-                    pis=funcionario.pis,
+                    cpf_funcionario=funcionario.cpf,
+                    pis=pis,
                     id_face=funcionario.id_face,
                     data_hora=data_hora,
                     tipo_lancamento='Importação PIS'
