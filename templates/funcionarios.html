@@ -161,13 +161,7 @@
         .btn-add:hover {
             background-color: color-mix(in srgb, var(--clr-success) 90%, black);
         }
-        .btn-pdf {
-            background-color: #DC3545; /* Vermelho mais para PDF */
-            color: var(--clr-white);
-        }
-        .btn-pdf:hover {
-            background-color: #C82333; /* Vermelho mais escuro no hover */
-        }
+        /* A classe .btn-pdf foi removida pois não é mais necessária */
 
         /* Para a tabela */
         .table-header-bg { background-color: var(--clr-dark-blue); color: var(--clr-white); } /* Cabeçalho da tabela */
@@ -347,8 +341,8 @@
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ funcionario.id_face }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ funcionario.telefone }}</td>
                                     <td class="py-3 px-4 text-sm flex items-center space-x-3">
-                                        {# Botão Gerar PDF #}
-                                        <a href="{{ url_for('relatorios_ficha_cadastral', cpf=funcionario.cpf) }}" class="btn-pdf py-1 px-2 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center text-sm" title="Gerar Ficha Cadastral (PDF)" target="_blank">
+                                        {# Botão Gerar PDF - ATUALIZADO #}
+                                        <a href="{{ url_for('relatorios_ficha_cadastral', cpf=funcionario.cpf) }}" class="text-error hover:text-dark-blue font-medium" title="Gerar Ficha Cadastral (PDF)" target="_blank">
                                             <i class="fas fa-file-pdf"></i>
                                         </a>
                                         <a href="{{ url_for('editar_funcionario', cpf=funcionario.cpf) }}" class="text-light-blue hover:text-dark-blue font-medium" title="Editar">
