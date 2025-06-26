@@ -26,6 +26,7 @@ class Funcionario(db.Model):
     chave_pix = db.Column(db.String(255), nullable=True)
     observacao = db.Column(db.Text, nullable=True)
     foto_base64 = db.Column(ImageBase64, nullable=True)
+    status = db.Column(db.String(20), nullable=True)
 
     # Relacionamentos
     dependentes = db.relationship('Dependente', backref='funcionario', lazy=True)

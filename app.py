@@ -1,5 +1,5 @@
 from flask import Flask, render_template, session, redirect, url_for, request, flash, jsonify, Response
-from sqlalchemy import or_
+from sqlalchemy import or_, text, inspect
 from extensions import db
 from config import Config
 import os
@@ -243,7 +243,8 @@ def create_app():
                 nome_banco=nome_banco, codigo_agencia=codigo_agencia,
                 numero_conta=numero_conta, variacao_conta=variacao_conta,
                 chave_pix=chave_pix, observacao=observacao,
-                foto_base64=foto_base64_str # Passa a string Base64, o CustomType cuidará da decodificação
+                foto_base64=foto_base64_str, # Passa a string Base64, o CustomType cuidará da decodificação
+                status=""
             )
             db.session.add(novo_funcionario)
             try:
@@ -828,6 +829,10 @@ def create_app():
             db.session.add(novo_contrato)
             try:
                 db.session.commit()
+                if status:
+                    funcionario.status = "Ativo"
+                    db.session.add(funcionario)
+                    db.session.commit()
                 flash('Contrato adicionado com sucesso!', 'success')
                 
                 log_entry = LogAuditoria(
@@ -1453,6 +1458,10 @@ def create_app():
                     contrato_ativo.data_demissao = data_demissao # Atualiza a data de demissão no contrato
                     db.session.add(contrato_ativo) # Adiciona a mudança na sessão
                     db.session.commit() # Salva a mudança no contrato
+
+                funcionario.status = "Inativo"
+                db.session.add(funcionario)
+                db.session.commit()
                 
                 flash('Registro de demissão adicionado com sucesso!', 'success')
                 
@@ -2273,6 +2282,18 @@ def create_app():
 def initialize_database(app_instance):
     with app_instance.app_context():
         db.create_all()
+        # Garantir que a coluna "status" exista em funcionarios
+        engine = db.engine
+        inspector = inspect(engine)
+        funcionario_cols = [c['name'] for c in inspector.get_columns('funcionarios')]
+        if 'status' not in funcionario_cols:
+            try:
+                with engine.connect() as conn:
+                    conn.execute(text('ALTER TABLE funcionarios ADD COLUMN status VARCHAR(20)'))
+                    conn.commit()
+                print("Coluna 'status' adicionada à tabela funcionarios.")
+            except Exception as e:
+                print(f"Erro ao adicionar coluna status: {e}")
         from models import Usuario, LogAuditoria, Cidade, Funcionario, ContratoTrabalho, Setor, Funcao, ReajusteSalarial, Demissao, ControleFerias
         try:
             master_user_exists = db.session.query(Usuario).filter_by(nome='master').first()
