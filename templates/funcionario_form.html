@@ -349,6 +349,15 @@
                             <label for="telefone" class="block text-sm font-medium text-gray-700">Telefone <span class="text-red-500">*</span></label>
                             <input type="text" id="telefone" name="telefone" value="{{ funcionario.telefone if funcionario else '' }}" required>
                         </div>
+                        <div>
+                            <label for="grau_instrucao" class="block text-sm font-medium text-gray-700">Grau de Instrução <span class="text-red-500">*</span></label>
+                            <select id="grau_instrucao" name="grau_instrucao" required>
+                                <option value="">Selecione</option>
+                                {% for grau in graus_instrucao %}
+                                    <option value="{{ grau }}" {% if funcionario and funcionario.grau_instrucao == grau %}selected{% endif %}>{{ grau }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
                         <div class="md:col-span-2">
                             <label for="endereco" class="block text-sm font-medium text-gray-700">Endereço Completo <span class="text-red-500">*</span></label>
                             <input type="text" id="endereco" name="endereco" value="{{ funcionario.endereco if funcionario else '' }}" required>

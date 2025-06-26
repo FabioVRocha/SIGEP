@@ -319,6 +319,7 @@
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">PIS</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">IDFace</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Telefone</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Grau de Instrução</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Status</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tr-lg">Ações</th>
                             </tr>
@@ -329,7 +330,8 @@
                                 <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar PIS..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="3"></th>
                                 <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar IDFace..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="4"></th>
                                 <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Telefone..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="5"></th>
-                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Status..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="6"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Grau..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="6"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Status..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="7"></th>
                                 <th class="px-4 py-2 border-b border-medium-gray"></th> <!-- Empty for Actions column -->
                             </tr>
                         </thead>
@@ -342,6 +344,7 @@
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ funcionario.pis }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ funcionario.id_face }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ funcionario.telefone }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ funcionario.grau_instrucao }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ funcionario.status }}</td>
                                     <td class="py-3 px-4 text-sm flex items-center space-x-3">
                                         {# Botão Gerar PDF - ATUALIZADO #}
