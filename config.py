@@ -8,5 +8,5 @@ class Config:
     # A senha agora é 'master123!' (sem caracteres especiais problemáticos)
     # Substitua 'master123!' pela senha real do seu usuário 'postgres' se for diferente.
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or \
-                              'postgresql://postgres:postgres@45.161.184.156:5433/sigep_db'
+                              'postgresql://postgres:postgres@192.168.0.254:5433/sigep_db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
