@@ -18,6 +18,7 @@ class Funcionario(db.Model):
     estado = db.Column(db.String(50), nullable=True)
     cep = db.Column(db.String(10), nullable=True)
     telefone = db.Column(db.String(20), nullable=True)
+    grau_instrucao = db.Column(db.String(100), nullable=True)
     codigo_banco = db.Column(db.String(10), nullable=True)
     nome_banco = db.Column(db.String(100), nullable=True)
     codigo_agencia = db.Column(db.String(20), nullable=True)

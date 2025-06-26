@@ -16,6 +16,21 @@ from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.lib.colors import HexColor, black, white, lightgrey  # Para usar as cores da paleta no PDF
 import base64 # Importar base64 para decodificar a foto
 
+GRAUS_INSTRUCAO = [
+    "Sem instrução",
+    "Analfabeto funcional",
+    "Ensino Fundamental incompleto",
+    "Ensino Fundamental completo",
+    "Ensino Médio incompleto",
+    "Ensino Médio completo",
+    "Educação Profissional Técnica (Médio Técnico)",
+    "Ensino Superior incompleto",
+    "Ensino Superior completo",
+    "Pós-graduação Lato Sensu",
+    "Pós-graduação Stricto Sensu",
+    "Pós-doutorado",
+]
+
 def create_app():
     """
     Cria e configura a instância do aplicativo Flask.
@@ -204,6 +219,7 @@ def create_app():
             estado = request.form['estado'] # Valor da combobox
             cep = request.form['cep']
             telefone = request.form['telefone']
+            grau_instrucao = request.form.get('grau_instrucao')
             codigo_banco = request.form.get('codigo_banco') # Usar .get() para evitar KeyError
             nome_banco = request.form.get('nome_banco')
             codigo_agencia = request.form.get('codigo_agencia')
@@ -224,22 +240,23 @@ def create_app():
             # Validação do CPF
             if not valida_cpf(cpf):
                 flash('CPF inválido. Verifique o número digitado.', 'danger')
-                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf)
+                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
 
             # Verifica se o CPF já existe
             if Funcionario.query.get(cpf):
                 flash('CPF já cadastrado.', 'danger')
-                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf)
+                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
 
             # Validação condicional para campos bancários/PIX no backend
             if not (chave_pix or (codigo_banco and nome_banco and codigo_agencia and numero_conta)):
                 flash('Por favor, preencha a Chave PIX OU todos os campos bancários.', 'danger')
-                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf)
+                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
 
             novo_funcionario = Funcionario(
                 cpf=cpf, nome=nome, data_nascimento=data_nascimento, pis=pis,
                 id_face=id_face, endereco=endereco, bairro=bairro, cidade=cidade, estado=estado, # NOVO CAMPO: BAIRRO
-                cep=cep, telefone=telefone, codigo_banco=codigo_banco,
+                cep=cep, telefone=telefone, grau_instrucao=grau_instrucao,
+                codigo_banco=codigo_banco,
                 nome_banco=nome_banco, codigo_agencia=codigo_agencia,
                 numero_conta=numero_conta, variacao_conta=variacao_conta,
                 chave_pix=chave_pix, observacao=observacao,
@@ -254,7 +271,7 @@ def create_app():
                 db.session.rollback()
                 print(f"ERROR (ADD): Falha no commit: {e}")
                 flash('Erro ao adicionar funcionário. Tente novamente.', 'danger')
-                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf)
+                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
 
             log_entry = LogAuditoria(
                 usuario_id=session['usuario_id'],
@@ -268,7 +285,7 @@ def create_app():
             flash('Funcionário adicionado com sucesso!', 'success')
             return redirect(url_for('listar_funcionarios'))
         
-        return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf)
+        return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
 
     @app.route('/funcionarios/edit/<string:cpf>', methods=['GET', 'POST'])
     def editar_funcionario(cpf):
@@ -296,6 +313,7 @@ def create_app():
             estado = request.form['estado'] # Valor da combobox
             cep = request.form['cep']
             telefone = request.form['telefone']
+            grau_instrucao = request.form.get('grau_instrucao')
             codigo_banco = request.form.get('codigo_banco')
             nome_banco = request.form.get('nome_banco')
             codigo_agencia = request.form.get('codigo_agencia')
@@ -314,7 +332,7 @@ def create_app():
             # Validação condicional para campos bancários/PIX no backend
             if not (chave_pix or (codigo_banco and nome_banco and codigo_agencia and numero_conta)):
                 flash('Por favor, preencha a Chave PIX OU todos os campos bancários.', 'danger')
-                return render_template('funcionario_form.html', funcionario=funcionario, estados_uf=estados_uf)
+                return render_template('funcionario_form.html', funcionario=funcionario, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
 
             # Guarda os dados antigos para o log de auditoria
             dados_antigos = {
@@ -323,6 +341,7 @@ def create_app():
                 'endereco': funcionario.endereco, 'bairro': funcionario.bairro, # NOVO CAMPO: BAIRRO
                 'cidade': funcionario.cidade, 'estado': funcionario.estado,
                 'cep': funcionario.cep, 'telefone': funcionario.telefone,
+                'grau_instrucao': funcionario.grau_instrucao,
                 'codigo_banco': funcionario.codigo_banco, 'nome_banco': funcionario.nome_banco,
                 'codigo_agencia': funcionario.codigo_agencia, 'numero_conta': funcionario.numero_conta,
                 'variacao_conta': funcionario.variacao_conta, 'chave_pix': funcionario.chave_pix,
@@ -340,6 +359,7 @@ def create_app():
             funcionario.estado = estado
             funcionario.cep = cep
             funcionario.telefone = telefone
+            funcionario.grau_instrucao = grau_instrucao
             funcionario.codigo_banco = codigo_banco
             funcionario.nome_banco = nome_banco
             funcionario.codigo_agencia = codigo_agencia
@@ -356,7 +376,7 @@ def create_app():
                 db.session.rollback()
                 print(f"ERROR (EDIT): Falha no commit: {e}")
                 flash('Erro ao atualizar funcionário. Tente novamente.', 'danger')
-                return render_template('funcionario_form.html', funcionario=funcionario, estados_uf=estados_uf)
+                return render_template('funcionario_form.html', funcionario=funcionario, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
 
             dados_novos = {
                 'nome': funcionario.nome, 'data_nascimento': str(funcionario.data_nascimento),
@@ -364,6 +384,7 @@ def create_app():
                 'endereco': funcionario.endereco, 'bairro': funcionario.bairro, # NOVO CAMPO: BAIRRO
                 'cidade': funcionario.cidade, 'estado': funcionario.estado,
                 'cep': funcionario.cep, 'telefone': funcionario.telefone,
+                'grau_instrucao': funcionario.grau_instrucao,
                 'codigo_banco': funcionario.codigo_banco, 'nome_banco': funcionario.nome_banco,
                 'codigo_agencia': funcionario.codigo_agencia, 'numero_conta': funcionario.numero_conta,
                 'variacao_conta': funcionario.variacao_conta, 'chave_pix': funcionario.chave_pix,
@@ -385,7 +406,7 @@ def create_app():
             flash('Funcionário atualizado com sucesso!', 'success')
             return redirect(url_for('listar_funcionarios'))
 
-        return render_template('funcionario_form.html', funcionario=funcionario, estados_uf=estados_uf)
+        return render_template('funcionario_form.html', funcionario=funcionario, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
 
     @app.route('/funcionarios/delete/<string:cpf>', methods=['POST'])
     def deletar_funcionario(cpf):
@@ -427,6 +448,7 @@ def create_app():
             'id_face': funcionario.id_face, 'endereco': funcionario.endereco, 'bairro': funcionario.bairro, # NOVO CAMPO: BAIRRO
             'cidade': funcionario.cidade, 'estado': funcionario.estado,
             'cep': funcionario.cep, 'telefone': funcionario.telefone,
+            'grau_instrucao': funcionario.grau_instrucao,
             'codigo_banco': funcionario.codigo_banco, 'nome_banco': funcionario.nome_banco,
             'codigo_agencia': funcionario.codigo_agencia, 'numero_conta': funcionario.numero_conta,
             'variacao_conta': funcionario.variacao_conta, 'chave_pix': funcionario.chave_pix,
@@ -1944,6 +1966,7 @@ def create_app():
             [Paragraph("IDFace", style_small_bold), Paragraph(funcionario.id_face, style_small)],
             [Paragraph("Data de Nascimento", style_small_bold), Paragraph(funcionario.data_nascimento.strftime('%d/%m/%Y'), style_small)],
             [Paragraph("Telefone", style_small_bold), Paragraph(funcionario.telefone, style_small)],
+            [Paragraph("Grau de Instrução", style_small_bold), Paragraph(funcionario.grau_instrucao or 'N/A', style_small)],
             [Paragraph("Endereço", style_small_bold), Paragraph(funcionario.endereco, style_small)],
             [Paragraph("Bairro", style_small_bold), Paragraph(funcionario.bairro or 'N/A', style_small)],
             [Paragraph("Cidade", style_small_bold), Paragraph(funcionario.cidade, style_small)],
