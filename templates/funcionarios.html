@@ -316,6 +316,7 @@
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tl-lg">CPF</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Nome</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Data Nasc.</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Sexo</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">PIS</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">IDFace</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Telefone</th>
@@ -327,11 +328,12 @@
                                 <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar CPF..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="0"></th>
                                 <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Nome..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="1"></th>
                                 <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Data..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="2"></th>
-                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar PIS..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="3"></th>
-                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar IDFace..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="4"></th>
-                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Telefone..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="5"></th>
-                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Grau..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="6"></th>
-                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Status..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="7"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Sexo..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="3"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar PIS..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="4"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar IDFace..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="5"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Telefone..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="6"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Grau..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="7"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Status..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="8"></th>
                                 <th class="px-4 py-2 border-b border-medium-gray"></th> <!-- Empty for Actions column -->
                             </tr>
                         </thead>
@@ -341,6 +343,7 @@
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ funcionario.cpf }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ funcionario.nome }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ funcionario.data_nascimento.strftime('%d/%m/%Y') }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ funcionario.sexo }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ funcionario.pis }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ funcionario.id_face }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ funcionario.telefone }}</td>

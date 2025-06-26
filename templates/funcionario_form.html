@@ -172,7 +172,7 @@
         /* Estilos de input/select/textarea para consistência */
         input[type="text"], input[type="date"], select, textarea {
             @apply mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3
-                   focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
+                    focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
             color: var(--clr-dark-blue); /* Cor do texto dentro do input */
             background-color: var(--clr-light-gray); /* Fundo do input */
         }
@@ -338,6 +338,15 @@
                             <input type="date" id="data_nascimento" name="data_nascimento" value="{{ funcionario.data_nascimento.strftime('%Y-%m-%d') if funcionario else '' }}" required>
                         </div>
                         <div>
+                            <label for="sexo" class="block text-sm font-medium text-gray-700">Sexo <span class="text-red-500">*</span></label>
+                            <select id="sexo" name="sexo" required>
+                                <option value="">Selecione</option>
+                                {% for s in sexos %}
+                                    <option value="{{ s }}" {% if funcionario and funcionario.sexo == s %}selected{% endif %}>{{ s }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div>
                             <label for="pis" class="block text-sm font-medium text-gray-700">PIS <span class="text-red-500">*</span></label>
                             <input type="text" id="pis" name="pis" value="{{ funcionario.pis if funcionario else '' }}" required>
                         </div>
@@ -417,9 +426,9 @@
                     </div>
                 </div>
 
-                <div class="col-span-1 md:col-span-2 lg:col-span-3">
+                <div class="col-span-1 md:col-span-2 lg:col-span-4">
                     <label for="observacao" class="block text-sm font-medium text-gray-700">Observação</label>
-                    <textarea id="observacao" name="observacao" rows="3"></textarea>
+                    <textarea id="observacao" name="observacao" rows="8"></textarea>
                 </div>
 
                 <div class="flex justify-end space-x-3 mt-6">
@@ -696,7 +705,7 @@
                     // If in edit mode and a city was previously selected, re-select it
                     // Use a separate variable for the initial city to avoid issues with select.value changing
                     if (funcionarioCidade && estadoUF === funcionarioEstado) { // Only set if current state matches initial state
-                           cidadeSelect.value = funcionarioCidade;
+                            cidadeSelect.value = funcionarioCidade;
                     }
                     cidadeSelect.disabled = false;
 

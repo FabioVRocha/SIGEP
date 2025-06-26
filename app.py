@@ -31,6 +31,11 @@ GRAUS_INSTRUCAO = [
     "Pós-doutorado",
 ]
 
+SEXOS = [
+    "Masculino",
+    "Feminino",
+]
+
 def create_app():
     """
     Cria e configura a instância do aplicativo Flask.
@@ -211,6 +216,7 @@ def create_app():
             cpf = request.form['cpf'].replace('.', '').replace('-', '') # Remove pontos e traço
             nome = request.form['nome']
             data_nascimento = datetime.datetime.strptime(request.form['data_nascimento'], '%Y-%m-%d').date()
+            sexo = request.form.get('sexo')
             pis = request.form['pis']
             id_face = request.form['id_face']
             endereco = request.form['endereco']
@@ -240,20 +246,20 @@ def create_app():
             # Validação do CPF
             if not valida_cpf(cpf):
                 flash('CPF inválido. Verifique o número digitado.', 'danger')
-                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
+                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO, sexos=SEXOS)
 
             # Verifica se o CPF já existe
             if Funcionario.query.get(cpf):
                 flash('CPF já cadastrado.', 'danger')
-                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
+                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO, sexos=SEXOS)
 
             # Validação condicional para campos bancários/PIX no backend
             if not (chave_pix or (codigo_banco and nome_banco and codigo_agencia and numero_conta)):
                 flash('Por favor, preencha a Chave PIX OU todos os campos bancários.', 'danger')
-                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
+                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO, sexos=SEXOS)
 
             novo_funcionario = Funcionario(
-                cpf=cpf, nome=nome, data_nascimento=data_nascimento, pis=pis,
+                cpf=cpf, nome=nome, data_nascimento=data_nascimento, sexo=sexo, pis=pis,
                 id_face=id_face, endereco=endereco, bairro=bairro, cidade=cidade, estado=estado, # NOVO CAMPO: BAIRRO
                 cep=cep, telefone=telefone, grau_instrucao=grau_instrucao,
                 codigo_banco=codigo_banco,
@@ -271,7 +277,7 @@ def create_app():
                 db.session.rollback()
                 print(f"ERROR (ADD): Falha no commit: {e}")
                 flash('Erro ao adicionar funcionário. Tente novamente.', 'danger')
-                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
+                return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO, sexos=SEXOS)
 
             log_entry = LogAuditoria(
                 usuario_id=session['usuario_id'],
@@ -285,7 +291,7 @@ def create_app():
             flash('Funcionário adicionado com sucesso!', 'success')
             return redirect(url_for('listar_funcionarios'))
         
-        return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
+        return render_template('funcionario_form.html', funcionario=None, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO, sexos=SEXOS)
 
     @app.route('/funcionarios/edit/<string:cpf>', methods=['GET', 'POST'])
     def editar_funcionario(cpf):
@@ -305,6 +311,7 @@ def create_app():
             # Não permitir alteração do CPF para manter a chave primária
             nome = request.form['nome']
             data_nascimento = datetime.datetime.strptime(request.form['data_nascimento'], '%Y-%m-%d').date()
+            sexo = request.form.get('sexo')
             pis = request.form['pis']
             id_face = request.form['id_face']
             endereco = request.form['endereco']
@@ -332,11 +339,12 @@ def create_app():
             # Validação condicional para campos bancários/PIX no backend
             if not (chave_pix or (codigo_banco and nome_banco and codigo_agencia and numero_conta)):
                 flash('Por favor, preencha a Chave PIX OU todos os campos bancários.', 'danger')
-                return render_template('funcionario_form.html', funcionario=funcionario, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
+                return render_template('funcionario_form.html', funcionario=funcionario, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO, sexos=SEXOS)
 
             # Guarda os dados antigos para o log de auditoria
             dados_antigos = {
                 'nome': funcionario.nome, 'data_nascimento': str(funcionario.data_nascimento),
+                'sexo': funcionario.sexo,
                 'pis': funcionario.pis, 'id_face': funcionario.id_face,
                 'endereco': funcionario.endereco, 'bairro': funcionario.bairro, # NOVO CAMPO: BAIRRO
                 'cidade': funcionario.cidade, 'estado': funcionario.estado,
@@ -352,6 +360,7 @@ def create_app():
             funcionario.nome = nome
             funcionario.data_nascimento = data_nascimento
             funcionario.pis = pis
+            funcionario.sexo = sexo
             funcionario.id_face = id_face
             funcionario.endereco = endereco
             funcionario.bairro = bairro # NOVO CAMPO: BAIRRO
@@ -376,10 +385,11 @@ def create_app():
                 db.session.rollback()
                 print(f"ERROR (EDIT): Falha no commit: {e}")
                 flash('Erro ao atualizar funcionário. Tente novamente.', 'danger')
-                return render_template('funcionario_form.html', funcionario=funcionario, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
+                return render_template('funcionario_form.html', funcionario=funcionario, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO, sexos=SEXOS)
 
             dados_novos = {
                 'nome': funcionario.nome, 'data_nascimento': str(funcionario.data_nascimento),
+                'sexo': funcionario.sexo,
                 'pis': funcionario.pis, 'id_face': funcionario.id_face,
                 'endereco': funcionario.endereco, 'bairro': funcionario.bairro, # NOVO CAMPO: BAIRRO
                 'cidade': funcionario.cidade, 'estado': funcionario.estado,
@@ -406,7 +416,7 @@ def create_app():
             flash('Funcionário atualizado com sucesso!', 'success')
             return redirect(url_for('listar_funcionarios'))
 
-        return render_template('funcionario_form.html', funcionario=funcionario, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO)
+        return render_template('funcionario_form.html', funcionario=funcionario, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO, sexos=SEXOS)
 
     @app.route('/funcionarios/delete/<string:cpf>', methods=['POST'])
     def deletar_funcionario(cpf):
@@ -444,7 +454,7 @@ def create_app():
         
         dados_antigos = {
             'cpf': funcionario.cpf, 'nome': funcionario.nome,
-            'data_nascimento': str(funcionario.data_nascimento), 'pis': funcionario.pis,
+            'data_nascimento': str(funcionario.data_nascimento), 'sexo': funcionario.sexo, 'pis': funcionario.pis,
             'id_face': funcionario.id_face, 'endereco': funcionario.endereco, 'bairro': funcionario.bairro, # NOVO CAMPO: BAIRRO
             'cidade': funcionario.cidade, 'estado': funcionario.estado,
             'cep': funcionario.cep, 'telefone': funcionario.telefone,
@@ -1965,6 +1975,7 @@ def create_app():
             [Paragraph("PIS", style_small_bold), Paragraph(funcionario.pis, style_small)],
             [Paragraph("IDFace", style_small_bold), Paragraph(funcionario.id_face, style_small)],
             [Paragraph("Data de Nascimento", style_small_bold), Paragraph(funcionario.data_nascimento.strftime('%d/%m/%Y'), style_small)],
+            [Paragraph("Sexo", style_small_bold), Paragraph(funcionario.sexo or 'N/A', style_small)],
             [Paragraph("Telefone", style_small_bold), Paragraph(funcionario.telefone, style_small)],
             [Paragraph("Grau de Instrução", style_small_bold), Paragraph(funcionario.grau_instrucao or 'N/A', style_small)],
             [Paragraph("Endereço", style_small_bold), Paragraph(funcionario.endereco, style_small)],

@@ -10,6 +10,7 @@ class Funcionario(db.Model):
     cpf = db.Column(db.String(14), primary_key=True)
     nome = db.Column(db.String(255), nullable=False)
     data_nascimento = db.Column(db.Date, nullable=False)
+    sexo = db.Column(db.String(20), nullable=True)
     pis = db.Column(db.String(14), unique=True)
     id_face = db.Column(db.String(255), unique=True)
     endereco = db.Column(db.String(255), nullable=True)
