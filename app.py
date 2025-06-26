@@ -2036,6 +2036,10 @@ def create_app():
                 # salvo no banco, mas mantemos o valor original para salvar
                 # no registro de ponto.
                 cpf_possivel = pis_campo.lstrip('0')
+                # Alguns relógios inserem um zero extra no início do CPF para
+                # preencher 12 dígitos no campo PIS. Para garantir a busca,
+                # também consideramos os 11 últimos dígitos (CPF completo)
+                cpf_completo = pis_campo[-11:]
 
                 try:
                     data_hora = datetime.datetime.strptime(data_str, '%d%m%Y%H%M')
@@ -2046,7 +2050,11 @@ def create_app():
                 # Caso não encontre, tenta localizar usando o CPF, pois muitos
                 # registros antigos usam o CPF no campo destinado ao PIS.
                 funcionario = Funcionario.query.filter(
-                    or_(Funcionario.pis == pis_campo, Funcionario.cpf == cpf_possivel)
+                    or_(
+                        Funcionario.pis == pis_campo,
+                        Funcionario.cpf == cpf_possivel,
+                        Funcionario.cpf == cpf_completo,
+                    )
                 ).first()
                 if not funcionario:
                     # pulamos registros sem funcionário correspondente
