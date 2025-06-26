@@ -11,9 +11,9 @@ from io import BytesIO
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, PageBreak, Table, TableStyle
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
-from reportlab.lib.colors import HexColor # Para usar as cores da paleta no PDF
+from reportlab.lib.colors import HexColor, black, white, lightgrey  # Para usar as cores da paleta no PDF
 import base64 # Importar base64 para decodificar a foto
 
 def create_app():
@@ -1886,6 +1886,14 @@ def create_app():
         style_small = ParagraphStyle(name='CustomSmall', fontSize=9, leading=11, alignment=TA_LEFT,
                                   fontName='Helvetica', textColor=HexColor('#1F3A5F'))
 
+        table_style = TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), HexColor('#4F83CC')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), white),
+            ('GRID', (0, 0), (-1, -1), 0.25, black),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [white, lightgrey]),
+        ])
+
 
         story = []
 
@@ -1920,61 +1928,92 @@ def create_app():
 
 
         # Dados Pessoais
-        story.append(Paragraph("DADOS PESSOAIS", style_heading2))
-        story.append(Paragraph(f"<b>Nome Completo:</b> {funcionario.nome}", style_normal))
-        story.append(Paragraph(f"<b>CPF:</b> {funcionario.cpf}", style_normal))
-        story.append(Paragraph(f"<b>PIS:</b> {funcionario.pis}", style_normal))
-        story.append(Paragraph(f"<b>IDFace:</b> {funcionario.id_face}", style_normal))
-        story.append(Paragraph(f"<b>Data de Nascimento:</b> {funcionario.data_nascimento.strftime('%d/%m/%Y')}", style_normal))
-        story.append(Paragraph(f"<b>Telefone:</b> {funcionario.telefone}", style_normal))
-        story.append(Paragraph(f"<b>Endereço:</b> {funcionario.endereco}", style_normal))
-        story.append(Paragraph(f"<b>Bairro:</b> {funcionario.bairro or 'N/A'}", style_normal)) # Incluindo o Bairro no PDF
-        story.append(Paragraph(f"<b>Cidade:</b> {funcionario.cidade}", style_normal))
-        story.append(Paragraph(f"<b>Estado:</b> {funcionario.estado}", style_normal))
-        story.append(Paragraph(f"<b>CEP:</b> {funcionario.cep}", style_normal))
+        dados_pessoais = [
+            [Paragraph("Nome Completo", style_small_bold), Paragraph(funcionario.nome, style_small)],
+            [Paragraph("CPF", style_small_bold), Paragraph(funcionario.cpf, style_small)],
+            [Paragraph("PIS", style_small_bold), Paragraph(funcionario.pis, style_small)],
+            [Paragraph("IDFace", style_small_bold), Paragraph(funcionario.id_face, style_small)],
+            [Paragraph("Data de Nascimento", style_small_bold), Paragraph(funcionario.data_nascimento.strftime('%d/%m/%Y'), style_small)],
+            [Paragraph("Telefone", style_small_bold), Paragraph(funcionario.telefone, style_small)],
+            [Paragraph("Endereço", style_small_bold), Paragraph(funcionario.endereco, style_small)],
+            [Paragraph("Bairro", style_small_bold), Paragraph(funcionario.bairro or 'N/A', style_small)],
+            [Paragraph("Cidade", style_small_bold), Paragraph(funcionario.cidade, style_small)],
+            [Paragraph("Estado", style_small_bold), Paragraph(funcionario.estado, style_small)],
+            [Paragraph("CEP", style_small_bold), Paragraph(funcionario.cep, style_small)],
+        ]
+        tabela_pessoais = Table([[Paragraph('DADOS PESSOAIS', style_heading2), '']] + dados_pessoais, colWidths=[2.2*inch, 3.8*inch])
+        tabela_pessoais.setStyle(table_style)
+        story.append(tabela_pessoais)
         story.append(Spacer(1, 0.2 * inch))
 
         # Dados Bancários
-        story.append(Paragraph("DADOS BANCÁRIOS", style_heading2))
+        
         if funcionario.chave_pix:
-            story.append(Paragraph(f"<b>Chave PIX:</b> {funcionario.chave_pix}", style_normal))
+            dados_bancarios = [[Paragraph("Chave PIX", style_small_bold), Paragraph(funcionario.chave_pix, style_small)]]
         else:
-            story.append(Paragraph(f"<b>Código Banco:</b> {funcionario.codigo_banco or 'N/A'}", style_normal))
-            story.append(Paragraph(f"<b>Nome Banco:</b> {funcionario.nome_banco or 'N/A'}", style_normal))
-            story.append(Paragraph(f"<b>Código Agência:</b> {funcionario.codigo_agencia or 'N/A'}", style_normal))
-            story.append(Paragraph(f"<b>Número Conta:</b> {funcionario.numero_conta or 'N/A'}", style_normal))
-            story.append(Paragraph(f"<b>Variação Conta:</b> {funcionario.variacao_conta or 'N/A'}", style_normal))
+            dados_bancarios = [
+                [Paragraph("Código Banco", style_small_bold), Paragraph(funcionario.codigo_banco or 'N/A', style_small)],
+                [Paragraph("Nome Banco", style_small_bold), Paragraph(funcionario.nome_banco or 'N/A', style_small)],
+                [Paragraph("Código Agência", style_small_bold), Paragraph(funcionario.codigo_agencia or 'N/A', style_small)],
+                [Paragraph("Número Conta", style_small_bold), Paragraph(funcionario.numero_conta or 'N/A', style_small)],
+                [Paragraph("Variação Conta", style_small_bold), Paragraph(funcionario.variacao_conta or 'N/A', style_small)],
+            ]
+        tabela_bancaria = Table([[Paragraph('DADOS BANCÁRIOS', style_heading2), '']] + dados_bancarios, colWidths=[2.2*inch, 3.8*inch])
+        tabela_bancaria.setStyle(table_style)
+        story.append(tabela_bancaria)
         story.append(Spacer(1, 0.2 * inch))
 
         # Informações de Contrato (do último contrato, se houver)
-        story.append(Paragraph("INFORMAÇÕES DE CONTRATO (Último Contrato)", style_heading2))
+        
         if contrato:
-            story.append(Paragraph(f"<b>Setor:</b> {contrato.setor}", style_normal))
-            story.append(Paragraph(f"<b>Função:</b> {contrato.funcao}", style_normal))
-            story.append(Paragraph(f"<b>Salário Inicial:</b> R$ {contrato.salario_inicial:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), style_normal))
-            story.append(Paragraph(f"<b>Bônus:</b> R$ {contrato.bonus:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), style_normal))
-            story.append(Paragraph(f"<b>Regime de Contratação:</b> {contrato.regime_contratacao}", style_normal))
-            story.append(Paragraph(f"<b>Data de Admissão:</b> {contrato.data_admissao.strftime('%d/%m/%Y')}", style_normal))
-            story.append(Paragraph(f"<b>Data de Demissão:</b> {contrato.data_demissao.strftime('%d/%m/%Y') if contrato.data_demissao else 'N/A'}", style_normal))
-            story.append(Paragraph(f"<b>Status Contrato:</b> {'Ativo' if contrato.status else 'Inativo'}", style_normal))
+            dados_contrato = [
+                [Paragraph("Setor", style_small_bold), Paragraph(contrato.setor, style_small)],
+                [Paragraph("Função", style_small_bold), Paragraph(contrato.funcao, style_small)],
+                [Paragraph("Salário Inicial", style_small_bold), Paragraph(f"R$ {contrato.salario_inicial:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), style_small)],
+                [Paragraph("Bônus", style_small_bold), Paragraph(f"R$ {contrato.bonus:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), style_small)],
+                [Paragraph("Regime de Contratação", style_small_bold), Paragraph(contrato.regime_contratacao, style_small)],
+                [Paragraph("Data de Admissão", style_small_bold), Paragraph(contrato.data_admissao.strftime('%d/%m/%Y'), style_small)],
+                [Paragraph("Data de Demissão", style_small_bold), Paragraph(contrato.data_demissao.strftime('%d/%m/%Y') if contrato.data_demissao else 'N/A', style_small)],
+                [Paragraph("Status Contrato", style_small_bold), Paragraph('Ativo' if contrato.status else 'Inativo', style_small)],
+            ]
+            tabela_contrato = Table([[Paragraph('INFORMAÇÕES DE CONTRATO (Último Contrato)', style_heading2), '']] + dados_contrato, colWidths=[2.2*inch, 3.8*inch])
+            tabela_contrato.setStyle(table_style)
+            story.append(tabela_contrato)
         else:
             story.append(Paragraph("Nenhum contrato de trabalho encontrado.", style_normal))
         story.append(Spacer(1, 0.2 * inch))
 
         # Dependentes
-        story.append(Paragraph("DEPENDENTES", style_heading2))
+        
         if dependentes:
+            dados_dep = [[Paragraph("Nome", style_small_bold), Paragraph("CPF", style_small_bold), Paragraph("Data Nasc.", style_small_bold), Paragraph("Salário Família", style_small_bold)]]
             for dep in dependentes:
-                story.append(Paragraph(f"- <b>Nome:</b> {dep.nome_dependente}, <b>CPF:</b> {dep.cpf_dependente}, <b>Data Nasc.:</b> {dep.data_nascimento.strftime('%d/%m/%Y')}, <b>Salário Família:</b> R$ {dep.salario_familia:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), style_normal))
+                dados_dep.append([
+                    Paragraph(dep.nome_dependente, style_small),
+                    Paragraph(dep.cpf_dependente, style_small),
+                    Paragraph(dep.data_nascimento.strftime('%d/%m/%Y'), style_small),
+                    Paragraph(f"R$ {dep.salario_familia:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."), style_small),
+                ])
+            tabela_dep = Table([[Paragraph('DEPENDENTES', style_heading2), '', '', '']] + dados_dep, colWidths=[2.0*inch, 1.5*inch, 1.2*inch, 1.3*inch])
+            tabela_dep.setStyle(table_style)
+            story.append(tabela_dep)
         else:
             story.append(Paragraph("Nenhum dependente cadastrado.", style_normal))
         story.append(Spacer(1, 0.2 * inch))
 
         # Reajustes Salariais
-        story.append(Paragraph("REAJUSTES SALARIAIS", style_heading2))
+        
         if reajustes:
+            dados_reaj = [[Paragraph("Data", style_small_bold), Paragraph("% Salário", style_small_bold), Paragraph("% Bônus", style_small_bold)]]
             for reaj in reajustes:
-                story.append(Paragraph(f"- <b>Data:</b> {reaj.data_alteracao.strftime('%d/%m/%Y')}, <b>% Salário:</b> {reaj.percentual_reajuste_salario:,.2f}%, <b>% Bônus:</b> {reaj.percentual_reajuste_bonus:,.2f}%".replace(",", "X").replace(".", ",").replace("X", "."), style_normal))
+                dados_reaj.append([
+                    Paragraph(reaj.data_alteracao.strftime('%d/%m/%Y'), style_small),
+                    Paragraph(f"{reaj.percentual_reajuste_salario:,.2f}%".replace(",", "X").replace(".", ",").replace("X", "."), style_small),
+                    Paragraph(f"{reaj.percentual_reajuste_bonus:,.2f}%".replace(",", "X").replace(".", ",").replace("X", "."), style_small),
+                ])
+            tabela_reaj = Table([[Paragraph('REAJUSTES SALARIAIS', style_heading2), '', '']] + dados_reaj, colWidths=[1.8*inch, 1.6*inch, 2.6*inch])
+            tabela_reaj.setStyle(table_style)
+            story.append(tabela_reaj)
         else:
             story.append(Paragraph("Nenhum reajuste salarial cadastrado.", style_normal))
         story.append(Spacer(1, 0.2 * inch))
