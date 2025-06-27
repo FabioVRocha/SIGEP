@@ -328,6 +328,22 @@
                         <option value="Dispensado" {% if demissao and demissao.aviso_previo == 'Dispensado' %}selected{% endif %}>Dispensado</option>
                     </select>
                 </div>
+                <div>
+                    <label for="motivo_demissao" class="block text-sm font-medium text-gray-700">Motivo da Demissão <span class="text-red-500">*</span></label>
+                    <textarea id="motivo_demissao" name="motivo_demissao" rows="3" required>{{ demissao.motivo_demissao if demissao else '' }}</textarea>
+                </div>
+                <div>
+                    <label for="data_aviso_previo" class="block text-sm font-medium text-gray-700">Data do Aviso Prévio</label>
+                    <input type="date" id="data_aviso_previo" name="data_aviso_previo" value="{{ demissao.data_aviso_previo.strftime('%Y-%m-%d') if demissao and demissao.data_aviso_previo else '' }}">
+                </div>
+                <div>
+                    <label for="quantidade_dias_aviso" class="block text-sm font-medium text-gray-700">Quantidade de Dias do Aviso</label>
+                    <input type="number" id="quantidade_dias_aviso" name="quantidade_dias_aviso" value="{{ demissao.quantidade_dias_aviso if demissao and demissao.quantidade_dias_aviso else '' }}">
+                </div>
+                <div>
+                    <label for="data_termino_aviso" class="block text-sm font-medium text-gray-700">Data de Término do Aviso</label>
+                    <input type="date" id="data_termino_aviso" name="data_termino_aviso" value="{{ demissao.data_termino_aviso.strftime('%Y-%m-%d') if demissao and demissao.data_termino_aviso else '' }}">
+                </div>
 
                 <div class="flex justify-end space-x-3 mt-6">
                     <button type="submit"
@@ -380,12 +396,51 @@
             }
         }
 
+        async function calcularAvisoPrevio() {
+            const cpfInput = document.getElementById('cpf_funcionario');
+            const demissaoInput = document.getElementById('data_demissao');
+            const diasInput = document.getElementById('quantidade_dias_aviso');
+            const avisoInput = document.getElementById('data_aviso_previo');
+            const terminoInput = document.getElementById('data_termino_aviso');
+            const cpf = cpfInput.value.replace(/\D/g, '');
+            const dataDemissao = demissaoInput.value;
+            if (cpf.length === 11 && dataDemissao) {
+                try {
+                    const resp = await fetch(`/api/contratos_ativos/${cpf}`);
+                    const data = await resp.json();
+                    if (data.data_admissao && data.data_admissao !== 'N/A') {
+                        const admissao = new Date(data.data_admissao);
+                        const demissao = new Date(dataDemissao);
+                        let anos = Math.floor((demissao - admissao) / (365 * 24 * 60 * 60 * 1000));
+                        if (anos < 0) anos = 0;
+                        let diasAviso = 30 + Math.max(anos - 1, 0) * 3;
+                        if (diasAviso > 90) diasAviso = 90;
+                        diasInput.value = diasAviso;
+                        const avisoDate = new Date(demissao);
+                        avisoDate.setDate(avisoDate.getDate() - diasAviso);
+                        avisoInput.value = avisoDate.toISOString().split('T')[0];
+                        const terminoDate = new Date(demissao);
+                        terminoDate.setDate(terminoDate.getDate() - 1);
+                        terminoInput.value = terminoDate.toISOString().split('T')[0];
+                    }
+                } catch (error) {
+                    console.error('Erro ao calcular aviso prévio:', error);
+                }
+            }
+        }
+
         // Chamar buscarFuncionario ao carregar a página se o campo já estiver preenchido (modo edição)
         document.addEventListener('DOMContentLoaded', (event) => {
             const cpfFuncionarioInput = document.getElementById('cpf_funcionario');
+            const dataDemissaoInput = document.getElementById('data_demissao');
             if (cpfFuncionarioInput && cpfFuncionarioInput.value) {
                 buscarFuncionario();
             }
+            if (cpfFuncionarioInput && dataDemissaoInput && cpfFuncionarioInput.value && dataDemissaoInput.value) {
+                calcularAvisoPrevio();
+            }
+            cpfFuncionarioInput.addEventListener('change', calcularAvisoPrevio);
+            dataDemissaoInput.addEventListener('change', calcularAvisoPrevio);
         });
     </script>
 </body>

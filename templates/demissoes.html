@@ -334,6 +334,10 @@
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Último Dia Trab.</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Tipo Desligamento</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Aviso Prévio</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Motivo Demissão</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Data Aviso</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Dias Aviso</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Término Aviso</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tr-lg">Ações</th>
                             </tr>
                             <tr class="bg-light-gray">
@@ -362,6 +366,10 @@
                                         <option value="dispensado">Dispensado</option>
                                     </select>
                                 </th>
+                                <th class="px-4 py-2 border-b border-medium-gray"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"></th>
                                 <th class="px-4 py-2 border-b border-medium-gray"></th> <!-- Empty for Actions column -->
                             </tr>
                         </thead>
@@ -383,6 +391,10 @@
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.ultimo_dia_trabalhado.strftime('%d/%m/%Y') }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.tipo_desligamento }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.aviso_previo }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.motivo_demissao }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.data_aviso_previo.strftime('%d/%m/%Y') if demissao.data_aviso_previo else '' }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.quantidade_dias_aviso if demissao.quantidade_dias_aviso else '' }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.data_termino_aviso.strftime('%d/%m/%Y') if demissao.data_termino_aviso else '' }}</td>
                                     <td class="py-3 px-4 text-sm flex items-center space-x-3">
                                         <a href="{{ url_for('editar_demissao', id=demissao.id) }}" class="text-light-blue hover:text-dark-blue font-medium" title="Editar">
                                             <i class="fas fa-edit"></i>

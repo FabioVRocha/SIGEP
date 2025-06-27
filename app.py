@@ -1409,6 +1409,12 @@ def create_app():
             return redirect(url_for('listar_reajustes'))
 
     # --- Módulo: Demissões ---
+    
+    def calcular_dias_aviso(data_admissao, data_demissao):
+        """Calcula a quantidade de dias de aviso prévio."""
+        anos = (data_demissao - data_admissao).days // 365
+        dias = 30 + max(anos - 1, 0) * 3
+        return dias if dias <= 90 else 90
     @app.route('/demissoes')
     def listar_demissoes():
         """
@@ -1467,6 +1473,14 @@ def create_app():
             if contrato_ativo and data_demissao < contrato_ativo.data_admissao:
                 flash('A data de demissão não pode ser anterior à data de admissão.', 'danger')
                 return render_template('demissao_form.html', demissao=None)
+
+            if contrato_ativo:
+                if quantidade_dias_aviso is None:
+                    quantidade_dias_aviso = calcular_dias_aviso(contrato_ativo.data_admissao, data_demissao)
+                if data_aviso_previo is None and quantidade_dias_aviso is not None:
+                    data_aviso_previo = data_demissao - datetime.timedelta(days=quantidade_dias_aviso)
+                if data_termino_aviso is None and quantidade_dias_aviso is not None:
+                    data_termino_aviso = data_demissao - datetime.timedelta(days=1)
 
             # Criar o registro de demissão
             nova_demissao = Demissao(
@@ -1555,6 +1569,14 @@ def create_app():
             if contrato_do_funcionario and data_demissao < contrato_do_funcionario.data_admissao:
                 flash('A data de demissão não pode ser anterior à data de admissão.', 'danger')
                 return render_template('demissao_form.html', demissao=demissao)
+
+            if contrato_do_funcionario:
+                if quantidade_dias_aviso is None:
+                    quantidade_dias_aviso = calcular_dias_aviso(contrato_do_funcionario.data_admissao, data_demissao)
+                if data_aviso_previo is None and quantidade_dias_aviso is not None:
+                    data_aviso_previo = data_demissao - datetime.timedelta(days=quantidade_dias_aviso)
+                if data_termino_aviso is None and quantidade_dias_aviso is not None:
+                    data_termino_aviso = data_demissao - datetime.timedelta(days=1)
 
             dados_antigos = {
                 'cpf_funcionario': demissao.cpf_funcionario,
