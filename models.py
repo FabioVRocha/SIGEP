@@ -234,6 +234,20 @@ class Funcao(db.Model):
     def __repr__(self):
         return f"<Funcao {self.nome}>"
 
+# Tabela: jornadas
+class Jornada(db.Model):
+    __tablename__ = 'jornadas'
+    id = db.Column(db.Integer, primary_key=True)
+    primeiro_turno_inicio = db.Column(db.Time, nullable=False)
+    primeiro_turno_fim = db.Column(db.Time, nullable=False)
+    segundo_turno_inicio = db.Column(db.Time, nullable=False)
+    segundo_turno_fim = db.Column(db.Time, nullable=False)
+    turno_extra_inicio = db.Column(db.Time)
+    turno_extra_fim = db.Column(db.Time)
+
+    def __repr__(self):
+        return f"<Jornada {self.id}>"
+
 # Tabela: logs_auditoria
 class LogAuditoria(db.Model):
     __tablename__ = 'logs_auditoria'

@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGEP - Jornadas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome para ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Definição da Paleta de Cores como Variáveis CSS */
+        :root {
+            --clr-dark-blue: #1F3A5F;
+            --clr-light-blue: #4F83CC;
+            --clr-light-gray: #F4F6F8;
+            --clr-medium-gray: #A0AAB4;
+            --clr-white: #FFFFFF;
+            --clr-success: #27AE60;
+            --clr-attention: #F1C40F;
+            --clr-error: #E74C3C;
+            --clr-purple: #8A2BE2;
+            --clr-orange: #FF8C00;
+            --clr-yellow: #F1C40F;
+            --clr-teal: #008080;
+            --clr-indigo: #4B0082;
+            --clr-pink: #FF69B4;
+            --clr-dashboard-bg: #F0F2F5;
+            --clr-sidebar-bg: #1F3A5F;
+            --clr-card-bg: #FFFFFF;
+            --clr-text-main: #333333;
+            --clr-text-secondary: #666666;
+            --clr-border: #E0E0E0;
+        }
+
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: var(--clr-dashboard-bg); 
+        }
+
+        .flash-message { padding: 1rem; margin-bottom: 1rem; border-radius: 0.5rem; font-weight: 600; }
+        .flash-message.success { background-color: var(--clr-success); color: var(--clr-white); border: 1px solid var(--clr-success); }
+        .flash-message.danger { background-color: var(--clr-error); color: var(--clr-white); border: 1px solid var(--clr-error); }
+        .flash-message.warning { background-color: var(--clr-attention); color: var(--clr-dark-blue); border: 1px solid var(--clr-attention); }
+
+        /* Estilos da Sidebar */
+        .sidebar { 
+            background-color: var(--clr-sidebar-bg); 
+            color: var(--clr-white); 
+            width: 280px; 
+            padding: 1.5rem; 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); 
+            position: fixed; 
+            height: 100vh; 
+            overflow-y: auto; 
+        }
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+        .sidebar-nav-item { 
+            display: flex; 
+            align-items: center; 
+            padding: 0.75rem 1rem; 
+            margin-bottom: 0.5rem; 
+            border-radius: 0.5rem; 
+            color: var(--clr-white); 
+            transition: background-color 0.2s, color 0.2s; 
+        }
+        .sidebar-nav-item:hover, .sidebar-nav-item.active { 
+            background-color: var(--clr-light-blue); 
+            color: var(--clr-white); 
+        }
+        .sidebar-nav-item i { 
+            margin-right: 1rem; 
+            font-size: 1.25rem; 
+        }
+
+        /* Estilos do Conteúdo Principal */
+        .main-content { 
+            margin-left: 280px; 
+            padding: 2rem; 
+            flex-grow: 1; 
+            background-color: var(--clr-dashboard-bg); 
+        }
+        .main-header { 
+            background-color: var(--clr-card-bg); 
+            padding: 1.5rem 2rem; 
+            border-radius: 0.75rem; 
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); 
+            margin-bottom: 2rem; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
+        .main-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--clr-dark-blue);
+        }
+        .content-section { 
+            background-color: var(--clr-card-bg); 
+            border-radius: 0.75rem; 
+            padding: 1.5rem; 
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); 
+            margin-bottom: 1.5rem; 
+        }
+
+        /* Cores para os botões e links */
+        .btn-add { 
+            background-color: var(--clr-success); 
+            color: var(--clr-white); 
+            padding: 0.5rem 1rem; /* Consistent padding */
+            border-radius: 0.5rem; /* Consistent border radius */
+            font-weight: 700; /* Bold font */
+            transition: background-color 0.2s ease-in-out; /* Smooth transition */
+            display: inline-flex; /* Align icon and text */
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-add:hover { background-color: color-mix(in srgb, var(--clr-success) 90%, black); }
+
+        .btn-secondary { 
+            background-color: var(--clr-medium-gray); 
+            color: var(--clr-white); 
+            padding: 0.5rem 1rem; /* Consistent padding */
+            border-radius: 0.5rem; /* Consistent border radius */
+            font-weight: 700; /* Bold font */
+            transition: background-color 0.2s ease-in-out; /* Smooth transition */
+            display: inline-flex; /* Align icon and text */
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-secondary:hover { background-color: color-mix(in srgb, var(--clr-medium-gray) 80%, black); }
+
+        .btn-delete {
+            background-color: var(--clr-error);
+            color: var(--clr-white);
+        }
+        .btn-delete:hover {
+            background-color: color-mix(in srgb, var(--clr-error) 90%, black);
+        }
+
+
+        /* Para a tabela */
+        .table-header-bg { background-color: var(--clr-dark-blue); color: var(--clr-white); }
+        .table-row-odd { background-color: var(--clr-white); }
+        .table-row-even { background-color: var(--clr-light-gray); }
+        .filter-input {
+            border-color: var(--clr-medium-gray);
+            color: var(--clr-dark-blue);
+            background-color: var(--clr-light-gray);
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+        }
+        .filter-input:focus {
+            border-color: var(--clr-light-blue);
+            box-shadow: 0 0 0 1px var(--clr-light-blue);
+            outline: none;
+        }
+        
+        /* Estilos do Modal de Confirmação */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: var(--clr-white);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            font-size: 1.5rem;
+            color: var(--clr-dark-blue);
+            margin-bottom: 1rem;
+        }
+
+        .modal-content p {
+            color: var(--clr-text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        /* Responsividade básica */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                margin-bottom: 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .main-header .search-bar {
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="flex flex-col md:flex-row min-h-screen">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-cubes mr-3 text-2xl"></i> SIGEP
+        </div>
+        <nav>
+            <ul>
+                <li>
+                    <a href="{{ url_for('index') }}" class="sidebar-nav-item">
+                        <i class="fas fa-home"></i> Visão Geral
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('listar_funcionarios') }}" class="sidebar-nav-item active">
+                        <i class="fas fa-edit"></i> Cadastros
+                    </a>
+                </li>
+                 <li>
+                    <a href="{{ url_for('listar_registros_ponto') }}" class="sidebar-nav-item">
+                        <i class="fas fa-calendar-alt"></i> Lançamentos
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-nav-item">
+                        <i class="fas fa-chart-bar"></i> Relatórios
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-nav-item">
+                        <i class="fas fa-cogs"></i> Gerencial
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="flex justify-end mt-8">
+            <a href="{{ url_for('logout') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md flex items-center">
+                <i class="fas fa-sign-out-alt mr-2"></i> Sair
+            </a>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="main-header">
+            <h1 class="text-2xl font-bold text-dark-blue">Jornadas</h1>
+            <div class="flex space-x-3">
+                <a href="{{ url_for('adicionar_jornada') }}" class="btn-add text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center">
+                    <i class="fas fa-plus mr-2"></i> Nova Jornada
+                </a>
+                <a href="{{ url_for('index') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center">
+                    <i class="fas fa-home"></i> Voltar ao Início
+                </a>
+            </div>
+        </div>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-6">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="content-section">
+            {% if jornadas %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg overflow-hidden" id="jornadasTable">
+                        <thead class="table-header-bg">
+                            <tr>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tl-lg">ID</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">1º Início</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">1º Fim</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">2º Início</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">2º Fim</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Extra Início</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Extra Fim</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tr-lg">Ações</th>
+                            </tr>
+                            {# Filter row can be added here if needed, similar to other tables #}
+                        </thead>
+                        <tbody class="divide-y divide-medium-gray">
+                            {% for j in jornadas %}
+                                <tr class="hover:bg-light-gray {% if loop.index is odd %}table-row-odd{% else %}table-row-even{% endif %}">
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ j.id }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ j.primeiro_turno_inicio }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ j.primeiro_turno_fim }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ j.segundo_turno_inicio or '-' }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ j.segundo_turno_fim or '-' }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ j.turno_extra_inicio or '-' }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ j.turno_extra_fim or '-' }}</td>
+                                    <td class="py-3 px-4 text-sm flex items-center space-x-3">
+                                        <a href="{{ url_for('editar_jornada', id=j.id) }}" class="text-light-blue hover:text-dark-blue font-medium" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" onclick="showConfirmModal('{{ url_for('deletar_jornada', id=j.id) }}')" class="text-error hover:text-dark-blue font-medium bg-transparent border-none cursor-pointer" title="Deletar">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-center text-medium-gray text-lg py-8">Nenhuma jornada cadastrada ainda.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Modal de Confirmação (Hidden by default) -->
+    <div id="confirmModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="font-bold">Confirmar Ação</h3>
+            <p>Tem certeza que deseja deletar esta jornada?</p>
+            <div class="modal-buttons">
+                <button id="cancelButton" class="btn-secondary py-2 px-4 rounded-lg">Cancelar</button>
+                <button id="confirmButton" class="btn-delete py-2 px-4 rounded-lg">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variável para armazenar a URL de exclusão
+        let deleteUrl = '';
+
+        function showConfirmModal(url) {
+            deleteUrl = url;
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        document.getElementById('cancelButton').addEventListener('click', () => {
+            document.getElementById('confirmModal').classList.add('hidden');
+            deleteUrl = ''; // Limpa a URL após cancelar
+        });
+
+        document.getElementById('confirmButton').addEventListener('click', () => {
+            if (deleteUrl) {
+                // Cria um formulário temporário e o submete
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = deleteUrl;
+                document.body.appendChild(form);
+                form.submit();
+            }
+            document.getElementById('confirmModal').classList.add('hidden');
+            deleteUrl = ''; // Limpa a URL
+        });
+
+        // This filterTable function is kept from your original script, but filters for individual columns are not present in the new table header structure.
+        // If you intend to add filters per column, you'll need to add the input fields in the <thead> section.
+        function filterTable() {
+            const tableId = 'jornadasTable';
+            const table = document.getElementById(tableId);
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            // Assuming filter inputs would be in a row within the thead with data-column attributes
+            const filterInputs = table.querySelectorAll('.filter-input'); 
+            
+            const textFilters = Array.from(filterInputs).map(input => ({
+                column: parseInt(input.dataset.column),
+                value: input.value.toLowerCase()
+            }));
+
+            for (let i = 0; i < rows.length; i++) {
+                let rowDisplay = 'table-row';
+                
+                for (let j = 0; j < textFilters.length; j++) {
+                    const cell = rows[i].getElementsByTagName('td')[textFilters[j].column];
+                    if (cell) {
+                        const cellText = cell.textContent || cell.innerText;
+                        if (textFilters[j].value && !cellText.toLowerCase().includes(textFilters[j].value)) {
+                            rowDisplay = 'none';
+                            break; 
+                        }
+                    }
+                }
+                rows[i].style.display = rowDisplay;
+            }
+        }
+    </script>
+</body>
+</html>

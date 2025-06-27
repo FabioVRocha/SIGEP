@@ -56,7 +56,7 @@ def create_app():
     # tenham acesso à instância 'db' corretamente configurada.
     from models import Funcionario, Dependente, ContratoTrabalho, ReajusteSalarial, \
                        ControleFerias, FolhaPagamento, BancoHoras, HorasExtras, \
-                       RegistroPonto, LogAuditoria, Usuario, Cidade, Setor, Funcao, Demissao
+                       RegistroPonto, LogAuditoria, Usuario, Cidade, Setor, Funcao, Demissao, Jornada
 
     # Define o diretório de uploads (para planilhas e outros arquivos)
     UPLOAD_FOLDER = 'uploads'
@@ -1231,6 +1231,140 @@ def create_app():
             print(f"Erro ao deletar função: {e}") # Print para depuração
             flash(f'Erro ao deletar função: {e}', 'danger')
             return redirect(url_for('listar_funcoes'))
+
+    # --- Módulo: Cadastro de Jornadas ---
+    @app.route('/jornadas')
+    def listar_jornadas():
+        if 'usuario_id' not in session or session['tipo_usuario'] not in ['Master']:
+            flash('Acesso negado. Apenas usuários Master podem gerenciar jornadas.', 'danger')
+            return redirect(url_for('login'))
+        jornadas = Jornada.query.order_by(Jornada.id).all()
+        return render_template('jornadas.html', jornadas=jornadas)
+
+    @app.route('/jornadas/add', methods=['GET', 'POST'])
+    def adicionar_jornada():
+        if 'usuario_id' not in session or session['tipo_usuario'] not in ['Master']:
+            flash('Acesso negado. Apenas usuários Master podem adicionar jornadas.', 'danger')
+            return redirect(url_for('login'))
+
+        if request.method == 'POST':
+            pt_inicio = request.form['primeiro_turno_inicio']
+            pt_fim = request.form['primeiro_turno_fim']
+            st_inicio = request.form['segundo_turno_inicio']
+            st_fim = request.form['segundo_turno_fim']
+            te_inicio = request.form.get('turno_extra_inicio')
+            te_fim = request.form.get('turno_extra_fim')
+
+            nova_jornada = Jornada(
+                primeiro_turno_inicio=datetime.datetime.strptime(pt_inicio, '%H:%M').time(),
+                primeiro_turno_fim=datetime.datetime.strptime(pt_fim, '%H:%M').time(),
+                segundo_turno_inicio=datetime.datetime.strptime(st_inicio, '%H:%M').time(),
+                segundo_turno_fim=datetime.datetime.strptime(st_fim, '%H:%M').time(),
+                turno_extra_inicio=datetime.datetime.strptime(te_inicio, '%H:%M').time() if te_inicio else None,
+                turno_extra_fim=datetime.datetime.strptime(te_fim, '%H:%M').time() if te_fim else None
+            )
+            db.session.add(nova_jornada)
+            try:
+                db.session.commit()
+                flash('Jornada adicionada com sucesso!', 'success')
+                log_entry = LogAuditoria(usuario_id=session['usuario_id'], acao='Jornada adicionada.', tabela_afetada='jornadas', registro_id=nova_jornada.id)
+                db.session.add(log_entry)
+                db.session.commit()
+                return redirect(url_for('listar_jornadas'))
+            except Exception as e:
+                db.session.rollback()
+                print(f"Erro ao adicionar jornada: {e}")
+                flash(f'Erro ao adicionar jornada: {e}', 'danger')
+                return render_template('jornada_form.html', jornada=None)
+
+        return render_template('jornada_form.html', jornada=None)
+
+    @app.route('/jornadas/edit/<int:id>', methods=['GET', 'POST'])
+    def editar_jornada(id):
+        if 'usuario_id' not in session or session['tipo_usuario'] not in ['Master']:
+            flash('Acesso negado. Apenas usuários Master podem editar jornadas.', 'danger')
+            return redirect(url_for('login'))
+
+        jornada = Jornada.query.get_or_404(id)
+
+        if request.method == 'POST':
+            pt_inicio = request.form['primeiro_turno_inicio']
+            pt_fim = request.form['primeiro_turno_fim']
+            st_inicio = request.form['segundo_turno_inicio']
+            st_fim = request.form['segundo_turno_fim']
+            te_inicio = request.form.get('turno_extra_inicio')
+            te_fim = request.form.get('turno_extra_fim')
+
+            dados_antigos = {
+                'primeiro_turno_inicio': str(jornada.primeiro_turno_inicio),
+                'primeiro_turno_fim': str(jornada.primeiro_turno_fim),
+                'segundo_turno_inicio': str(jornada.segundo_turno_inicio),
+                'segundo_turno_fim': str(jornada.segundo_turno_fim),
+                'turno_extra_inicio': str(jornada.turno_extra_inicio) if jornada.turno_extra_inicio else None,
+                'turno_extra_fim': str(jornada.turno_extra_fim) if jornada.turno_extra_fim else None
+            }
+
+            jornada.primeiro_turno_inicio = datetime.datetime.strptime(pt_inicio, '%H:%M').time()
+            jornada.primeiro_turno_fim = datetime.datetime.strptime(pt_fim, '%H:%M').time()
+            jornada.segundo_turno_inicio = datetime.datetime.strptime(st_inicio, '%H:%M').time()
+            jornada.segundo_turno_fim = datetime.datetime.strptime(st_fim, '%H:%M').time()
+            jornada.turno_extra_inicio = datetime.datetime.strptime(te_inicio, '%H:%M').time() if te_inicio else None
+            jornada.turno_extra_fim = datetime.datetime.strptime(te_fim, '%H:%M').time() if te_fim else None
+
+            try:
+                db.session.commit()
+                flash('Jornada atualizada com sucesso!', 'success')
+                dados_novos = {
+                    'primeiro_turno_inicio': str(jornada.primeiro_turno_inicio),
+                    'primeiro_turno_fim': str(jornada.primeiro_turno_fim),
+                    'segundo_turno_inicio': str(jornada.segundo_turno_inicio),
+                    'segundo_turno_fim': str(jornada.segundo_turno_fim),
+                    'turno_extra_inicio': str(jornada.turno_extra_inicio) if jornada.turno_extra_inicio else None,
+                    'turno_extra_fim': str(jornada.turno_extra_fim) if jornada.turno_extra_fim else None
+                }
+                log_entry = LogAuditoria(usuario_id=session['usuario_id'], acao=f'Jornada ID {id} editada.', tabela_afetada='jornadas', registro_id=id, dados_antigos=dados_antigos, dados_novos=dados_novos)
+                db.session.add(log_entry)
+                db.session.commit()
+                return redirect(url_for('listar_jornadas'))
+            except Exception as e:
+                db.session.rollback()
+                print(f"Erro ao atualizar jornada: {e}")
+                flash(f'Erro ao atualizar jornada: {e}', 'danger')
+                return render_template('jornada_form.html', jornada=jornada)
+
+        return render_template('jornada_form.html', jornada=jornada)
+
+    @app.route('/jornadas/delete/<int:id>', methods=['POST'])
+    def deletar_jornada(id):
+        if 'usuario_id' not in session or session['tipo_usuario'] not in ['Master']:
+            flash('Acesso negado. Apenas usuários Master podem deletar jornadas.', 'danger')
+            return redirect(url_for('login'))
+
+        jornada = Jornada.query.get_or_404(id)
+
+        dados_antigos = {
+            'id': jornada.id,
+            'primeiro_turno_inicio': str(jornada.primeiro_turno_inicio),
+            'primeiro_turno_fim': str(jornada.primeiro_turno_fim),
+            'segundo_turno_inicio': str(jornada.segundo_turno_inicio),
+            'segundo_turno_fim': str(jornada.segundo_turno_fim),
+            'turno_extra_inicio': str(jornada.turno_extra_inicio) if jornada.turno_extra_inicio else None,
+            'turno_extra_fim': str(jornada.turno_extra_fim) if jornada.turno_extra_fim else None
+        }
+
+        db.session.delete(jornada)
+        try:
+            db.session.commit()
+            flash('Jornada deletada com sucesso!', 'success')
+            log_entry = LogAuditoria(usuario_id=session['usuario_id'], acao=f'Jornada ID {id} deletada.', tabela_afetada='jornadas', registro_id=id, dados_antigos=dados_antigos, dados_novos=None)
+            db.session.add(log_entry)
+            db.session.commit()
+            return redirect(url_for('listar_jornadas'))
+        except Exception as e:
+            db.session.rollback()
+            print(f"Erro ao deletar jornada: {e}")
+            flash(f'Erro ao deletar jornada: {e}', 'danger')
+            return redirect(url_for('listar_jornadas'))
 
     # --- Módulo: Reajuste Salarial ---
     @app.route('/reajustes')
