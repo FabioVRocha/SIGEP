@@ -65,6 +65,7 @@ class ContratoTrabalho(db.Model):
     cpf_funcionario = db.Column(db.String(14), db.ForeignKey('funcionarios.cpf'), nullable=False)
     setor = db.Column(db.String(100), nullable=False)
     funcao = db.Column(db.String(100), nullable=False)
+    jornada_id = db.Column(db.Integer, db.ForeignKey('jornadas.id'))
     salario_inicial = db.Column(db.Numeric(10, 2), nullable=False)
     bonus = db.Column(db.Numeric(10, 2), default=0.00)
     regime_contratacao = db.Column(db.String(50), nullable=False)
@@ -74,6 +75,7 @@ class ContratoTrabalho(db.Model):
 
     # Relacionamento; backref cria funcionario.contratos
     funcionario = db.relationship('Funcionario', backref='contratos', lazy=True)
+    jornada = db.relationship('Jornada', backref='contratos', lazy=True)
 
     def __repr__(self):
         return f"<Contrato {self.id} - {self.cpf_funcionario}>"
@@ -187,7 +189,8 @@ class RegistroPonto(db.Model):
 class Usuario(db.Model):
     __tablename__ = 'usuarios'
     codigo = db.Column(db.Integer, primary_key=True)
-    nome = db.Column(db.String(255), nullable=False)
+    nome = db.Column(db.String(255), nullable=False)  # nome de usuário
+    nome_completo = db.Column(db.String(255), nullable=False)
     senha_hash = db.Column(db.String(255), nullable=False)
     tipo_usuario = db.Column(db.String(50), nullable=False)
 

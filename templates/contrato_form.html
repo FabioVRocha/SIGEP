@@ -315,6 +315,17 @@
                         </select>
                     </div>
                     <div>
+                        <label for="jornada_id" class="block text-sm font-medium text-gray-700">Jornada <span class="text-red-500">*</span></label>
+                        <select id="jornada_id" name="jornada_id" required>
+                            <option value="">Selecione a Jornada</option>
+                            {% for j in jornadas %}
+                                <option value="{{ j.id }}" {% if contrato and contrato.jornada_id == j.id %}selected{% endif %}>
+                                    {{ j.id }} - {{ j.primeiro_turno_inicio }} às {{ j.segundo_turno_fim }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
                         <label for="salario_inicial" class="block text-sm font-medium text-gray-700">Salário Inicial <span class="text-red-500">*</span></label>
                         <input type="number" step="0.01" id="salario_inicial" name="salario_inicial" value="{{ '%.2f'|format(contrato.salario_inicial) if contrato else '' }}" required>
                     </div>

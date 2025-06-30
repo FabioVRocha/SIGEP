@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGEP - Contratos de Trabalho</title>
+    <title>SIGEP - Usuarios</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Font Awesome para ícones -->
@@ -178,15 +178,10 @@
             color: var(--clr-dark-blue);
             background-color: var(--clr-light-gray);
         }
-        .filter-input:focus, .filter-select:focus {
+        .filter-input:focus {
             border-color: var(--clr-light-blue);
             box-shadow: 0 0 0 1px var(--clr-light-blue);
             outline: none;
-        }
-        .filter-select {
-            border-color: var(--clr-medium-gray);
-            color: var(--clr-dark-blue);
-            background-color: var(--clr-light-gray);
         }
 
         /* Estilos do Modal de Confirmação */
@@ -267,12 +262,12 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('listar_funcionarios') }}" class="sidebar-nav-item">
+                    <a href="{{ url_for('listar_funcionarios') }}" class="sidebar-nav-item active">
                         <i class="fas fa-edit"></i> Cadastros
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('listar_registros_ponto') }}" class="sidebar-nav-item active">
+                    <a href="#" class="sidebar-nav-item">
                         <i class="fas fa-calendar-alt"></i> Lançamentos
                     </a>
                 </li>
@@ -299,9 +294,9 @@
     <div class="main-content">
         <!-- Main Header -->
         <div class="main-header">
-            <h1 class="text-2xl font-bold text-dark-blue">Contratos de Trabalho</h1>
+            <h1 class="text-2xl font-bold text-dark-blue">Cadastro de Usuarios</h1>
             <div class="flex space-x-3">
-                <a href="{{ url_for('adicionar_contrato') }}" class="btn-add text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center" title="Adicionar Novo Contrato">
+                <a href="{{ url_for('adicionar_usuario') }}" class="btn-add text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center" title="Adicionar Novo Usuário">
                     <i class="fas fa-plus mr-2"></i> Adicionar
                 </a>
                 <a href="{{ url_for('index') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center" title="Voltar ao Início">
@@ -310,7 +305,6 @@
             </div>
         </div>
 
-        <!-- Mensagens Flash -->
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="mb-6">
@@ -322,89 +316,43 @@
         {% endwith %}
 
         <div class="content-section">
-            {% if contratos %}
+            {% if usuarios %}
                 <div class="overflow-x-auto">
-                    <table class="min-w-full bg-white rounded-lg overflow-hidden" id="contratosTable">
+                    <table class="min-w-full bg-white rounded-lg overflow-hidden" id="usuariosTable">
                         <thead class="table-header-bg">
                             <tr>
-                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tl-lg">ID</th>
-                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">CPF Funcionário</th>
-                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Nome Funcionário</th>
-                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Setor</th>
-                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Função</th>
-                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Jornada</th>
-                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Salário Inicial</th>
-                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Bônus</th>
-                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Regime Contratação</th>
-                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Data Admissão</th>
-                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Data Demissão</th>
-                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Status</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tl-lg">Código</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Usuário</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Nome Completo</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Tipo</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tr-lg">Ações</th>
                             </tr>
                             <tr class="bg-light-gray">
-                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar ID..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="0"></th>
-                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar CPF..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="1"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Código..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="0"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Usuário..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="1"></th>
                                 <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Nome..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="2"></th>
-                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Setor..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="3"></th>
-                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Função..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="4"></th>
-                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Jornada..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="5"></th>
-                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Salário..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="6"></th>
-                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Bônus..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="7"></th>
-                                <th class="px-4 py-2 border-b border-medium-gray">
-                                    <select onchange="filterTable()" class="w-full px-2 py-1 border rounded text-sm filter-select" data-column="8">
-                                        <option value="">Todos</option>
-                                        <option value="salário fixo">Salário Fixo</option>
-                                        <option value="escala 12x36">Escala 12x36</option>
-                                        <option value="comissão">Comissão</option>
-                                        <option value="produção">Produção</option>
-                                    </select>
-                                </th>
-                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Admissão..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="8"></th>
-                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Demissão..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="9"></th>
-                                <th class="px-4 py-2 border-b border-medium-gray">
-                                    <select onchange="filterTable()" class="w-full px-2 py-1 border rounded text-sm filter-select" data-column="11">
-                                        <option value="">Todos</option>
-                                        <option value="ativo">Ativo</option>
-                                        <option value="inativo">Inativo</option>
-                                    </select>
-                                </th>
-                                <th class="px-4 py-2 border-b border-medium-gray"></th> <!-- Empty for Actions column -->
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Tipo..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="3"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"></th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-medium-gray">
-                            {% for contrato in contratos %}
+                            {% for usuario in usuarios %}
                                 <tr class="hover:bg-light-gray {% if loop.index is odd %}table-row-odd{% else %}table-row-even{% endif %}">
-                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ contrato.id }}</td>
-                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ contrato.cpf_funcionario }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ usuario.codigo }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ usuario.nome }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ usuario.nome_completo }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">
-                                        {% if contrato.funcionario %}
-                                            <a href="{{ url_for('editar_funcionario', cpf=contrato.cpf_funcionario) }}" class="text-light-blue hover:text-dark-blue font-medium">
-                                                {{ contrato.funcionario.nome }}
-                                            </a>
+                                        {% if usuario.tipo_usuario == 'Master' %}
+                                            Administrador
                                         {% else %}
-                                            N/A
-                                        {% endif %}
-                                    </td>
-                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ contrato.setor }}</td>
-                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ contrato.funcao }}</td>
-                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ contrato.jornada_id or '-' }}</td>
-                                    <td class="py-3 px-4 text-sm text-dark-blue">R$ {{ '%.2f'|format(contrato.salario_inicial) }}</td>
-                                    <td class="py-3 px-4 text-sm text-dark-blue">R$ {{ '%.2f'|format(contrato.bonus) }}</td>
-                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ contrato.regime_contratacao }}</td>
-                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ contrato.data_admissao.strftime('%d/%m/%Y') }}</td>
-                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ contrato.data_demissao.strftime('%d/%m/%Y') if contrato.data_demissao else 'N/A' }}</td>
-                                    <td class="py-3 px-4 text-sm text-dark-blue">
-                                        {% if contrato.status %}
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">Ativo</span>
-                                        {% else %}
-                                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Inativo</span>
+                                            Usuário
                                         {% endif %}
                                     </td>
                                     <td class="py-3 px-4 text-sm flex items-center space-x-3">
-                                        <a href="{{ url_for('editar_contrato', id=contrato.id) }}" class="text-light-blue hover:text-dark-blue font-medium" title="Editar">
+                                        <a href="{{ url_for('editar_usuario', id=usuario.codigo) }}" class="text-light-blue hover:text-dark-blue font-medium" title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
-                                        <button type="button" onclick="showConfirmModal('{{ url_for('deletar_contrato', id=contrato.id) }}')" class="text-error hover:text-dark-blue font-medium bg-transparent border-none cursor-pointer" title="Deletar">
+                                        <button type="button" onclick="showConfirmModal('{{ url_for('deletar_usuario', id=usuario.codigo) }}')" class="text-error hover:text-dark-blue font-medium bg-transparent border-none cursor-pointer" title="Deletar">
                                             <i class="fas fa-trash-alt"></i>
                                         </button>
                                     </td>
@@ -414,7 +362,7 @@
                     </table>
                 </div>
             {% else %}
-                <p class="text-center text-medium-gray text-lg py-8">Nenhum contrato de trabalho cadastrado ainda.</p>
+                <p class="text-center text-medium-gray text-lg py-8">Nenhum usuario cadastrado ainda.</p>
             {% endif %}
         </div>
     </div>
@@ -423,7 +371,7 @@
     <div id="confirmModal" class="modal-overlay hidden">
         <div class="modal-content">
             <h3 class="font-bold">Confirmar Ação</h3>
-            <p>Tem certeza que deseja deletar este contrato?</p>
+            <p>Tem certeza que deseja deletar este usuário?</p>
             <div class="modal-buttons">
                 <button id="cancelButton" class="btn-secondary py-2 px-4 rounded-lg">Cancelar</button>
                 <button id="confirmButton" class="btn-delete py-2 px-4 rounded-lg">Confirmar</button>
@@ -459,26 +407,19 @@
         });
 
         function filterTable() {
-            const tableId = 'contratosTable';
+            const tableId = 'usuariosTable';
             const table = document.getElementById(tableId);
             const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
             const filterInputs = table.querySelectorAll('.filter-input');
-            const filterSelects = table.querySelectorAll('.filter-select');
-
+            
             const textFilters = Array.from(filterInputs).map(input => ({
                 column: parseInt(input.dataset.column),
                 value: input.value.toLowerCase()
             }));
 
-            const selectFilters = Array.from(filterSelects).map(select => ({
-                column: parseInt(select.dataset.column),
-                value: select.value.toLowerCase()
-            }));
-
             for (let i = 0; i < rows.length; i++) {
                 let rowDisplay = 'table-row';
                 
-                // Apply text filters
                 for (let j = 0; j < textFilters.length; j++) {
                     const cell = rows[i].getElementsByTagName('td')[textFilters[j].column];
                     if (cell) {
@@ -486,22 +427,6 @@
                         if (textFilters[j].value && !cellText.toLowerCase().includes(textFilters[j].value)) {
                             rowDisplay = 'none';
                             break; 
-                        }
-                    }
-                }
-
-                // Apply select filters (only if row is still visible)
-                if (rowDisplay === 'table-row') {
-                    for (let j = 0; j < selectFilters.length; j++) {
-                        const cell = rows[i].getElementsByTagName('td')[selectFilters[j].column];
-                        if (cell) {
-                            const cellText = cell.textContent || cell.innerText;
-                            // For select filters, we need an exact match, or check if "Todos" is selected
-                            const actualValue = cellText.toLowerCase().trim(); // Trim to remove whitespace
-                            if (selectFilters[j].value !== "" && actualValue !== selectFilters[j].value) {
-                                rowDisplay = 'none';
-                                break;
-                            }
                         }
                     }
                 }

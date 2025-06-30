@@ -828,6 +828,7 @@ def create_app():
         # Obter listas de setores e funções para o dropdown
         setores = Setor.query.order_by(Setor.nome).all()
         funcoes = Funcao.query.order_by(Funcao.nome).all()
+        jornadas = Jornada.query.order_by(Jornada.id).all()
 
         if request.method == 'POST':
             cpf_funcionario = request.form['cpf_funcionario'].replace('.', '').replace('-', '')
@@ -836,6 +837,7 @@ def create_app():
             salario_inicial = float(request.form['salario_inicial'])
             bonus = float(request.form['bonus']) if request.form['bonus'] else 0.00
             regime_contratacao = request.form['regime_contratacao']
+            jornada_id = int(request.form['jornada_id']) if request.form.get('jornada_id') else None
             data_admissao = datetime.datetime.strptime(request.form['data_admissao'], '%Y-%m-%d').date()
             data_demissao_str = request.form.get('data_demissao')
             data_demissao = datetime.datetime.strptime(data_demissao_str, '%Y-%m-%d').date() if data_demissao_str else None
@@ -844,16 +846,17 @@ def create_app():
             funcionario = Funcionario.query.get(cpf_funcionario)
             if not funcionario:
                 flash('Funcionário com o CPF informado não encontrado.', 'danger')
-                return render_template('contrato_form.html', contrato=None, setores=setores, funcoes=funcoes)
+                return render_template('contrato_form.html', contrato=None, setores=setores, funcoes=funcoes, jornadas=jornadas)
             
             # Validação: Um funcionário pode ter apenas um contrato ATIVO
             if ContratoTrabalho.query.filter_by(cpf_funcionario=cpf_funcionario, status=True).first():
                 flash('Este funcionário já possui um contrato ATIVO. Por favor, inative o contrato anterior antes de criar um novo.', 'danger')
-                return render_template('contrato_form.html', contrato=None, setores=setores, funcoes=funcoes)
+                return render_template('contrato_form.html', contrato=None, setores=setores, funcoes=funcoes, jornadas=jornadas)
 
 
             novo_contrato = ContratoTrabalho(
                 cpf_funcionario=cpf_funcionario, setor=setor_nome, funcao=funcao_nome, # Usando o nome direto
+                jornada_id=jornada_id,
                 salario_inicial=salario_inicial, bonus=bonus,
                 regime_contratacao=regime_contratacao, data_admissao=data_admissao,
                 data_demissao=data_demissao, status=status
@@ -881,9 +884,9 @@ def create_app():
                 db.session.rollback()
                 print(f"Erro ao adicionar contrato: {e}") # Print para depuração
                 flash(f'Erro ao adicionar contrato: {e}', 'danger')
-                return render_template('contrato_form.html', contrato=None, setores=setores, funcoes=funcoes)
+                return render_template('contrato_form.html', contrato=None, setores=setores, funcoes=funcoes, jornadas=jornadas)
         
-        return render_template('contrato_form.html', contrato=None, setores=setores, funcoes=funcoes)
+        return render_template('contrato_form.html', contrato=None, setores=setores, funcoes=funcoes, jornadas=jornadas)
 
     @app.route('/contratos/edit/<int:id>', methods=['GET', 'POST'])
     def editar_contrato(id):
@@ -907,6 +910,7 @@ def create_app():
             salario_inicial = float(request.form['salario_inicial'])
             bonus = float(request.form['bonus']) if request.form['bonus'] else 0.00
             regime_contratacao = request.form['regime_contratacao']
+            jornada_id = int(request.form['jornada_id']) if request.form.get('jornada_id') else None
             data_admissao = datetime.datetime.strptime(request.form['data_admissao'], '%Y-%m-%d').date()
             data_demissao_str = request.form.get('data_demissao')
             data_demissao = datetime.datetime.strptime(data_demissao_str, '%Y-%m-%d').date() if data_demissao_str else None
@@ -915,12 +919,12 @@ def create_app():
             funcionario = Funcionario.query.get(cpf_funcionario)
             if not funcionario:
                 flash('Funcionário com o CPF informado não encontrado.', 'danger')
-                return render_template('contrato_form.html', contrato=contrato, setores=setores, funcoes=funcoes)
+                return render_template('contrato_form.html', contrato=contrato, setores=setores, funcoes=funcoes, jornadas=jornadas)
             
             # Validação: Se está alterando o status para ATIVO, verifica se já existe outro contrato ATIVO
             if status and ContratoTrabalho.query.filter(ContratoTrabalho.cpf_funcionario == cpf_funcionario, ContratoTrabalho.status == True, ContratoTrabalho.id != contrato.id).first():
                 flash('Este funcionário já possui outro contrato ATIVO. Por favor, inative o contrato anterior ou selecione "Inativo" para este contrato.', 'danger')
-                return render_template('contrato_form.html', contrato=contrato, setores=setores, funcoes=funcoes)
+                return render_template('contrato_form.html', contrato=contrato, setores=setores, funcoes=funcoes, jornadas=jornadas)
 
 
             # Guarda dados antigos para log
@@ -929,7 +933,8 @@ def create_app():
                 'funcao': contrato.funcao, 'salario_inicial': float(contrato.salario_inicial),
                 'bonus': float(contrato.bonus), 'regime_contratacao': contrato.regime_contratacao,
                 'data_admissao': str(contrato.data_admissao), 'data_demissao': str(contrato.data_demissao) if contrato.data_demissao else None,
-                'status': contrato.status
+                'status': contrato.status,
+                'jornada_id': contrato.jornada_id
             }
 
             contrato.cpf_funcionario = cpf_funcionario
@@ -938,6 +943,7 @@ def create_app():
             contrato.salario_inicial = salario_inicial
             contrato.bonus = bonus
             contrato.regime_contratacao = regime_contratacao
+            contrato.jornada_id = jornada_id
             contrato.data_admissao = data_admissao
             contrato.data_demissao = data_demissao
             contrato.status = status
@@ -952,7 +958,8 @@ def create_app():
                     'funcao': contrato.funcao, 'salario_inicial': float(contrato.salario_inicial),
                     'bonus': float(contrato.bonus), 'regime_contratacao': contrato.regime_contratacao,
                     'data_admissao': str(contrato.data_admissao), 'data_demissao': str(contrato.data_demissao) if contrato.data_demissao else None,
-                    'status': contrato.status
+                    'status': contrato.status,
+                    'jornada_id': contrato.jornada_id
                 }
 
                 log_entry = LogAuditoria(
@@ -971,9 +978,9 @@ def create_app():
                 db.session.rollback()
                 print(f"Erro ao atualizar contrato: {e}") # Print para depuração
                 flash(f'Erro ao atualizar contrato: {e}', 'danger')
-                return render_template('contrato_form.html', contrato=contrato, setores=setores, funcoes=funcoes)
+                return render_template('contrato_form.html', contrato=contrato, setores=setores, funcoes=funcoes, jornadas=jornadas)
         
-        return render_template('contrato_form.html', contrato=contrato, setores=setores, funcoes=funcoes)
+        return render_template('contrato_form.html', contrato=contrato, setores=setores, funcoes=funcoes, jornadas=jornadas)
 
     @app.route('/contratos/delete/<int:id>', methods=['POST'])
     def deletar_contrato(id):
@@ -993,7 +1000,8 @@ def create_app():
             'salario_inicial': float(contrato.salario_inicial), 'bonus': float(contrato.bonus),
             'regime_contratacao': contrato.regime_contratacao,
             'data_admissao': str(contrato.data_admissao), 'data_demissao': str(contrato.data_demissao) if contrato.data_demissao else None,
-            'status': contrato.status
+            'status': contrato.status,
+            'jornada_id': contrato.jornada_id
         }
         
         db.session.delete(contrato)
@@ -2465,6 +2473,73 @@ def create_app():
 
         return render_template('registro_ponto_form.html', registro_ponto=registro)
 
+    # --- Módulo: Cadastro de Usuários ---
+    @app.route('/usuarios')
+    def listar_usuarios():
+        if 'usuario_id' not in session or session['tipo_usuario'] != 'Master':
+            flash('Acesso negado. Apenas usuários Master podem gerenciar usuários.', 'danger')
+            return redirect(url_for('login'))
+        usuarios = Usuario.query.order_by(Usuario.nome).all()
+        return render_template('usuarios.html', usuarios=usuarios)
+
+    @app.route('/usuarios/add', methods=['GET', 'POST'])
+    def adicionar_usuario():
+        if 'usuario_id' not in session or session['tipo_usuario'] != 'Master':
+            flash('Acesso negado. Apenas usuários Master podem adicionar usuários.', 'danger')
+            return redirect(url_for('login'))
+
+        if request.method == 'POST':
+            nome_completo = request.form['nome_completo']
+            nome = request.form['nome']
+            senha = request.form['senha']
+            tipo_usuario = request.form['tipo_usuario']
+
+            if Usuario.query.filter_by(nome=nome).first():
+                flash('Usuário já existe.', 'danger')
+                return render_template('usuario_form.html', usuario=None)
+
+            novo_usuario = Usuario(nome=nome, nome_completo=nome_completo, tipo_usuario=tipo_usuario)
+            novo_usuario.set_password(senha)
+            db.session.add(novo_usuario)
+            db.session.commit()
+            flash('Usuário adicionado com sucesso!', 'success')
+            return redirect(url_for('listar_usuarios'))
+
+        return render_template('usuario_form.html', usuario=None)
+
+    @app.route('/usuarios/edit/<int:id>', methods=['GET', 'POST'])
+    def editar_usuario(id):
+        if 'usuario_id' not in session or session['tipo_usuario'] != 'Master':
+            flash('Acesso negado. Apenas usuários Master podem editar usuários.', 'danger')
+            return redirect(url_for('login'))
+
+        usuario = Usuario.query.get_or_404(id)
+
+        if request.method == 'POST':
+            usuario.nome_completo = request.form['nome_completo']
+            usuario.nome = request.form['nome']
+            senha = request.form.get('senha')
+            usuario.tipo_usuario = request.form['tipo_usuario']
+            if senha:
+                usuario.set_password(senha)
+            db.session.commit()
+            flash('Usuário atualizado com sucesso!', 'success')
+            return redirect(url_for('listar_usuarios'))
+
+        return render_template('usuario_form.html', usuario=usuario)
+
+    @app.route('/usuarios/delete/<int:id>', methods=['POST'])
+    def deletar_usuario(id):
+        if 'usuario_id' not in session or session['tipo_usuario'] != 'Master':
+            flash('Acesso negado. Apenas usuários Master podem deletar usuários.', 'danger')
+            return redirect(url_for('login'))
+
+        usuario = Usuario.query.get_or_404(id)
+        db.session.delete(usuario)
+        db.session.commit()
+        flash('Usuário deletado com sucesso!', 'success')
+        return redirect(url_for('listar_usuarios'))
+
     return app # Fim da função create_app
 
 
@@ -2484,11 +2559,31 @@ def initialize_database(app_instance):
                 print("Coluna 'status' adicionada à tabela funcionarios.")
             except Exception as e:
                 print(f"Erro ao adicionar coluna status: {e}")
+
+        usuario_cols = [c['name'] for c in inspector.get_columns('usuarios')]
+        if 'nome_completo' not in usuario_cols:
+            try:
+                with engine.connect() as conn:
+                    conn.execute(text('ALTER TABLE usuarios ADD COLUMN nome_completo VARCHAR(255)'))
+                    conn.commit()
+                print("Coluna 'nome_completo' adicionada à tabela usuarios.")
+            except Exception as e:
+                print(f"Erro ao adicionar coluna nome_completo: {e}")
+
+        contrato_cols = [c['name'] for c in inspector.get_columns('contratos_trabalho')]
+        if 'jornada_id' not in contrato_cols:
+            try:
+                with engine.connect() as conn:
+                    conn.execute(text('ALTER TABLE contratos_trabalho ADD COLUMN jornada_id INTEGER REFERENCES jornadas(id)'))
+                    conn.commit()
+                print("Coluna 'jornada_id' adicionada à tabela contratos_trabalho.")
+            except Exception as e:
+                print(f"Erro ao adicionar coluna jornada_id: {e}")
         from models import Usuario, LogAuditoria, Cidade, Funcionario, ContratoTrabalho, Setor, Funcao, ReajusteSalarial, Demissao, ControleFerias
         try:
             master_user_exists = db.session.query(Usuario).filter_by(nome='master').first()
             if not master_user_exists:
-                master_user = Usuario(nome='master', tipo_usuario='Master')
+                master_user = Usuario(nome='master', nome_completo='Administrador', tipo_usuario='Master')
                 master_user.set_password('master123')
                 db.session.add(master_user)
                 db.session.commit()

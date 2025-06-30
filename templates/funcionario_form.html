@@ -150,31 +150,51 @@
         .btn-primary {
             background-color: var(--clr-light-blue);
             color: var(--clr-white);
+            transition: all 0.3s ease; /* Transição para hover */
         }
         .btn-primary:hover {
             background-color: var(--clr-dark-blue); /* Mais escuro no hover */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Sombra no hover */
+            transform: translateY(-2px); /* Leve elevação no hover */
         }
         .btn-secondary {
             background-color: var(--clr-medium-gray);
             color: var(--clr-white);
+            transition: all 0.3s ease; /* Transição para hover */
         }
         .btn-secondary:hover {
             background-color: color-mix(in srgb, var(--clr-medium-gray) 80%, black); /* Um pouco mais escuro no hover */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Sombra no hover */
+            transform: translateY(-2px); /* Leve elevação no hover */
         }
         .btn-add {
             background-color: var(--clr-success);
             color: var(--clr-white);
+            transition: all 0.3s ease; /* Transição para hover */
         }
         .btn-add:hover {
             background-color: color-mix(in srgb, var(--clr-success) 90%, black);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Sombra no hover */
+            transform: translateY(-2px); /* Leve elevação no hover */
         }
 
-        /* Estilos de input/select/textarea para consistência */
+        /* Estilos de input/select/textarea para consistência e tamanho maior */
         input[type="text"], input[type="date"], select, textarea {
-            @apply mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3
-                    focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
-            color: var(--clr-dark-blue); /* Cor do texto dentro do input */
-            background-color: var(--clr-light-gray); /* Fundo do input */
+            @apply mt-1 block w-full rounded-lg shadow-none px-4 py-2.5
+                     focus:ring-blue-500 focus:border-blue-500 text-base;
+            color: var(--clr-dark-blue);
+            background-color: var(--clr-white);
+            transition: all 0.3s ease;
+            border: 1px solid var(--clr-dark-blue);
+        }
+        /* Textarea specific */
+        textarea {
+            @apply resize-y; /* Keep resize-y for textarea */
+        }
+
+        input[type="text"]:focus, input[type="date"]:focus, select:focus, textarea:focus {
+            border-color: var(--clr-dark-blue); /* Borda no foco */
+            box-shadow: 0 0 0 1px rgba(31, 58, 95, 0.4); /* Sombra azul suave no foco, usando clr-dark-blue */
         }
 
         input[type="text"]:read-only {
@@ -184,6 +204,15 @@
 
         label {
             color: var(--clr-text-main); /* Cor do label */
+            font-weight: 600; /* Labels mais fortes */
+            margin-bottom: 0.5rem; /* Espaçamento abaixo do label */
+            display: block; /* Garante que o label ocupe sua própria linha */
+        }
+
+        /* Estilo para o input de arquivo */
+        input[type="file"] {
+            @apply file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold
+                   file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100;
         }
 
         /* Responsividade básica */
@@ -204,6 +233,12 @@
             .main-header .search-bar {
                 width: 100%;
                 margin-top: 1rem;
+            }
+            .grid-cols-1.md\:grid-cols-3 > div { /* Ajuste para colunas em telas menores */
+                grid-column: span 1 / span 1;
+            }
+            .md\:col-span-1.flex-col.items-center { /* Centraliza a foto em telas menores */
+                width: 100%;
             }
         }
     </style>
@@ -280,39 +315,39 @@
         {% endwith %}
 
         <div class="content-section">
-            <form id="funcionarioForm" action="{% if funcionario %}{{ url_for('editar_funcionario', cpf=funcionario.cpf) }}{% else %}{{ url_for('adicionar_funcionario') }}{% endif %}" method="POST" class="space-y-4">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6"> {# Adjusted grid for better photo positioning #}
+            <form id="funcionarioForm" action="{% if funcionario %}{{ url_for('editar_funcionario', cpf=funcionario.cpf) }}{% else %}{{ url_for('adicionar_funcionario') }}{% endif %}" method="POST" class="space-y-2"> {# Reduced space-y to 2 #}
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-3"> {# Reduced grid gap to 3 #}
                     <!-- Coluna de Foto -->
-                    <div class="md:col-span-1 flex flex-col items-center">
-                        <label for="foto_option" class="block text-base font-medium text-gray-700 mb-4">Foto do Funcionário</label>
-                        <div class="w-48 h-48 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden mb-4 shadow-inner"> {# Increased size and made it circular #}
+                    <div class="md:col-span-1 flex flex-col items-center p-4 bg-gray-50 rounded-lg shadow-inner">
+                        <label for="foto_option" class="block text-lg font-semibold text-gray-800 mb-4">Foto do Funcionário</label>
+                        <div class="w-56 h-56 bg-gray-200 rounded-full flex items-center justify-center overflow-hidden mb-6 shadow-lg border-4 border-blue-200">
                             <img id="photo-preview" class="w-full h-full object-cover" alt="Pré-visualização da foto"
-                                src="{{ funcionario.foto_base64 if funcionario.foto_base64 else 'https://placehold.co/192x192/cbd5e0/4a5568?text=Sem+Foto' }}">
+                                src="{{ funcionario.foto_base64 if funcionario.foto_base64 else 'https://placehold.co/224x224/cbd5e0/4a5568?text=Sem+Foto' }}">
                         </div>
 
-                        <div class="flex flex-col space-y-2 mb-4">
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" class="form-radio text-blue-600 focus:ring-blue-500" name="foto_option" value="upload" checked>
-                                <span class="ml-2 text-gray-700 font-medium">Upload do PC</span>
+                        <div class="flex flex-col space-y-3 mb-6 w-full items-center">
+                            <label class="inline-flex items-center cursor-pointer text-gray-700 font-medium">
+                                <input type="radio" class="form-radio h-5 w-5 text-blue-600 focus:ring-blue-500" name="foto_option" value="upload" checked>
+                                <span class="ml-3">Upload do PC</span>
                             </label>
-                            <label class="inline-flex items-center cursor-pointer">
-                                <input type="radio" class="form-radio text-blue-600 focus:ring-blue-500" name="foto_option" value="webcam">
-                                <span class="ml-2 text-gray-700 font-medium">Tirar Foto (Webcam)</span>
+                            <label class="inline-flex items-center cursor-pointer text-gray-700 font-medium">
+                                <input type="radio" class="form-radio h-5 w-5 text-blue-600 focus:ring-blue-500" name="foto_option" value="webcam">
+                                <span class="ml-3">Tirar Foto (Webcam)</span>
                             </label>
                         </div>
 
                         <div id="upload-section" class="w-full px-4">
                             <input type="file" id="foto_upload" name="foto_upload" accept="image/*"
-                                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 cursor-pointer">
+                                class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200 cursor-pointer">
                         </div>
 
                         <div id="webcam-section" class="hidden w-full px-4">
-                            <video id="webcam-video" class="w-full rounded-lg shadow-md mb-2 border border-gray-300"></video>
-                            <button type="button" id="take-photo-btn" class="btn-primary py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out w-full mb-2 flex items-center justify-center">
+                            <video id="webcam-video" class="w-full rounded-lg shadow-md mb-4 border border-gray-300"></video>
+                            <button type="button" id="take-photo-btn" class="btn-primary py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out w-full mb-2 flex items-center justify-center">
                                 <i class="fas fa-camera mr-2"></i> Tirar Foto
                             </button>
                             <canvas id="photo-canvas" class="w-full rounded-lg shadow-md hidden border border-gray-300"></canvas>
-                            <button type="button" id="retake-photo-btn" class="btn-secondary py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out w-full mt-2 flex items-center justify-center hidden">
+                            <button type="button" id="retake-photo-btn" class="btn-secondary py-3 px-6 rounded-lg shadow-md transition duration-300 ease-in-out w-full mt-2 flex items-center justify-center hidden">
                                 <i class="fas fa-redo-alt mr-2"></i> Refazer Foto
                             </button>
                         </div>
@@ -323,7 +358,7 @@
                     <!-- Fim da Coluna de Foto -->
 
                     <!-- Campos de Dados Pessoais e Endereço -->
-                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-3"> {# Reduced grid gap to 3 #}
                         <div>
                             <label for="cpf" class="block text-sm font-medium text-gray-700">CPF <span class="text-red-500">*</span></label>
                             <input type="text" id="cpf" name="cpf" value="{{ funcionario.cpf if funcionario else '' }}" {% if funcionario %}readonly{% endif %} required
@@ -398,15 +433,15 @@
                     </div>
                 </div>
 
-                <h2 class="text-xl font-semibold text-dark-blue mt-6 mb-4">Dados Bancários</h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <h2 class="text-2xl font-bold text-dark-blue mt-8 mb-4 border-b pb-2">Dados Bancários</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3"> {# Reduced grid gap to 3 #}
                     <div>
                         <label for="codigo_banco" class="block text-sm font-medium text-gray-700">Cód. Banco <span id="req-bank-code" class="text-red-500">*</span></label>
                         <input type="text" id="codigo_banco" name="codigo_banco" value="{{ funcionario.codigo_banco if funcionario else '' }}">
                     </div>
                     <div>
                         <label for="nome_banco" class="block text-sm font-medium text-gray-700">Nome Banco <span id="req-bank-name" class="text-red-500">*</span></label>
-                        <input type="text" id="nome_banco" name="nome_banco" value="{{ funcionario.nome_banco if funcionario else '' }}">
+                        <input type="text" id="nome_banco" name="nome_banco" value="{{ funcionario.nome_banco if funcionario.nome_banco else '' }}">
                     </div>
                     <div>
                         <label for="codigo_agencia" class="block text-sm font-medium text-gray-700">Cód. Agência <span id="req-agency-code" class="text-red-500">*</span></label>
@@ -428,18 +463,18 @@
 
                 <div class="col-span-1 md:col-span-2 lg:col-span-4">
                     <label for="observacao" class="block text-sm font-medium text-gray-700">Observação</label>
-                    <textarea id="observacao" name="observacao" cols="100" rows="8"></textarea>
+                    <textarea id="observacao" name="observacao" cols="100" rows="6" class="resize-y"></textarea>
                 </div>
 
-                <div class="flex justify-end space-x-3 mt-6">
-                    <button type="submit" class="btn-primary py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center">
+                <div class="flex justify-end space-x-4 mt-8">
+                    <button type="submit" class="btn-primary py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
                         {% if funcionario %}
                             <i class="fas fa-save mr-2"></i> Atualizar Funcionário
                         {% else %}
                             <i class="fas fa-plus mr-2"></i> Adicionar Funcionário
                         {% endif %}
                     </button>
-                    <a href="{{ url_for('listar_funcionarios') }}" class="btn-secondary py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center">
+                    <a href="{{ url_for('listar_funcionarios') }}" class="btn-secondary py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
                         <i class="fas fa-arrow-left mr-2"></i> Cancelar
                     </a>
                 </div>
@@ -520,7 +555,7 @@
                 stopWebcamStream();
                 fotoUploadInput.required = true;
                 fotoBase64Input.value = ''; // Clear base64 if switching to upload
-                photoPreview.src = 'https://placehold.co/192x192/cbd5e0/4a5568?text=Sem+Foto'; // Placeholder
+                photoPreview.src = 'https://placehold.co/224x224/cbd5e0/4a5568?text=Sem+Foto'; // Placeholder
                 photoPreview.classList.remove('hidden'); // Ensure preview is visible with placeholder
             } else {
                 uploadSection.classList.add('hidden');
@@ -590,7 +625,7 @@
         retakePhotoBtn.addEventListener('click', () => {
             startWebcamStream(); // Restart stream to retake photo
             fotoBase64Input.value = ''; // Clear stored photo
-            photoPreview.src = 'https://placehold.co/192x192/cbd5e0/4a5568?text=Sem+Foto'; // Reset to placeholder
+            photoPreview.src = 'https://placehold.co/224x224/cbd5e0/4a5568?text=Sem+Foto'; // Reset to placeholder
             photoPreview.classList.remove('hidden'); // Ensure preview is visible
         });
 
@@ -608,7 +643,7 @@
                 reader.readAsDataURL(file);
             } else {
                 fotoBase64Input.value = '';
-                photoPreview.src = 'https://placehold.co/192x192/cbd5e0/4a5568?text=Sem+Foto'; // Reset to placeholder
+                photoPreview.src = 'https://placehold.co/224x224/cbd5e0/4a5568?text=Sem+Foto'; // Reset to placeholder
             }
         });
 
@@ -705,7 +740,7 @@
                     // If in edit mode and a city was previously selected, re-select it
                     // Use a separate variable for the initial city to avoid issues with select.value changing
                     if (funcionarioCidade && estadoUF === funcionarioEstado) { // Only set if current state matches initial state
-                            cidadeSelect.value = funcionarioCidade;
+                                cidadeSelect.value = funcionarioCidade;
                     }
                     cidadeSelect.disabled = false;
 
@@ -742,7 +777,7 @@
                 retakePhotoBtn.classList.remove('hidden');
             } else {
                 // Ensure initial photo is a placeholder if no photo exists
-                photoPreview.src = 'https://placehold.co/192x192/cbd5e0/4a5568?text=Sem+Foto';
+                photoPreview.src = 'https://placehold.co/224x224/cbd5e0/4a5568?text=Sem+Foto';
                 photoPreview.classList.remove('hidden');
             }
 
