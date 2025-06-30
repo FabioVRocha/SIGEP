@@ -902,6 +902,7 @@ def create_app():
         # Obter listas de setores e funções para o dropdown
         setores = Setor.query.order_by(Setor.nome).all()
         funcoes = Funcao.query.order_by(Funcao.nome).all()
+        jornadas = Jornada.query.order_by(Jornada.id).all()
 
         if request.method == 'POST':
             cpf_funcionario = request.form['cpf_funcionario'].replace('.', '').replace('-', '')
