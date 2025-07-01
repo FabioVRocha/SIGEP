@@ -2643,25 +2643,47 @@ def create_app():
     @app.route('/tipos_exames/add', methods=['GET', 'POST'])
     def adicionar_tipo_exame():
         if request.method == 'POST':
+            nome = request.form['nome'].strip()
+            if TipoExame.query.filter_by(nome=nome).first():
+                flash(f'O tipo de exame "{nome}" já existe.', 'danger')
+                return render_template('tipo_exame_form.html', tipo_exame=None)
+
             tipo = TipoExame(
-                nome=request.form['nome'],
+                nome=nome,
                 periodicidade_dias=int(request.form['periodicidade_dias']),
                 observacoes=request.form.get('observacoes')
             )
             db.session.add(tipo)
-            db.session.commit()
-            return redirect(url_for('listar_tipos_exames'))
+            try:
+                db.session.commit()
+                flash('Tipo de exame adicionado com sucesso!', 'success')
+                return redirect(url_for('listar_tipos_exames'))
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Erro ao adicionar tipo de exame: {e}', 'danger')
+                return render_template('tipo_exame_form.html', tipo_exame=None)
         return render_template('tipo_exame_form.html', tipo_exame=None)
 
     @app.route('/tipos_exames/edit/<int:id>', methods=['GET', 'POST'])
     def editar_tipo_exame(id):
         tipo = TipoExame.query.get_or_404(id)
         if request.method == 'POST':
-            tipo.nome = request.form['nome']
+            novo_nome = request.form['nome'].strip()
+            if TipoExame.query.filter(TipoExame.nome == novo_nome, TipoExame.id != id).first():
+                flash(f'O tipo de exame "{novo_nome}" já existe.', 'danger')
+                return render_template('tipo_exame_form.html', tipo_exame=tipo)
+
+            tipo.nome = novo_nome
             tipo.periodicidade_dias = int(request.form['periodicidade_dias'])
             tipo.observacoes = request.form.get('observacoes')
-            db.session.commit()
-            return redirect(url_for('listar_tipos_exames'))
+            try:
+                db.session.commit()
+                flash('Tipo de exame atualizado com sucesso!', 'success')
+                return redirect(url_for('listar_tipos_exames'))
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Erro ao atualizar tipo de exame: {e}', 'danger')
+                return render_template('tipo_exame_form.html', tipo_exame=tipo)
         return render_template('tipo_exame_form.html', tipo_exame=tipo)
 
     @app.route('/tipos_exames/delete/<int:id>', methods=['POST'])
