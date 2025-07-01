@@ -2664,6 +2664,47 @@ def create_app():
             return redirect(url_for('listar_tipos_exames'))
         return render_template('tipo_exame_form.html', tipo_exame=tipo)
 
+    @app.route('/tipos_exames/delete/<int:id>', methods=['POST'])
+    def deletar_tipo_exame(id):
+        if 'usuario_id' not in session or session.get('tipo_usuario') not in ['Master']:
+            flash('Acesso negado. Apenas usuários Master podem deletar tipos de exames.', 'danger')
+            return redirect(url_for('login'))
+
+        tipo = TipoExame.query.get_or_404(id)
+
+        if ExameFuncionario.query.filter_by(tipo_exame_id=id).first() or ExameFuncao.query.filter_by(tipo_exame_id=id).first():
+            flash('Não foi possível deletar o tipo de exame. Existem registros associados a ele.', 'danger')
+            return redirect(url_for('listar_tipos_exames'))
+
+        dados_antigos = {
+            'id': tipo.id,
+            'nome': tipo.nome,
+            'periodicidade_dias': tipo.periodicidade_dias,
+            'observacoes': tipo.observacoes
+        }
+
+        db.session.delete(tipo)
+        try:
+            db.session.commit()
+            flash('Tipo de exame deletado com sucesso!', 'success')
+
+            log_entry = LogAuditoria(
+                usuario_id=session['usuario_id'],
+                acao=f"Tipo de Exame '{tipo.nome}' ID {id} deletado.",
+                tabela_afetada='tipos_exames',
+                registro_id=id,
+                dados_antigos=dados_antigos,
+                dados_novos=None
+            )
+            db.session.add(log_entry)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            print(f"Erro ao deletar tipo de exame: {e}")
+            flash(f'Erro ao deletar tipo de exame: {e}', 'danger')
+
+        return redirect(url_for('listar_tipos_exames'))
+
     # --- Módulo: Exames de Funcionários ---
     @app.route('/exames_funcionarios')
     def listar_exames_funcionarios():
