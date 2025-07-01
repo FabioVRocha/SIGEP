@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Entidades de Saúde Ocupacional</title>
+</head>
+<body>
+    <h1>Entidades de Saúde Ocupacional</h1>
+    <a href="{{ url_for('adicionar_entidade_saude') }}">Nova Entidade</a>
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>Nome</th>
+            <th>CRM/CNPJ</th>
+            <th>Contato</th>
+            <th>Ações</th>
+        </tr>
+        {% for ent in entidades %}
+        <tr>
+            <td>{{ ent.nome }}</td>
+            <td>{{ ent.crm_cnpj }}</td>
+            <td>{{ ent.telefone }} {{ ent.email }}</td>
+            <td><a href="{{ url_for('editar_entidade_saude', id=ent.id) }}">Editar</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

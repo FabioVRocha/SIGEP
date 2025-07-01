@@ -267,3 +267,66 @@ class LogAuditoria(db.Model):
 
     def __repr__(self):
         return f"<Log {self.id} - {self.acao} por Usuário {self.usuario_id}>"
+
+# ------------------------ Módulo de Exames Ocupacionais -----------------------
+
+class EntidadeSaudeOcupacional(db.Model):
+    """Médicos ou empresas responsáveis por exames."""
+    __tablename__ = 'entidades_saude_ocupacional'
+
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(255), nullable=False)
+    crm_cnpj = db.Column(db.String(30))
+    telefone = db.Column(db.String(20))
+    email = db.Column(db.String(255))
+
+    exames = db.relationship('ExameFuncionario', backref='entidade', lazy=True)
+
+    def __repr__(self):
+        return f"<EntidadeSaudeOcupacional {self.nome}>"
+
+
+class TipoExame(db.Model):
+    """Tipos de exames e suas periodicidades."""
+    __tablename__ = 'tipos_exames'
+
+    id = db.Column(db.Integer, primary_key=True)
+    nome = db.Column(db.String(255), nullable=False, unique=True)
+    periodicidade_dias = db.Column(db.Integer, nullable=False)
+    observacoes = db.Column(db.Text)
+
+    funcoes = db.relationship('ExameFuncao', backref='tipo_exame', lazy=True)
+    exames = db.relationship('ExameFuncionario', backref='tipo_exame', lazy=True)
+
+    def __repr__(self):
+        return f"<TipoExame {self.nome}>"
+
+
+class ExameFuncao(db.Model):
+    """Associação entre funções e tipos de exames obrigatórios."""
+    __tablename__ = 'exames_funcoes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    funcao_id = db.Column(db.Integer, db.ForeignKey('funcoes.id'), nullable=False)
+    tipo_exame_id = db.Column(db.Integer, db.ForeignKey('tipos_exames.id'), nullable=False)
+
+    def __repr__(self):
+        return f"<ExameFuncao funcao={self.funcao_id} exame={self.tipo_exame_id}>"
+
+
+class ExameFuncionario(db.Model):
+    """Registro de exames realizados pelos colaboradores."""
+    __tablename__ = 'exames_funcionarios'
+
+    id = db.Column(db.Integer, primary_key=True)
+    cpf_funcionario = db.Column(db.String(14), db.ForeignKey('funcionarios.cpf'), nullable=False)
+    tipo_exame_id = db.Column(db.Integer, db.ForeignKey('tipos_exames.id'), nullable=False)
+    data_realizacao = db.Column(db.Date, nullable=False)
+    data_vencimento = db.Column(db.Date, nullable=False)
+    entidade_id = db.Column(db.Integer, db.ForeignKey('entidades_saude_ocupacional.id'))
+    observacoes = db.Column(db.Text)
+
+    funcionario = db.relationship('Funcionario', backref='exames', lazy=True)
+
+    def __repr__(self):
+        return f"<ExameFuncionario {self.cpf_funcionario} {self.tipo_exame_id}>"

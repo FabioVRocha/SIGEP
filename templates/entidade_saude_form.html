@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if entidade %}Editar Entidade{% else %}Adicionar Entidade{% endif %}</title>
+</head>
+<body>
+    <h1>{% if entidade %}Editar Entidade{% else %}Adicionar Entidade{% endif %}</h1>
+    <form method="post">
+        <label>Nome:<input type="text" name="nome" value="{{ entidade.nome if entidade else '' }}"></label><br>
+        <label>CRM/CNPJ:<input type="text" name="crm_cnpj" value="{{ entidade.crm_cnpj if entidade else '' }}"></label><br>
+        <label>Telefone:<input type="text" name="telefone" value="{{ entidade.telefone if entidade else '' }}"></label><br>
+        <label>E-mail:<input type="email" name="email" value="{{ entidade.email if entidade else '' }}"></label><br>
+        <button type="submit">Salvar</button>
+    </form>
+</body>
+</html>

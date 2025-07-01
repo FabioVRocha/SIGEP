@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if tipo_exame %}Editar Tipo de Exame{% else %}Adicionar Tipo de Exame{% endif %}</title>
+</head>
+<body>
+    <h1>{% if tipo_exame %}Editar Tipo de Exame{% else %}Adicionar Tipo de Exame{% endif %}</h1>
+    <form method="post">
+        <label>Nome:<input type="text" name="nome" value="{{ tipo_exame.nome if tipo_exame else '' }}"></label><br>
+        <label>Periodicidade (dias):<input type="number" name="periodicidade_dias" value="{{ tipo_exame.periodicidade_dias if tipo_exame else '' }}"></label><br>
+        <label>Observações:<br><textarea name="observacoes">{{ tipo_exame.observacoes if tipo_exame else '' }}</textarea></label><br>
+        <button type="submit">Salvar</button>
+    </form>
+</body>
+</html>

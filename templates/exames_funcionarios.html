@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Exames de Funcionários</title>
+</head>
+<body>
+    <h1>Exames de Funcionários</h1>
+    <a href="{{ url_for('adicionar_exame_funcionario') }}">Novo Exame</a>
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>Funcionário</th>
+            <th>Tipo</th>
+            <th>Realização</th>
+            <th>Vencimento</th>
+            <th>Entidade</th>
+            <th>Ações</th>
+        </tr>
+        {% for exame in exames %}
+        <tr>
+            <td>{{ exame.funcionario.nome }}</td>
+            <td>{{ exame.tipo_exame.nome }}</td>
+            <td>{{ exame.data_realizacao }}</td>
+            <td>{{ exame.data_vencimento }}</td>
+            <td>{{ exame.entidade.nome if exame.entidade else '' }}</td>
+            <td><a href="{{ url_for('editar_exame_funcionario', id=exame.id) }}">Editar</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

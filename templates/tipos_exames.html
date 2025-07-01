@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Tipos de Exames</title>
+</head>
+<body>
+    <h1>Tipos de Exames</h1>
+    <a href="{{ url_for('adicionar_tipo_exame') }}">Novo Tipo</a>
+    <table border="1" cellpadding="5">
+        <tr>
+            <th>Nome</th>
+            <th>Periodicidade (dias)</th>
+            <th>Ações</th>
+        </tr>
+        {% for tipo in tipos %}
+        <tr>
+            <td>{{ tipo.nome }}</td>
+            <td>{{ tipo.periodicidade_dias }}</td>
+            <td><a href="{{ url_for('editar_tipo_exame', id=tipo.id) }}">Editar</a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>

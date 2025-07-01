@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>{% if exame %}Editar Exame{% else %}Adicionar Exame{% endif %}</title>
+</head>
+<body>
+    <h1>{% if exame %}Editar Exame{% else %}Adicionar Exame{% endif %}</h1>
+    <form method="post">
+        <label>CPF:<input type="text" name="cpf_funcionario" value="{{ exame.cpf_funcionario if exame else '' }}"></label><br>
+        <label>Tipo de Exame:
+            <select name="tipo_exame_id">
+                {% for tipo in tipos %}
+                <option value="{{ tipo.id }}" {% if exame and tipo.id == exame.tipo_exame_id %}selected{% endif %}>{{ tipo.nome }}</option>
+                {% endfor %}
+            </select>
+        </label><br>
+        <label>Data de Realização:<input type="date" name="data_realizacao" value="{{ exame.data_realizacao if exame else '' }}"></label><br>
+        <label>Entidade:
+            <select name="entidade_id">
+                <option value="">--</option>
+                {% for ent in entidades %}
+                <option value="{{ ent.id }}" {% if exame and ent.id == exame.entidade_id %}selected{% endif %}>{{ ent.nome }}</option>
+                {% endfor %}
+            </select>
+        </label><br>
+        <label>Observações:<br><textarea name="observacoes">{{ exame.observacoes if exame else '' }}</textarea></label><br>
+        <button type="submit">Salvar</button>
+    </form>
+</body>
+</html>

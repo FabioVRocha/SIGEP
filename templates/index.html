@@ -326,8 +326,10 @@
                     <div class="dashboard-card-header">
                         <i class="fas fa-exclamation-triangle"></i> Alertas
                     </div>
-                    <p class="text-sm text-gray-700">6 verificações de antecedentes a serem concluídas</p>
-                    <!-- Pode adicionar mais lógica aqui se necessário -->
+                    <p class="text-sm text-gray-700">
+                        Exames vencidos: {{ exames_vencidos }}<br>
+                        Exames a vencer em até 7 dias: {{ exames_proximos }}
+                    </p>
                 </div>
 
                 <div class="dashboard-card notice-card">

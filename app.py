@@ -54,9 +54,11 @@ def create_app():
     # Importa os modelos de dados APÓS 'db' ser inicializado e associado ao 'app'.
     # Isso é crucial para evitar dependências circulares e garantir que os modelos
     # tenham acesso à instância 'db' corretamente configurada.
-    from models import Funcionario, Dependente, ContratoTrabalho, ReajusteSalarial, \
-                       ControleFerias, FolhaPagamento, BancoHoras, HorasExtras, \
-                       RegistroPonto, LogAuditoria, Usuario, Cidade, Setor, Funcao, Demissao, Jornada
+    from models import (Funcionario, Dependente, ContratoTrabalho, ReajusteSalarial,
+                       ControleFerias, FolhaPagamento, BancoHoras, HorasExtras,
+                       RegistroPonto, LogAuditoria, Usuario, Cidade, Setor, Funcao,
+                       Demissao, Jornada, EntidadeSaudeOcupacional, TipoExame,
+                       ExameFuncao, ExameFuncionario)
 
     # Define o diretório de uploads (para planilhas e outros arquivos)
     UPLOAD_FOLDER = 'uploads'
@@ -110,7 +112,17 @@ def create_app():
         if 'usuario_id' not in session:
             return redirect(url_for('login'))
         total_funcionarios_ativos = db.session.query(ContratoTrabalho).filter_by(status=True).count()
-        return render_template('index.html', total_funcionarios_ativos=total_funcionarios_ativos)
+        hoje = datetime.date.today()
+        limite = hoje + datetime.timedelta(days=90)
+        exames_proximos = ExameFuncionario.query.filter(ExameFuncionario.data_vencimento <= limite).all()
+        vencidos = [e for e in exames_proximos if e.data_vencimento < hoje]
+        alerta_amarelo = [e for e in exames_proximos if hoje <= e.data_vencimento <= hoje + datetime.timedelta(days=7)]
+        return render_template(
+            'index.html',
+            total_funcionarios_ativos=total_funcionarios_ativos,
+            exames_vencidos=len(vencidos),
+            exames_proximos=len(alerta_amarelo)
+        )
 
     @app.route('/login', methods=['GET', 'POST'])
     def login():
@@ -2541,6 +2553,118 @@ def create_app():
         flash('Usuário deletado com sucesso!', 'success')
         return redirect(url_for('listar_usuarios'))
 
+    # --- Módulo: Entidades de Saúde Ocupacional ---
+    @app.route('/entidades_saude')
+    def listar_entidades_saude():
+        entidades = EntidadeSaudeOcupacional.query.order_by(EntidadeSaudeOcupacional.nome).all()
+        return render_template('entidades_saude.html', entidades=entidades)
+
+    @app.route('/entidades_saude/add', methods=['GET', 'POST'])
+    def adicionar_entidade_saude():
+        if request.method == 'POST':
+            entidade = EntidadeSaudeOcupacional(
+                nome=request.form['nome'],
+                crm_cnpj=request.form.get('crm_cnpj'),
+                telefone=request.form.get('telefone'),
+                email=request.form.get('email')
+            )
+            db.session.add(entidade)
+            db.session.commit()
+            return redirect(url_for('listar_entidades_saude'))
+        return render_template('entidade_saude_form.html', entidade=None)
+
+    @app.route('/entidades_saude/edit/<int:id>', methods=['GET', 'POST'])
+    def editar_entidade_saude(id):
+        entidade = EntidadeSaudeOcupacional.query.get_or_404(id)
+        if request.method == 'POST':
+            entidade.nome = request.form['nome']
+            entidade.crm_cnpj = request.form.get('crm_cnpj')
+            entidade.telefone = request.form.get('telefone')
+            entidade.email = request.form.get('email')
+            db.session.commit()
+            return redirect(url_for('listar_entidades_saude'))
+        return render_template('entidade_saude_form.html', entidade=entidade)
+
+    # --- Módulo: Tipos de Exames ---
+    @app.route('/tipos_exames')
+    def listar_tipos_exames():
+        tipos = TipoExame.query.order_by(TipoExame.nome).all()
+        return render_template('tipos_exames.html', tipos=tipos)
+
+    @app.route('/tipos_exames/add', methods=['GET', 'POST'])
+    def adicionar_tipo_exame():
+        if request.method == 'POST':
+            tipo = TipoExame(
+                nome=request.form['nome'],
+                periodicidade_dias=int(request.form['periodicidade_dias']),
+                observacoes=request.form.get('observacoes')
+            )
+            db.session.add(tipo)
+            db.session.commit()
+            return redirect(url_for('listar_tipos_exames'))
+        return render_template('tipo_exame_form.html', tipo_exame=None)
+
+    @app.route('/tipos_exames/edit/<int:id>', methods=['GET', 'POST'])
+    def editar_tipo_exame(id):
+        tipo = TipoExame.query.get_or_404(id)
+        if request.method == 'POST':
+            tipo.nome = request.form['nome']
+            tipo.periodicidade_dias = int(request.form['periodicidade_dias'])
+            tipo.observacoes = request.form.get('observacoes')
+            db.session.commit()
+            return redirect(url_for('listar_tipos_exames'))
+        return render_template('tipo_exame_form.html', tipo_exame=tipo)
+
+    # --- Módulo: Exames de Funcionários ---
+    @app.route('/exames_funcionarios')
+    def listar_exames_funcionarios():
+        exames = ExameFuncionario.query.join(Funcionario).join(TipoExame).all()
+        return render_template('exames_funcionarios.html', exames=exames)
+
+    @app.route('/exames_funcionarios/add', methods=['GET', 'POST'])
+    def adicionar_exame_funcionario():
+        tipos = TipoExame.query.order_by(TipoExame.nome).all()
+        entidades = EntidadeSaudeOcupacional.query.order_by(EntidadeSaudeOcupacional.nome).all()
+        if request.method == 'POST':
+            cpf = request.form['cpf_funcionario'].replace('.', '').replace('-', '')
+            tipo_id = int(request.form['tipo_exame_id'])
+            data_realizacao = datetime.datetime.strptime(request.form['data_realizacao'], '%Y-%m-%d').date()
+            tipo = TipoExame.query.get(tipo_id)
+            data_vencimento = data_realizacao + datetime.timedelta(days=tipo.periodicidade_dias)
+            ent = request.form.get('entidade_id')
+            entidade_id = int(ent) if ent else None
+            observacoes = request.form.get('observacoes')
+            exame = ExameFuncionario(
+                cpf_funcionario=cpf,
+                tipo_exame_id=tipo_id,
+                data_realizacao=data_realizacao,
+                data_vencimento=data_vencimento,
+                entidade_id=entidade_id,
+                observacoes=observacoes
+            )
+            db.session.add(exame)
+            db.session.commit()
+            return redirect(url_for('listar_exames_funcionarios'))
+        return render_template('exame_funcionario_form.html', exame=None, tipos=tipos, entidades=entidades)
+
+    @app.route('/exames_funcionarios/edit/<int:id>', methods=['GET', 'POST'])
+    def editar_exame_funcionario(id):
+        exame = ExameFuncionario.query.get_or_404(id)
+        tipos = TipoExame.query.order_by(TipoExame.nome).all()
+        entidades = EntidadeSaudeOcupacional.query.order_by(EntidadeSaudeOcupacional.nome).all()
+        if request.method == 'POST':
+            exame.cpf_funcionario = request.form['cpf_funcionario'].replace('.', '').replace('-', '')
+            exame.tipo_exame_id = int(request.form['tipo_exame_id'])
+            exame.data_realizacao = datetime.datetime.strptime(request.form['data_realizacao'], '%Y-%m-%d').date()
+            tipo = TipoExame.query.get(exame.tipo_exame_id)
+            exame.data_vencimento = exame.data_realizacao + datetime.timedelta(days=tipo.periodicidade_dias)
+            ent = request.form.get('entidade_id')
+            exame.entidade_id = int(ent) if ent else None
+            exame.observacoes = request.form.get('observacoes')
+            db.session.commit()
+            return redirect(url_for('listar_exames_funcionarios'))
+        return render_template('exame_funcionario_form.html', exame=exame, tipos=tipos, entidades=entidades)
+
     return app # Fim da função create_app
 
 
@@ -2580,7 +2704,9 @@ def initialize_database(app_instance):
                 print("Coluna 'jornada_id' adicionada à tabela contratos_trabalho.")
             except Exception as e:
                 print(f"Erro ao adicionar coluna jornada_id: {e}")
-        from models import Usuario, LogAuditoria, Cidade, Funcionario, ContratoTrabalho, Setor, Funcao, ReajusteSalarial, Demissao, ControleFerias
+        from models import (Usuario, LogAuditoria, Cidade, Funcionario, ContratoTrabalho,
+                            Setor, Funcao, ReajusteSalarial, Demissao, ControleFerias,
+                            EntidadeSaudeOcupacional, TipoExame, ExameFuncao, ExameFuncionario)
         try:
             master_user_exists = db.session.query(Usuario).filter_by(nome='master').first()
             if not master_user_exists:
