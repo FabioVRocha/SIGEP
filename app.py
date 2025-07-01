@@ -2585,6 +2585,44 @@ def create_app():
             return redirect(url_for('listar_entidades_saude'))
         return render_template('entidade_saude_form.html', entidade=entidade)
 
+    @app.route('/entidades_saude/delete/<int:id>', methods=['POST'])
+    def deletar_entidade_saude(id):
+        if 'usuario_id' not in session or session.get('tipo_usuario') not in ['Master']:
+            flash('Acesso negado. Apenas usuários Master podem deletar entidades de saúde.', 'danger')
+            return redirect(url_for('login'))
+
+        entidade = EntidadeSaudeOcupacional.query.get_or_404(id)
+
+        dados_antigos = {
+            'id': entidade.id,
+            'nome': entidade.nome,
+            'crm_cnpj': entidade.crm_cnpj,
+            'telefone': entidade.telefone,
+            'email': entidade.email
+        }
+
+        db.session.delete(entidade)
+        try:
+            db.session.commit()
+            flash('Entidade de saúde ocupacional deletada com sucesso!', 'success')
+
+            log_entry = LogAuditoria(
+                usuario_id=session['usuario_id'],
+                acao=f"Entidade de saúde ocupacional '{entidade.nome}' ID {id} deletada.",
+                tabela_afetada='entidades_saude_ocupacional',
+                registro_id=id,
+                dados_antigos=dados_antigos,
+                dados_novos=None
+            )
+            db.session.add(log_entry)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            print(f"Erro ao deletar entidade de saúde ocupacional: {e}")
+            flash(f'Erro ao deletar entidade: {e}', 'danger')
+
+        return redirect(url_for('listar_entidades_saude'))
+
     # --- Módulo: Tipos de Exames ---
     @app.route('/tipos_exames')
     def listar_tipos_exames():
