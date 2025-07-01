@@ -1,5 +1,6 @@
 from flask import Flask, render_template, session, redirect, url_for, request, flash, jsonify, Response
 from sqlalchemy import or_, text, inspect
+from sqlalchemy.exc import IntegrityError
 from extensions import db
 from config import Config
 import os
@@ -2569,8 +2570,18 @@ def create_app():
                 email=request.form.get('email')
             )
             db.session.add(entidade)
-            db.session.commit()
-            return redirect(url_for('listar_entidades_saude'))
+            try:
+                db.session.commit()
+                flash('Entidade de saúde ocupacional adicionada com sucesso!', 'success')
+                return redirect(url_for('listar_entidades_saude'))
+            except IntegrityError:
+                db.session.rollback()
+                flash('E-mail já cadastrado. Escolha outro.', 'danger')
+                return render_template('entidade_saude_form.html', entidade=entidade)
+            except Exception as e:
+                db.session.rollback()
+                flash(f'Erro ao adicionar entidade: {e}', 'danger')
+                return render_template('entidade_saude_form.html', entidade=entidade)
         return render_template('entidade_saude_form.html', entidade=None)
 
     @app.route('/entidades_saude/edit/<int:id>', methods=['GET', 'POST'])

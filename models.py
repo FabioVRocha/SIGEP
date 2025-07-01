@@ -278,7 +278,7 @@ class EntidadeSaudeOcupacional(db.Model):
     nome = db.Column(db.String(255), nullable=False)
     crm_cnpj = db.Column(db.String(30))
     telefone = db.Column(db.String(20))
-    email = db.Column(db.String(255))
+    email = db.Column(db.String(255), unique=True)
 
     exames = db.relationship('ExameFuncionario', backref='entidade', lazy=True)
 
