@@ -2,26 +2,412 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Entidades de Saúde Ocupacional</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIGEP - Entidades de Saúde Ocupacional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* Definição da Paleta de Cores como Variáveis CSS */
+        :root {
+            --clr-dark-blue: #1F3A5F;
+            --clr-light-blue: #4F83CC;
+            --clr-light-gray: #F4F6F8;
+            --clr-medium-gray: #A0AAB4;
+            --clr-white: #FFFFFF;
+            --clr-success: #27AE60;
+            --clr-attention: #F1C40F;
+            --clr-error: #E74C3C;
+            --clr-purple: #8A2BE2;
+            --clr-orange: #FF8C00;
+            --clr-yellow: #F1C40F;
+            --clr-teal: #008080;
+            --clr-indigo: #4B0082;
+            --clr-pink: #FF69B4;
+            --clr-dashboard-bg: #F0F2F5; /* Cor de fundo do painel principal, similar à imagem */
+            --clr-sidebar-bg: #1F3A5F; /* Cor de fundo da sidebar, azul escuro */
+            --clr-card-bg: #FFFFFF; /* Cor de fundo dos cards */
+            --clr-text-main: #333333; /* Cor principal do texto */
+            --clr-text-secondary: #666666; /* Cor secundária do texto */
+            --clr-border: #E0E0E0; /* Cor da borda para elementos */
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--clr-dashboard-bg); /* Fundo geral */
+        }
+
+        .flash-message { padding: 1rem; margin-bottom: 1rem; border-radius: 0.5rem; font-weight: 600; }
+        .flash-message.success { background-color: var(--clr-success); color: var(--clr-white); border: 1px solid var(--clr-success); }
+        .flash-message.danger { background-color: var(--clr-error); color: var(--clr-white); border: 1px solid var(--clr-error); }
+        .flash-message.warning { background-color: var(--clr-attention); color: var(--clr-dark-blue); border: 1px solid var(--clr-attention); }
+
+        /* Estilos da Sidebar */
+        .sidebar {
+            background-color: var(--clr-sidebar-bg);
+            color: var(--clr-white);
+            width: 280px; /* Largura da sidebar */
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            position: fixed; /* Fixa a sidebar na tela */
+            height: 100vh; /* Altura total da viewport */
+            overflow-y: auto; /* Adiciona scroll se o conteúdo for maior que a tela */
+        }
+
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            color: var(--clr-white);
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .sidebar-nav-item:hover, .sidebar-nav-item.active {
+            background-color: var(--clr-light-blue); /* Cor de hover/ativo */
+            color: var(--clr-white);
+        }
+
+        .sidebar-nav-item i {
+            margin-right: 1rem;
+            font-size: 1.25rem;
+        }
+
+        /* Estilos do Conteúdo Principal */
+        .main-content {
+            margin-left: 280px; /* Margem para acomodar a sidebar */
+            padding: 2rem;
+            flex-grow: 1;
+            background-color: var(--clr-dashboard-bg);
+        }
+
+        .main-header {
+            background-color: var(--clr-card-bg);
+            padding: 1.5rem 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--clr-dark-blue);
+        }
+
+        .main-header .search-bar {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--clr-border);
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--clr-light-gray);
+        }
+
+        .main-header .search-bar input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 1rem;
+            color: var(--clr-text-main);
+        }
+
+        .main-header .search-bar i {
+            color: var(--clr-medium-gray);
+            margin-right: 0.5rem;
+        }
+
+        /* Cards do Dashboard e conteúdo das categorias */
+        .content-section {
+            background-color: var(--clr-card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem; /* Ajustado padding */
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+            margin-bottom: 1.5rem; /* Adicionado margin para separar as seções */
+        }
+
+        /* Cores para os botões e links */
+        .btn-primary {
+            background-color: var(--clr-light-blue);
+            color: var(--clr-white);
+        }
+        .btn-primary:hover {
+            background-color: var(--clr-dark-blue); /* Mais escuro no hover */
+        }
+        .btn-secondary {
+            background-color: var(--clr-medium-gray);
+            color: var(--clr-white);
+        }
+        .btn-secondary:hover {
+            background-color: color-mix(in srgb, var(--clr-medium-gray) 80%, black); /* Um pouco mais escuro no hover */
+        }
+        .btn-add {
+            background-color: var(--clr-success);
+            color: var(--clr-white);
+        }
+        .btn-add:hover {
+            background-color: color-mix(in srgb, var(--clr-success) 90%, black);
+        }
+
+        /* Para a tabela */
+        .table-header-bg { background-color: var(--clr-dark-blue); color: var(--clr-white); } /* Cabeçalho da tabela */
+        .table-row-odd { background-color: var(--clr-white); }
+        .table-row-even { background-color: var(--clr-light-gray); }
+        .filter-input {
+            border-color: var(--clr-medium-gray);
+            color: var(--clr-dark-blue);
+        }
+        .filter-input:focus {
+            border-color: var(--clr-light-blue);
+            box-shadow: 0 0 0 1px var(--clr-light-blue);
+        }
+
+        /* Estilos do Modal de Confirmação */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background-color: var(--clr-white);
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            font-size: 1.5rem;
+            color: var(--clr-dark-blue);
+            margin-bottom: 1rem;
+        }
+
+        .modal-content p {
+            color: var(--clr-text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        /* Responsividade básica */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                margin-bottom: 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .main-header .search-bar {
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
+    </style>
 </head>
-<body>
-    <h1>Entidades de Saúde Ocupacional</h1>
-    <a href="{{ url_for('adicionar_entidade_saude') }}">Nova Entidade</a>
-    <table border="1" cellpadding="5">
-        <tr>
-            <th>Nome</th>
-            <th>CRM/CNPJ</th>
-            <th>Contato</th>
-            <th>Ações</th>
-        </tr>
-        {% for ent in entidades %}
-        <tr>
-            <td>{{ ent.nome }}</td>
-            <td>{{ ent.crm_cnpj }}</td>
-            <td>{{ ent.telefone }} {{ ent.email }}</td>
-            <td><a href="{{ url_for('editar_entidade_saude', id=ent.id) }}">Editar</a></td>
-        </tr>
-        {% endfor %}
-    </table>
+<body class="flex flex-col md:flex-row min-h-screen">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-cubes mr-3 text-2xl"></i> SIGEP
+        </div>
+        <nav>
+            <ul>
+                <li>
+                    <a href="{{ url_for('index') }}" class="sidebar-nav-item">
+                        <i class="fas fa-home"></i> Visão Geral
+                    </a>
+                </li>
+                <li>
+                    {# Assumindo que 'Entidades de Saúde' está sob 'Cadastros' #}
+                    <a href="{{ url_for('listar_funcionarios') }}" class="sidebar-nav-item active">
+                        <i class="fas fa-edit"></i> Cadastros
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-nav-item">
+                        <i class="fas fa-calendar-alt"></i> Lançamentos
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-nav-item">
+                        <i class="fas fa-chart-bar"></i> Relatórios
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-nav-item">
+                        <i class="fas fa-cogs"></i> Gerencial
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="flex justify-end mt-8">
+            <a href="{{ url_for('logout') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md flex items-center">
+                <i class="fas fa-sign-out-alt mr-2"></i> Sair
+            </a>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="main-header">
+            <h1 class="text-2xl font-bold text-dark-blue">Cadastro de Entidades de Saúde Ocupacional</h1>
+            <div class="flex space-x-3">
+                <a href="{{ url_for('adicionar_entidade_saude') }}" class="btn-add text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center" title="Adicionar Nova Entidade">
+                    <i class="fas fa-plus mr-2"></i> Adicionar
+                </a>
+                <a href="{{ url_for('index') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center" title="Voltar ao Início">
+                    <i class="fas fa-home"></i>
+                </a>
+            </div>
+        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-6">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <div class="content-section">
+            {% if entidades %}
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white rounded-lg overflow-hidden" id="entidadesTable">
+                        <thead class="table-header-bg">
+                            <tr>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tl-lg">Nome</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">CRM/CNPJ</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Contato</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider rounded-tr-lg">Ações</th>
+                            </tr>
+                            <tr class="bg-light-gray">
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Nome..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="0"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar CRM/CNPJ..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="1"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"><input type="text" onkeyup="filterTable()" placeholder="Pesquisar Contato..." class="w-full px-2 py-1 border rounded text-sm filter-input" data-column="2"></th>
+                                <th class="px-4 py-2 border-b border-medium-gray"></th> </tr>
+                        </thead>
+                        <tbody class="divide-y divide-medium-gray">
+                            {% for ent in entidades %}
+                                <tr class="hover:bg-light-gray {% if loop.index is odd %}bg-white{% else %}bg-light-gray{% endif %}">
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ ent.nome }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ ent.crm_cnpj }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ ent.telefone }} {{ ent.email }}</td>
+                                    <td class="py-3 px-4 text-sm flex items-center space-x-3">
+                                        <a href="{{ url_for('editar_entidade_saude', id=ent.id) }}" class="text-light-blue hover:text-dark-blue font-medium" title="Editar">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <button type="button" onclick="showConfirmModal('{{ url_for('deletar_entidade_saude', id=ent.id) }}')" class="text-error hover:text-dark-blue font-medium bg-transparent border-none cursor-pointer" title="Deletar">
+                                            <i class="fas fa-trash-alt"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-center text-medium-gray text-lg py-8">Nenhuma entidade de saúde cadastrada ainda.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div id="confirmModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h3 class="font-bold">Confirmar Ação</h3>
+            <p>Tem certeza que deseja deletar esta entidade de saúde?</p>
+            <div class="modal-buttons">
+                <button id="cancelButton" class="btn-secondary py-2 px-4 rounded-lg">Cancelar</button>
+                <button id="confirmButton" class="btn-error py-2 px-4 rounded-lg">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variável para armazenar a URL de exclusão
+        let deleteUrl = '';
+
+        function showConfirmModal(url) {
+            deleteUrl = url;
+            document.getElementById('confirmModal').classList.remove('hidden');
+        }
+
+        document.getElementById('cancelButton').addEventListener('click', () => {
+            document.getElementById('confirmModal').classList.add('hidden');
+            deleteUrl = ''; // Limpa a URL após cancelar
+        });
+
+        document.getElementById('confirmButton').addEventListener('click', () => {
+            if (deleteUrl) {
+                // Cria um formulário temporário e o submete
+                const form = document.createElement('form');
+                form.method = 'POST';
+                form.action = deleteUrl;
+                document.body.appendChild(form);
+                form.submit();
+            }
+            document.getElementById('confirmModal').classList.add('hidden');
+            deleteUrl = ''; // Limpa a URL
+        });
+
+
+        function filterTable() {
+            const table = document.getElementById('entidadesTable');
+            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+            const filterInputs = document.querySelectorAll('.filter-input');
+            const filters = Array.from(filterInputs).map(input => input.value.toLowerCase());
+
+            for (let i = 0; i < rows.length; i++) {
+                let rowDisplay = 'table-row'; // Assume row is visible by default
+
+                // Iterate through the filter inputs and apply logic based on data-column
+                for (let j = 0; j < filters.length; j++) {
+                    const columnToFilter = parseInt(filterInputs[j].dataset.column);
+                    const cell = rows[i].getElementsByTagName('td')[columnToFilter];
+                    
+                    if (cell) {
+                        const cellText = cell.textContent || cell.innerText;
+                        if (filters[j] && !cellText.toLowerCase().includes(filters[j])) {
+                            rowDisplay = 'none'; // Hide row if it doesn't match this filter
+                            break; // No need to check other columns for this row if one filter fails
+                        }
+                    }
+                }
+                rows[i].style.display = rowDisplay;
+            }
+        }
+    </script>
 </body>
 </html>

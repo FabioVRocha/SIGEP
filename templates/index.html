@@ -279,6 +279,11 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ url_for('listar_exames_funcionarios') }}" class="sidebar-nav-item">
+                        <i class="fas fa-notes-medical"></i> Exames
+                    </a>
+                </li>
+                <li>
                     <a href="#" data-target="relatorios-content" class="sidebar-nav-item">
                         <i class="fas fa-chart-bar"></i> Relatórios
                     </a>
@@ -409,6 +414,16 @@
                     <h2 class="text-xl font-semibold text-dark-blue mb-2">Jornadas</h2>
                     <p class="text-medium-gray">Configure horários de trabalho.</p>
                 </a>
+                <a href="{{ url_for('listar_entidades_saude') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-indigo mb-4"><i class="fas fa-clinic-medical fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Entidades de Saúde</h2>
+                    <p class="text-medium-gray">Cadastre clínicas ou profissionais de saúde ocupacional.</p>
+                </a>
+                <a href="{{ url_for('listar_tipos_exames') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-purple mb-4"><i class="fas fa-stethoscope fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Tipos de Exames</h2>
+                    <p class="text-medium-gray">Gerencie os tipos e periodicidade de exames.</p>
+                </a>
             </div>
         </div>
 
@@ -440,6 +455,11 @@
                     <div class="text-icon-pink mb-4"><i class="fas fa-plane-departure fa-3x"></i></div>
                     <h2 class="text-xl font-semibold text-dark-blue mb-2">Controle de Férias</h2>
                     <p class="text-medium-gray">Gerencie os períodos aquisitivos e de usufruto de férias.</p>
+                </a>
+                <a href="{{ url_for('listar_exames_funcionarios') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-green mb-4"><i class="fas fa-notes-medical fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Exames</h2>
+                    <p class="text-medium-gray">Registre exames ocupacionais dos funcionários.</p>
                 </a>
             </div>
         </div>
