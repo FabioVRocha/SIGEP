@@ -300,7 +300,7 @@
         {% endwith %}
 
         <div class="content-section">
-            <form id="entidadeForm" method="POST" action="{% if entidade %}{{ url_for('editar_entidade_saude', id=entidade.id) }}{% else %}{{ url_for('adicionar_entidade_saude') }}{% endif %}" class="space-y-4">
+            <form id="entidadeForm" method="POST" action="{% if entidade and entidade.id %}{{ url_for('editar_entidade_saude', id=entidade.id) }}{% else %}{{ url_for('adicionar_entidade_saude') }}{% endif %}" class="space-y-4">
                 <div>
                     <label for="nome" class="block text-sm font-medium text-gray-700">Nome <span class="text-red-500">*</span></label>
                     <input type="text" id="nome" name="nome" value="{{ entidade.nome if entidade else '' }}" required>
