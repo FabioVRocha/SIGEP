@@ -2777,6 +2777,45 @@ def create_app():
             return redirect(url_for('listar_exames_funcionarios'))
         return render_template('exame_funcionario_form.html', exame=exame, tipos=tipos, entidades=entidades)
 
+    @app.route('/exames_funcionarios/delete/<int:id>', methods=['POST'])
+    def deletar_exame_funcionario(id):
+        if 'usuario_id' not in session or session.get('tipo_usuario') not in ['Master']:
+            flash('Acesso negado. Apenas usuários Master podem deletar exames.', 'danger')
+            return redirect(url_for('login'))
+
+        exame = ExameFuncionario.query.get_or_404(id)
+        dados_antigos = {
+            'id': exame.id,
+            'cpf_funcionario': exame.cpf_funcionario,
+            'tipo_exame_id': exame.tipo_exame_id,
+            'data_realizacao': exame.data_realizacao.strftime('%Y-%m-%d'),
+            'data_vencimento': exame.data_vencimento.strftime('%Y-%m-%d'),
+            'entidade_id': exame.entidade_id,
+            'observacoes': exame.observacoes
+        }
+
+        db.session.delete(exame)
+        try:
+            db.session.commit()
+            flash('Exame do funcionário deletado com sucesso!', 'success')
+
+            log_entry = LogAuditoria(
+                usuario_id=session['usuario_id'],
+                acao=f"Exame de funcionário ID {id} deletado.",
+                tabela_afetada='exames_funcionarios',
+                registro_id=id,
+                dados_antigos=dados_antigos,
+                dados_novos=None
+            )
+            db.session.add(log_entry)
+            db.session.commit()
+        except Exception as e:
+            db.session.rollback()
+            print(f"Erro ao deletar exame do funcionário: {e}")
+            flash(f'Erro ao deletar exame do funcionário: {e}', 'danger')
+
+        return redirect(url_for('listar_exames_funcionarios'))
+
     return app # Fim da função create_app
 
 

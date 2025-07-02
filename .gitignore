@@ -1,0 +1,9 @@
+# Ignore Python virtual environments
+sigep.env/
+
+# Backup files
+backups/
+*.backup
+__pycache__/
+pg_dump
+pg_dump.exe
