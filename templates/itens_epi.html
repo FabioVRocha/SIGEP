@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Itens de Fardas e EPIs - SIGEP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="p-6">
+    <h1 class="text-2xl font-bold mb-4">Itens de Fardas e EPIs</h1>
+    <a href="{{ url_for('adicionar_item_epi') }}" class="bg-blue-600 text-white px-4 py-2 rounded">Novo Item</a>
+    <table class="min-w-full mt-4 border">
+        <thead>
+            <tr><th class="p-2">Código</th><th class="p-2">Descrição</th><th class="p-2">Tipo</th><th class="p-2">Periodicidade (dias)</th><th class="p-2">Ações</th></tr>
+        </thead>
+        <tbody>
+            {% for item in itens %}
+            <tr class="border-t">
+                <td class="p-2">{{ item.codigo }}</td>
+                <td class="p-2">{{ item.descricao }}</td>
+                <td class="p-2">{{ item.tipo_item }}</td>
+                <td class="p-2">{{ item.periodicidade_dias or '' }}</td>
+                <td class="p-2"><a href="{{ url_for('editar_item_epi', id=item.id) }}" class="text-blue-600">Editar</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

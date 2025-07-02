@@ -331,3 +331,59 @@ class ExameFuncionario(db.Model):
 
     def __repr__(self):
         return f"<ExameFuncionario {self.cpf_funcionario} {self.tipo_exame_id}>"
+# ------------------------ Modulo de Fardas e EPIs ---------------------------
+class ItemEPI(db.Model):
+    """Catalogo de fardas e equipamentos de protecao individual."""
+    __tablename__ = 'itens_epi'
+
+    id = db.Column(db.Integer, primary_key=True)
+    tipo_item = db.Column(db.String(10), nullable=False)
+    descricao = db.Column(db.String(255), nullable=False)
+    codigo = db.Column(db.String(50), unique=True, nullable=False)
+    funcoes_permitidas = db.Column(db.Text)
+    periodicidade_dias = db.Column(db.Integer)
+    fornecedor = db.Column(db.String(255))
+    observacoes = db.Column(db.Text)
+
+    def __repr__(self):
+        return f"<ItemEPI {self.codigo} ({self.tipo_item})>"
+
+class DistribuicaoItem(db.Model):
+    """Registro de distribuicao de fardas e EPIs."""
+    __tablename__ = 'distribuicoes_itens'
+
+    id = db.Column(db.Integer, primary_key=True)
+    item_id = db.Column(db.Integer, db.ForeignKey('itens_epi.id'), nullable=False)
+    cpf_funcionario = db.Column(db.String(14), db.ForeignKey('funcionarios.cpf'), nullable=False)
+    quantidade = db.Column(db.Integer, nullable=False, default=1)
+    certificado_aprovacao = db.Column(db.String(100))
+    data_entrega = db.Column(db.DateTime, default=datetime.datetime.now)
+    responsavel = db.Column(db.String(255))
+
+    item = db.relationship('ItemEPI', backref='distribuicoes', lazy=True)
+    funcionario = db.relationship('Funcionario', backref='itens_recebidos', lazy=True)
+
+    @property
+    def data_vencimento(self):
+        if self.item and self.item.periodicidade_dias:
+            return (self.data_entrega.date() + datetime.timedelta(days=self.item.periodicidade_dias))
+        return None
+
+    def __repr__(self):
+        return f"<DistribuicaoItem {self.id} func={self.cpf_funcionario}>"
+
+class DevolucaoItem(db.Model):
+    """Registro de devolucao ou troca de itens."""
+    __tablename__ = 'devolucoes_itens'
+
+    id = db.Column(db.Integer, primary_key=True)
+    distribuicao_id = db.Column(db.Integer, db.ForeignKey('distribuicoes_itens.id'), nullable=False)
+    data_devolucao = db.Column(db.DateTime, default=datetime.datetime.now)
+    motivo = db.Column(db.String(255))
+    estado_item = db.Column(db.String(50))
+    observacoes = db.Column(db.Text)
+
+    distribuicao = db.relationship('DistribuicaoItem', backref=db.backref('devolucoes', lazy=True))
+
+    def __repr__(self):
+        return f"<DevolucaoItem {self.id} dist={self.distribuicao_id}>"

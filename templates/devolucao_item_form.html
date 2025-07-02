@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Devolução de Item - SIGEP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-6">
+    <h1 class="text-2xl mb-4">Registrar Devolução</h1>
+    <form method="post">
+        <p class="mb-2">Item: {{ distrib.item.descricao }} - Func.: {{ distrib.cpf_funcionario }}</p>
+        <label class="block mb-2">Motivo
+            <input type="text" name="motivo" class="border p-2 w-full">
+        </label>
+        <label class="block mb-2">Estado do item
+            <input type="text" name="estado_item" class="border p-2 w-full">
+        </label>
+        <label class="block mb-2">Observações
+            <textarea name="observacoes" class="border p-2 w-full"></textarea>
+        </label>
+        <div class="mt-4">
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Salvar</button>
+            <a href="{{ url_for('listar_distribuicoes_itens') }}" class="ml-2 text-blue-600">Cancelar</a>
+        </div>
+    </form>
+</body>
+</html>

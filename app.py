@@ -59,7 +59,8 @@ def create_app():
                        ControleFerias, FolhaPagamento, BancoHoras, HorasExtras,
                        RegistroPonto, LogAuditoria, Usuario, Cidade, Setor, Funcao,
                        Demissao, Jornada, EntidadeSaudeOcupacional, TipoExame,
-                       ExameFuncao, ExameFuncionario)
+                       ExameFuncao, ExameFuncionario, ItemEPI, DistribuicaoItem,
+                       DevolucaoItem)
 
     # Define o diretório de uploads (para planilhas e outros arquivos)
     UPLOAD_FOLDER = 'uploads'
@@ -2822,6 +2823,89 @@ def create_app():
 
         return redirect(url_for('listar_exames_funcionarios'))
 
+    # --- Módulo: Itens de Fardas e EPIs ---
+    @app.route('/itens_epi')
+    def listar_itens_epi():
+        itens = ItemEPI.query.order_by(ItemEPI.descricao).all()
+        return render_template('itens_epi.html', itens=itens)
+
+    @app.route('/itens_epi/add', methods=['GET', 'POST'])
+    def adicionar_item_epi():
+        if request.method == 'POST':
+            item = ItemEPI(
+                tipo_item=request.form['tipo_item'],
+                descricao=request.form['descricao'],
+                codigo=request.form['codigo'],
+                funcoes_permitidas=request.form.get('funcoes_permitidas'),
+                periodicidade_dias=request.form.get('periodicidade_dias') or None,
+                fornecedor=request.form.get('fornecedor'),
+                observacoes=request.form.get('observacoes'),
+            )
+            db.session.add(item)
+            db.session.commit()
+            return redirect(url_for('listar_itens_epi'))
+        return render_template('item_epi_form.html', item=None)
+
+    @app.route('/itens_epi/edit/<int:id>', methods=['GET', 'POST'])
+    def editar_item_epi(id):
+        item = ItemEPI.query.get_or_404(id)
+        if request.method == 'POST':
+            item.tipo_item = request.form['tipo_item']
+            item.descricao = request.form['descricao']
+            item.codigo = request.form['codigo']
+            item.funcoes_permitidas = request.form.get('funcoes_permitidas')
+            item.periodicidade_dias = request.form.get('periodicidade_dias') or None
+            item.fornecedor = request.form.get('fornecedor')
+            item.observacoes = request.form.get('observacoes')
+            db.session.commit()
+            return redirect(url_for('listar_itens_epi'))
+        return render_template('item_epi_form.html', item=item)
+
+    # --- Rotina de Distribuição ---
+    @app.route('/distribuicoes_itens')
+    def listar_distribuicoes_itens():
+        distribs = DistribuicaoItem.query.join(ItemEPI).all()
+        return render_template('distribuicoes_itens.html', distribs=distribs)
+
+    @app.route('/distribuicoes_itens/add', methods=['GET', 'POST'])
+    def adicionar_distribuicao_item():
+        itens = ItemEPI.query.order_by(ItemEPI.descricao).all()
+        if request.method == 'POST':
+            dist = DistribuicaoItem(
+                item_id=int(request.form['item_id']),
+                cpf_funcionario=request.form['cpf_funcionario'],
+                quantidade=int(request.form.get('quantidade', 1)),
+                certificado_aprovacao=request.form.get('certificado_aprovacao'),
+                responsavel=request.form.get('responsavel')
+            )
+            db.session.add(dist)
+            db.session.commit()
+            return redirect(url_for('listar_distribuicoes_itens'))
+        return render_template('distribuicao_item_form.html', itens=itens)
+
+    @app.route('/distribuicoes_itens/devolver/<int:distrib_id>', methods=['GET', 'POST'])
+    def registrar_devolucao_item(distrib_id):
+        distrib = DistribuicaoItem.query.get_or_404(distrib_id)
+        if request.method == 'POST':
+            dev = DevolucaoItem(
+                distribuicao_id=distrib_id,
+                motivo=request.form.get('motivo'),
+                estado_item=request.form.get('estado_item'),
+                observacoes=request.form.get('observacoes'),
+            )
+            db.session.add(dev)
+            db.session.commit()
+            return redirect(url_for('listar_distribuicoes_itens'))
+        return render_template('devolucao_item_form.html', distrib=distrib)
+
+    @app.route('/itens_epi/alertas')
+    def alertas_itens_epi():
+        hoje = datetime.date.today()
+        limite = hoje + datetime.timedelta(days=30)
+        distribs = DistribuicaoItem.query.join(ItemEPI).all()
+        vencendo = [d for d in distribs if d.data_vencimento and hoje <= d.data_vencimento <= limite]
+        return render_template('alertas_epi.html', itens_vencendo=vencendo)
+
     return app # Fim da função create_app
 
 
@@ -3009,6 +3093,16 @@ def initialize_database(app_instance):
                     print("Registros de férias de exemplo populados com sucesso!")
                 else:
                     print("Nenhum funcionário encontrado para popular férias de exemplo.")
+            
+            if ItemEPI.query.count() == 0:
+                print("Populando itens de EPI de exemplo...")
+                itens_exemplo = [
+                    ItemEPI(tipo_item='EPI', descricao='Capacete de Segurança', codigo='EPI001', periodicidade_dias=365),
+                    ItemEPI(tipo_item='Farda', descricao='Camisa Padrão', codigo='FARDA001', periodicidade_dias=180)
+                ]
+                db.session.bulk_save_objects(itens_exemplo)
+                db.session.commit()
+                print("Itens de exemplo populados com sucesso!")
 
 
         except Exception as e:
