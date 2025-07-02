@@ -2,22 +2,117 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Itens a Vencer - SIGEP</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --clr-dark-blue: #1F3A5F;
+            --clr-light-blue: #4F83CC;
+            --clr-light-gray: #F4F6F8;
+            --clr-medium-gray: #A0AAB4;
+            --clr-white: #FFFFFF;
+            --clr-success: #27AE60;
+            --clr-attention: #F1C40F;
+            --clr-error: #E74C3C;
+            --clr-purple: #8A2BE2;
+            --clr-orange: #FF8C00;
+            --clr-yellow: #F1C40F;
+            --clr-teal: #008080;
+            --clr-indigo: #4B0082;
+            --clr-pink: #FF69B4;
+            --clr-dashboard-bg: #F0F2F5;
+            --clr-sidebar-bg: #1F3A5F;
+            --clr-card-bg: #FFFFFF;
+            --clr-text-main: #333333;
+            --clr-text-secondary: #666666;
+            --clr-border: #E0E0E0;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: var(--clr-dashboard-bg); }
+        .sidebar { background-color: var(--clr-sidebar-bg); color: var(--clr-white); width: 280px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); position: fixed; height: 100vh; overflow-y: auto; }
+        .sidebar-header { font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; display: flex; align-items: center; }
+        .sidebar-nav-item { display: flex; align-items: center; padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 0.5rem; color: var(--clr-white); transition: background-color 0.2s, color 0.2s; }
+        .sidebar-nav-item:hover, .sidebar-nav-item.active { background-color: var(--clr-light-blue); color: var(--clr-white); }
+        .sidebar-nav-item i { margin-right: 1rem; font-size: 1.25rem; }
+        .main-content { margin-left: 280px; padding: 2rem; flex-grow: 1; background-color: var(--clr-dashboard-bg); }
+        .main-header { background-color: var(--clr-card-bg); padding: 1.5rem 2rem; border-radius: 0.75rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; }
+        .main-header h1 { font-size: 1.75rem; font-weight: 700; color: var(--clr-dark-blue); }
+        .content-section { background-color: var(--clr-card-bg); border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); margin-bottom: 1.5rem; }
+        .btn-secondary { background-color: var(--clr-medium-gray); color: var(--clr-white); }
+        .btn-secondary:hover { background-color: color-mix(in srgb, var(--clr-medium-gray) 80%, black); }
+        @media (max-width: 768px) { .sidebar { width: 100%; height: auto; position: relative; margin-bottom: 1rem; } .main-content { margin-left: 0; } .main-header { flex-direction: column; align-items: flex-start; } }
+    </style>
 </head>
-<body class="p-6">
-    <h1 class="text-2xl mb-4">Itens com Vencimento Próximo</h1>
-    <table class="min-w-full border">
-        <thead><tr><th class="p-2">Funcionário</th><th class="p-2">Item</th><th class="p-2">Vencimento</th></tr></thead>
-        <tbody>
-            {% for dist in itens_vencendo %}
-            <tr class="border-t">
-                <td class="p-2">{{ dist.cpf_funcionario }}</td>
-                <td class="p-2">{{ dist.item.descricao }}</td>
-                <td class="p-2">{{ dist.data_vencimento.strftime('%Y-%m-%d') }}</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<body class="flex flex-col md:flex-row min-h-screen">
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-cubes mr-3 text-2xl"></i> SIGEP
+        </div>
+        <nav>
+            <ul>
+                <li>
+                    <a href="{{ url_for('index') }}" class="sidebar-nav-item">
+                        <i class="fas fa-home"></i> Visão Geral
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('listar_funcionarios') }}" class="sidebar-nav-item">
+                        <i class="fas fa-edit"></i> Cadastros
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('listar_registros_ponto') }}" class="sidebar-nav-item">
+                        <i class="fas fa-calendar-alt"></i> Lançamentos
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('listar_distribuicoes_itens') }}" class="sidebar-nav-item active">
+                        <i class="fas fa-hard-hat"></i> Fardas e EPIs
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-nav-item">
+                        <i class="fas fa-chart-bar"></i> Relatórios
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="sidebar-nav-item">
+                        <i class="fas fa-cogs"></i> Gerencial
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="flex justify-end mt-8">
+            <a href="{{ url_for('logout') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md flex items-center">
+                <i class="fas fa-sign-out-alt mr-2"></i> Sair
+            </a>
+        </div>
+    </div>
+    <div class="main-content">
+        <div class="main-header">
+            <h1 class="text-2xl font-bold text-dark-blue">Itens com Vencimento Próximo</h1>
+            <div class="flex space-x-3">
+                <a href="{{ url_for('index') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md flex items-center" title="Voltar ao Início">
+                    <i class="fas fa-home"></i>
+                </a>
+            </div>
+        </div>
+        <div class="content-section">
+            <table class="min-w-full border">
+                <thead><tr><th class="p-2">Funcionário</th><th class="p-2">Item</th><th class="p-2">Vencimento</th></tr></thead>
+                <tbody>
+                    {% for dist in itens_vencendo %}
+                    <tr class="border-t">
+                        <td class="p-2">{{ dist.cpf_funcionario }}</td>
+                        <td class="p-2">{{ dist.item.descricao }}</td>
+                        <td class="p-2">{{ dist.data_vencimento.strftime('%Y-%m-%d') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </body>
 </html>
