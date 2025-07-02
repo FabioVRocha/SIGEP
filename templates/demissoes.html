@@ -333,6 +333,7 @@
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Data Demissão</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Último Dia Trab.</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Tipo Desligamento</th>
+                                <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Classificação</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Aviso Prévio</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Motivo Demissão</th>
                                 <th class="py-3 px-4 text-left text-sm font-semibold uppercase tracking-wider">Data Aviso</th>
@@ -360,6 +361,14 @@
                                 </th>
                                 <th class="px-4 py-2 border-b border-medium-gray">
                                     <select onchange="filterTable()" class="w-full px-2 py-1 border rounded text-sm filter-select" data-column="6">
+                                        <option value="">Todos</option>
+                                        <option value="positivo">Positivo</option>
+                                        <option value="neutro">Neutro</option>
+                                        <option value="negativo">Negativo</option>
+                                    </select>
+                                </th>
+                                <th class="px-4 py-2 border-b border-medium-gray">
+                                    <select onchange="filterTable()" class="w-full px-2 py-1 border rounded text-sm filter-select" data-column="7">
                                         <option value="">Todos</option>
                                         <option value="cumprido">Cumprido</option>
                                         <option value="indenizado">Indenizado</option>
@@ -390,6 +399,7 @@
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.data_demissao.strftime('%d/%m/%Y') }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.ultimo_dia_trabalhado.strftime('%d/%m/%Y') }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.tipo_desligamento }}</td>
+                                    <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.classificacao }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.aviso_previo }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.motivo_demissao }}</td>
                                     <td class="py-3 px-4 text-sm text-dark-blue">{{ demissao.data_aviso_previo.strftime('%d/%m/%Y') if demissao.data_aviso_previo else '' }}</td>

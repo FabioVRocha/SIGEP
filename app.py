@@ -1604,6 +1604,7 @@ def create_app():
             data_demissao = datetime.datetime.strptime(request.form['data_demissao'], '%Y-%m-%d').date()
             ultimo_dia_trabalhado = datetime.datetime.strptime(request.form['ultimo_dia_trabalhado'], '%Y-%m-%d').date()
             tipo_desligamento = request.form['tipo_desligamento']
+            classificacao = request.form['classificacao']
             motivo_demissao = request.form.get('motivo_demissao')
             aviso_previo = request.form['aviso_previo']
             data_aviso_previo_str = request.form.get('data_aviso_previo')
@@ -1644,6 +1645,7 @@ def create_app():
                 data_demissao=data_demissao,
                 ultimo_dia_trabalhado=ultimo_dia_trabalhado,
                 tipo_desligamento=tipo_desligamento,
+                classificacao=classificacao,
                 motivo_demissao=motivo_demissao,
                 aviso_previo=aviso_previo,
                 data_aviso_previo=data_aviso_previo,
@@ -1701,6 +1703,7 @@ def create_app():
             data_demissao = datetime.datetime.strptime(request.form['data_demissao'], '%Y-%m-%d').date()
             ultimo_dia_trabalhado = datetime.datetime.strptime(request.form['ultimo_dia_trabalhado'], '%Y-%m-%d').date()
             tipo_desligamento = request.form['tipo_desligamento']
+            classificacao = request.form['classificacao']
             motivo_demissao = request.form.get('motivo_demissao')
             aviso_previo = request.form['aviso_previo']
             data_aviso_previo_str = request.form.get('data_aviso_previo')
@@ -1739,6 +1742,7 @@ def create_app():
                 'data_demissao': str(demissao.data_demissao),
                 'ultimo_dia_trabalhado': str(demissao.ultimo_dia_trabalhado),
                 'tipo_desligamento': demissao.tipo_desligamento,
+                'classificacao': demissao.classificacao,
                 'motivo_demissao': demissao.motivo_demissao,
                 'aviso_previo': demissao.aviso_previo,
                 'data_aviso_previo': str(demissao.data_aviso_previo) if demissao.data_aviso_previo else None,
@@ -1750,6 +1754,7 @@ def create_app():
             demissao.data_demissao = data_demissao
             demissao.ultimo_dia_trabalhado = ultimo_dia_trabalhado
             demissao.tipo_desligamento = tipo_desligamento
+            demissao.classificacao = classificacao
             demissao.motivo_demissao = motivo_demissao
             demissao.aviso_previo = aviso_previo
             demissao.data_aviso_previo = data_aviso_previo
@@ -1781,6 +1786,7 @@ def create_app():
                     'ultimo_dia_trabalhado': str(demissao.ultimo_dia_trabalhado),
                     'tipo_desligamento': demissao.tipo_desligamento,
                     'motivo_demissao': demissao.motivo_demissao,
+                    'classificacao': demissao.classificacao,
                     'aviso_previo': demissao.aviso_previo,
                     'data_aviso_previo': str(demissao.data_aviso_previo) if demissao.data_aviso_previo else None,
                     'quantidade_dias_aviso': demissao.quantidade_dias_aviso,

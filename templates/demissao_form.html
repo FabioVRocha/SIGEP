@@ -320,6 +320,16 @@
                 </div>
 
                 <div>
+                    <label for="classificacao" class="block text-sm font-medium text-gray-700">Classificação <span class="text-red-500">*</span></label>
+                    <select id="classificacao" name="classificacao" required>
+                        <option value="">Selecione</option>
+                        <option value="Positivo" {% if demissao and demissao.classificacao == 'Positivo' %}selected{% endif %}>Positivo</option>
+                        <option value="Neutro" {% if demissao and demissao.classificacao == 'Neutro' %}selected{% endif %}>Neutro</option>
+                        <option value="Negativo" {% if demissao and demissao.classificacao == 'Negativo' %}selected{% endif %}>Negativo</option>
+                    </select>
+                </div>
+
+                <div>
                     <label for="aviso_previo" class="block text-sm font-medium text-gray-700">Aviso Prévio <span class="text-red-500">*</span></label>
                     <select id="aviso_previo" name="aviso_previo" required>
                         <option value="">Selecione</option>

@@ -123,6 +123,7 @@ class Demissao(db.Model):
     data_demissao = db.Column(db.Date, nullable=False)
     ultimo_dia_trabalhado = db.Column(db.Date, nullable=False)
     tipo_desligamento = db.Column(db.String(100), nullable=False)
+    classificacao = db.Column(db.String(20), nullable=False, default='Neutro')
     motivo_demissao = db.Column(db.Text, nullable=False)
     aviso_previo = db.Column(db.String(50), nullable=False)
     data_aviso_previo = db.Column(db.Date, nullable=True)
