@@ -2945,9 +2945,23 @@ def initialize_database(app_instance):
                 print("Coluna 'jornada_id' adicionada à tabela contratos_trabalho.")
             except Exception as e:
                 print(f"Erro ao adicionar coluna jornada_id: {e}")
-        from models import (Usuario, LogAuditoria, Cidade, Funcionario, ContratoTrabalho,
-                            Setor, Funcao, ReajusteSalarial, Demissao, ControleFerias,
-                            EntidadeSaudeOcupacional, TipoExame, ExameFuncao, ExameFuncionario)
+        from models import (
+            Usuario,
+            LogAuditoria,
+            Cidade,
+            Funcionario,
+            ContratoTrabalho,
+            Setor,
+            Funcao,
+            ReajusteSalarial,
+            Demissao,
+            ControleFerias,
+            EntidadeSaudeOcupacional,
+            TipoExame,
+            ExameFuncao,
+            ExameFuncionario,
+            ItemEPI,
+        )
         try:
             master_user_exists = db.session.query(Usuario).filter_by(nome='master').first()
             if not master_user_exists:
