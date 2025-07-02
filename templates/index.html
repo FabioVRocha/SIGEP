@@ -284,6 +284,11 @@
                     </a>
                 </li>
                 <li>
+                    <a href="{{ url_for('listar_distribuicoes_itens') }}" class="sidebar-nav-item">
+                        <i class="fas fa-hard-hat"></i> Fardas e EPIs
+                    </a>
+                </li>
+                <li>
                     <a href="#" data-target="relatorios-content" class="sidebar-nav-item">
                         <i class="fas fa-chart-bar"></i> Relatórios
                     </a>
@@ -460,6 +465,11 @@
                     <div class="text-icon-green mb-4"><i class="fas fa-notes-medical fa-3x"></i></div>
                     <h2 class="text-xl font-semibold text-dark-blue mb-2">Exames</h2>
                     <p class="text-medium-gray">Registre exames ocupacionais dos funcionários.</p>
+                </a>
+                <a href="{{ url_for('listar_distribuicoes_itens') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-orange mb-4"><i class="fas fa-hard-hat fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Fardas e EPIs</h2>
+                    <p class="text-medium-gray">Controle entrega e devolução de fardas e EPIs.</p>
                 </a>
             </div>
         </div>

@@ -2,25 +2,35 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Distribuições de Itens - SIGEP</title>
+    <title>Nova Distribuição - SIGEP</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="p-6">
-    <h1 class="text-2xl mb-4">Distribuições</h1>
-    <a href="{{ url_for('adicionar_distribuicao_item') }}" class="bg-blue-600 text-white px-4 py-2 rounded">Nova Distribuição</a>
-    <table class="min-w-full mt-4 border">
-        <thead><tr><th class="p-2">Funcionário</th><th class="p-2">Item</th><th class="p-2">Qtd</th><th class="p-2">Data</th><th class="p-2">Ações</th></tr></thead>
-        <tbody>
-            {% for dist in distribs %}
-            <tr class="border-t">
-                <td class="p-2">{{ dist.cpf_funcionario }}</td>
-                <td class="p-2">{{ dist.item.descricao }}</td>
-                <td class="p-2">{{ dist.quantidade }}</td>
-                <td class="p-2">{{ dist.data_entrega.strftime('%Y-%m-%d') }}</td>
-                <td class="p-2"><a href="{{ url_for('registrar_devolucao_item', distrib_id=dist.id) }}" class="text-blue-600">Devolver</a></td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <h1 class="text-2xl mb-4">Nova Distribuição</h1>
+    <form method="post">
+        <label class="block mb-2">Item
+            <select name="item_id" class="border p-2 w-full">
+                {% for item in itens %}
+                <option value="{{ item.id }}">{{ item.descricao }}</option>
+                {% endfor %}
+            </select>
+        </label>
+        <label class="block mb-2">CPF do Funcionário
+            <input type="text" name="cpf_funcionario" class="border p-2 w-full">
+        </label>
+        <label class="block mb-2">Quantidade
+            <input type="number" name="quantidade" value="1" class="border p-2 w-full">
+        </label>
+        <label class="block mb-2">Certificado de Aprovação
+            <input type="text" name="certificado_aprovacao" class="border p-2 w-full">
+        </label>
+        <label class="block mb-2">Responsável
+            <input type="text" name="responsavel" class="border p-2 w-full">
+        </label>
+        <div class="mt-4">
+            <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded">Salvar</button>
+            <a href="{{ url_for('listar_distribuicoes_itens') }}" class="ml-2 text-blue-600">Cancelar</a>
+        </div>
+    </form>
 </body>
 </html>

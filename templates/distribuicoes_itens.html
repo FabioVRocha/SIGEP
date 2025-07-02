@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>Distribuições de Itens - SIGEP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="p-6">
+    <h1 class="text-2xl mb-4">Distribuições</h1>
+    <a href="{{ url_for('adicionar_distribuicao_item') }}" class="bg-blue-600 text-white px-4 py-2 rounded">Nova Distribuição</a>
+    <table class="min-w-full mt-4 border">
+        <thead><tr><th class="p-2">Funcionário</th><th class="p-2">Item</th><th class="p-2">Qtd</th><th class="p-2">Data</th><th class="p-2">Ações</th></tr></thead>
+        <tbody>
+            {% for dist in distribs %}
+            <tr class="border-t">
+                <td class="p-2">{{ dist.cpf_funcionario }}</td>
+                <td class="p-2">{{ dist.item.descricao }}</td>
+                <td class="p-2">{{ dist.quantidade }}</td>
+                <td class="p-2">{{ dist.data_entrega.strftime('%Y-%m-%d') }}</td>
+                <td class="p-2"><a href="{{ url_for('registrar_devolucao_item', distrib_id=dist.id) }}" class="text-blue-600">Devolver</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
