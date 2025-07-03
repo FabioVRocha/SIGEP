@@ -287,11 +287,6 @@
                     <a href="{{ url_for('fardas_epi_menu') }}" class="sidebar-nav-item">
                         <i class="fas fa-hard-hat"></i> Fardas e EPIs
                     </a>
-                    <ul class="ml-4">
-                        <li><a href="{{ url_for('alertas_itens_epi') }}" class="sidebar-nav-item">Alertas</a></li>
-                        <li><a href="{{ url_for('listar_distribuicoes_itens') }}" class="sidebar-nav-item">Distribuição</a></li>
-                        <li><a href="{{ url_for('listar_itens_epi') }}" class="sidebar-nav-item">Itens</a></li>
-                    </ul>
                 </li>
                 <li>
                     <a href="#" data-target="relatorios-content" class="sidebar-nav-item">
@@ -535,16 +530,18 @@
 
             sidebarItems.forEach(item => {
                 item.addEventListener('click', (event) => {
-                    event.preventDefault(); // Previne o comportamento padrão do link
-
-                    deactivateAllSidebarItems();
-                    item.classList.add('active'); // Ativa o item clicado
-
-                    hideAllContentSections();
                     const targetId = item.dataset.target;
-                    const targetSection = document.getElementById(targetId);
-                    if (targetSection) {
-                        targetSection.classList.remove('hidden'); // Mostra a seção de conteúdo correspondente
+                    if (targetId) {
+                        event.preventDefault(); // Previne o comportamento padrão do link apenas para itens internos
+
+                        deactivateAllSidebarItems();
+                        item.classList.add('active'); // Ativa o item clicado
+
+                        hideAllContentSections();
+                        const targetSection = document.getElementById(targetId);
+                        if (targetSection) {
+                            targetSection.classList.remove('hidden'); // Mostra a seção de conteúdo correspondente
+                        }
                     }
                 });
             });
