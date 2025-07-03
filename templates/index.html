@@ -289,12 +289,12 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-target="relatorios-content" class="sidebar-nav-item">
+                    <a href="#" data-target="gerencial-content" class="sidebar-nav-item">
                         <i class="fas fa-chart-bar"></i> Relatórios
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-target="gerencial-content" class="sidebar-nav-item">
+                    <a href="{{ url_for('index', section='gerencial-content') }}" class="sidebar-nav-item">
                         <i class="fas fa-cogs"></i> Gerencial
                     </a>
                 </li>
@@ -546,10 +546,12 @@
                 });
             });
 
-            // Ativa a "Visão Geral" e exibe seu conteúdo ao carregar a página
-            const initialSidebarItem = document.querySelector('.sidebar-nav-item[data-target="dashboard-content"]');
+            // Verifica parâmetro na URL para selecionar a seção inicial
+            const params = new URLSearchParams(window.location.search);
+            const section = params.get('section') || 'dashboard-content';
+            const initialSidebarItem = document.querySelector(`.sidebar-nav-item[data-target="${section}"]`);
             if (initialSidebarItem) {
-                initialSidebarItem.click(); // Simula um clique para ativar e exibir o conteúdo
+                initialSidebarItem.click();
             }
         });
     </script>

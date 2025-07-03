@@ -264,17 +264,17 @@
         <nav>
             <ul>
                 <li>
-                    <a href="#" data-target="dashboard-content" class="sidebar-nav-item">
+                    <a href="{{ url_for('index', section='dashboard-content') }}" class="sidebar-nav-item">
                         <i class="fas fa-home"></i> Visão Geral
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-target="cadastros-content" class="sidebar-nav-item">
+                    <a href="{{ url_for('index', section='cadastros-content') }}" class="sidebar-nav-item">
                         <i class="fas fa-edit"></i> Cadastros
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-target="lancamentos-content" class="sidebar-nav-item">
+                    <a href="{{ url_for('index', section='lancamentos-content') }}" class="sidebar-nav-item">
                         <i class="fas fa-calendar-alt"></i> Lançamentos
                     </a>
                 </li>
@@ -289,12 +289,12 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-target="relatorios-content" class="sidebar-nav-item">
+                    <a href="{{ url_for('index', section='relatorios-content') }}" class="sidebar-nav-item">
                         <i class="fas fa-chart-bar"></i> Relatórios
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-target="gerencial-content" class="sidebar-nav-item">
+                    <a href="{{ url_for('index', section='gerencial-content') }}" class="sidebar-nav-item">
                         <i class="fas fa-cogs"></i> Gerencial
                     </a>
                 </li>
