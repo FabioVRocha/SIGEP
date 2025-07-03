@@ -2823,6 +2823,12 @@ def create_app():
 
         return redirect(url_for('listar_exames_funcionarios'))
 
+    # --- Menu Fardas e EPIs ---
+    @app.route('/fardas_epi')
+    def fardas_epi_menu():
+        """Página inicial do módulo de Fardas e EPIs"""
+        return render_template('fardas_epi_menu.html')
+
     # --- Módulo: Itens de Fardas e EPIs ---
     @app.route('/itens_epi')
     def listar_itens_epi():
