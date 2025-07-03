@@ -328,6 +328,20 @@
             {% endif %}
         {% endwith %}
 
+        <div class="flex justify-end mb-6">
+        <form method="get" class="flex flex-wrap items-end gap-4">
+            <div>
+                <label for="start_date" class="block text-sm font-medium mb-1">Início</label>
+                <input type="date" id="start_date" name="start_date" value="{{ start_date }}" class="w-full px-2 py-1 border rounded filter-input">
+            </div>
+            <div>
+                <label for="end_date" class="block text-sm font-medium mb-1">Fim</label>
+                <input type="date" id="end_date" name="end_date" value="{{ end_date }}" class="w-full px-2 py-1 border rounded filter-input">
+            </div>
+            <button type="submit" class="btn-primary text-white font-bold py-2 px-4 rounded-lg shadow-md">Filtrar</button>
+        </form>
+        </div>
+
         <div class="content-section">
             {% if registros_ponto %}
                 <div class="overflow-x-auto">

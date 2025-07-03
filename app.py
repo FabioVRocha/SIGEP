@@ -2268,8 +2268,35 @@ def create_app():
             flash('Você precisa estar logado para acessar esta página.', 'warning')
             return redirect(url_for('login'))
 
-        registros = db.session.query(RegistroPonto).outerjoin(Funcionario).order_by(RegistroPonto.data_hora.desc()).all()
-        return render_template('registro_ponto.html', registros_ponto=registros)
+        start_str = request.args.get('start_date')
+        end_str = request.args.get('end_date')
+        try:
+            if start_str and end_str:
+                start_date = datetime.datetime.strptime(start_str, '%Y-%m-%d')
+                end_date = datetime.datetime.strptime(end_str, '%Y-%m-%d')
+            else:
+                today = datetime.date.today()
+                start_date = today.replace(day=1)
+                next_month = (start_date + datetime.timedelta(days=32)).replace(day=1)
+                end_date = next_month - datetime.timedelta(days=1)
+        except ValueError:
+            flash('Formato de data inválido.', 'danger')
+            today = datetime.date.today()
+            start_date = today.replace(day=1)
+            next_month = (start_date + datetime.timedelta(days=32)).replace(day=1)
+            end_date = next_month - datetime.timedelta(days=1)
+
+        query = db.session.query(RegistroPonto).outerjoin(Funcionario)
+        query = query.filter(RegistroPonto.data_hora >= datetime.datetime.combine(start_date, datetime.time.min))
+        query = query.filter(RegistroPonto.data_hora <= datetime.datetime.combine(end_date, datetime.time.max))
+        registros = query.order_by(RegistroPonto.data_hora.desc()).all()
+
+        return render_template(
+            'registro_ponto.html',
+            registros_ponto=registros,
+            start_date=start_date.strftime('%Y-%m-%d'),
+            end_date=end_date.strftime('%Y-%m-%d')
+        )
 
     @app.route('/registros_ponto/importar', methods=['GET', 'POST'])
     def importar_registros_ponto():
