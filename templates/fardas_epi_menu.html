@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* Definição da Paleta de Cores como Variáveis CSS */
         :root {
             --clr-dark-blue: #1F3A5F;
             --clr-light-blue: #4F83CC;
@@ -23,31 +24,236 @@
             --clr-teal: #008080;
             --clr-indigo: #4B0082;
             --clr-pink: #FF69B4;
-            --clr-dashboard-bg: #F0F2F5;
-            --clr-sidebar-bg: #1F3A5F;
-            --clr-card-bg: #FFFFFF;
-            --clr-text-main: #333333;
-            --clr-text-secondary: #666666;
-            --clr-border: #E0E0E0;
+            --clr-dashboard-bg: #F0F2F5; /* Cor de fundo do painel principal, similar à imagem */
+            --clr-sidebar-bg: #1F3A5F; /* Cor de fundo da sidebar, azul escuro */
+            --clr-card-bg: #FFFFFF; /* Cor de fundo dos cards */
+            --clr-text-main: #333333; /* Cor principal do texto */
+            --clr-text-secondary: #666666; /* Cor secundária do texto */
+            --clr-border: #E0E0E0; /* Cor da borda para elementos */
         }
-        body { font-family: 'Inter', sans-serif; background-color: var(--clr-dashboard-bg); }
-        .sidebar { background-color: var(--clr-sidebar-bg); color: var(--clr-white); width: 280px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); position: fixed; height: 100vh; overflow-y: auto; }
-        .sidebar-header { font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; display: flex; align-items: center; }
-        .sidebar-nav-item { display: flex; align-items: center; padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 0.5rem; color: var(--clr-white); transition: background-color 0.2s, color 0.2s; }
-        .sidebar-nav-item:hover, .sidebar-nav-item.active { background-color: var(--clr-light-blue); color: var(--clr-white); }
-        .sidebar-nav-item i { margin-right: 1rem; font-size: 1.25rem; }
-        .main-content { margin-left: 280px; padding: 2rem; flex-grow: 1; background-color: var(--clr-dashboard-bg); }
-        .main-header { background-color: var(--clr-card-bg); padding: 1.5rem 2rem; border-radius: 0.75rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; }
-        .main-header h1 { font-size: 1.75rem; font-weight: 700; color: var(--clr-dark-blue); }
-        .content-section { background-color: var(--clr-card-bg); border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); margin-bottom: 1.5rem; }
-        .card { background-color: var(--clr-card-bg); border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); transition: transform 0.2s, box-shadow 0.2s; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); }
-        .card h2 { color: var(--clr-dark-blue); }
-        .card p { color: var(--clr-text-secondary); font-size: 0.9rem; }
-        .text-icon-attention { color: var(--clr-attention); }
-        .text-icon-orange { color: var(--clr-orange); }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--clr-dashboard-bg); /* Fundo geral */
+        }
+
+        .flash-message { padding: 1rem; margin-bottom: 1rem; border-radius: 0.5rem; font-weight: 600; }
+        .flash-message.success { background-color: var(--clr-success); color: var(--clr-white); border: 1px solid var(--clr-success); }
+        .flash-message.danger { background-color: var(--clr-error); color: var(--clr-white); border: 1px solid var(--clr-error); }
+        .flash-message.warning { background-color: var(--clr-attention); color: var(--clr-dark-blue); border: 1px solid var(--clr-attention); }
+
+        /* Estilos da Sidebar */
+        .sidebar {
+            background-color: var(--clr-sidebar-bg);
+            color: var(--clr-white);
+            width: 280px; /* Largura da sidebar */
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            position: fixed; /* Fixa a sidebar na tela */
+            height: 100vh; /* Altura total da viewport */
+            overflow-y: auto; /* Adiciona scroll se o conteúdo for maior que a tela */
+        }
+
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            color: var(--clr-white);
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .sidebar-nav-item:hover, .sidebar-nav-item.active {
+            background-color: var(--clr-light-blue); /* Cor de hover/ativo */
+            color: var(--clr-white);
+        }
+
+        .sidebar-nav-item i {
+            margin-right: 1rem;
+            font-size: 1.25rem;
+        }
+
+        /* Estilos do Conteúdo Principal */
+        .main-content {
+            margin-left: 280px; /* Margem para acomodar a sidebar */
+            padding: 2rem;
+            flex-grow: 1;
+            background-color: var(--clr-dashboard-bg);
+        }
+
+        .main-header {
+            background-color: var(--clr-card-bg);
+            padding: 1.5rem 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--clr-dark-blue);
+        }
+
+        .main-header .search-bar {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--clr-border);
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--clr-light-gray);
+        }
+
+        .main-header .search-bar input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 1rem;
+            color: var(--clr-text-main);
+        }
+
+        .main-header .search-bar i {
+            color: var(--clr-medium-gray);
+            margin-right: 0.5rem;
+        }
+
+        /* Cards do Dashboard */
+        .dashboard-card {
+            background-color: var(--clr-card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+        }
+
+        .dashboard-card-header {
+            display: flex;
+            align-items: center;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--clr-dark-blue);
+            margin-bottom: 1rem;
+        }
+
+        .dashboard-card-header i {
+            margin-right: 0.75rem;
+            font-size: 1.5rem;
+        }
+
+        .alert-card .dashboard-card-header i { color: var(--clr-error); } /* Ícone de alerta vermelho */
+        .notice-card .dashboard-card-header i { color: var(--clr-attention); } /* Ícone de aviso amarelo */
+        .new-enrollment-card .dashboard-card-header i { color: var(--clr-dark-blue); } /* Ícone de novas inscrições azul escuro */
+        .active-employees-card .dashboard-card-header i { color: var(--clr-success); } /* Ícone de funcionários ativos verde */
+
+
+        /* Estilos para as categorias expansíveis existentes */
+        .category-header {
+            background-color: var(--clr-light-blue); /* Alterado para combinar mais com a sidebar */
+            color: var(--clr-white);
+            padding: 1rem 1.5rem; /* Ajustado padding */
+            border-radius: 0.75rem;
+            margin-bottom: 1rem; /* Ajustado margin */
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.25rem; /* Ajustado tamanho da fonte */
+            font-weight: 600; /* Ajustado peso da fonte */
+        }
+        .category-header:hover { background-color: var(--clr-dark-blue); } /* Darker on hover */
+        .category-header .arrow-icon { transition: transform 0.2s; }
+        .category-header.expanded .arrow-icon { transform: rotate(90deg); }
+        .category-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit,minmax(200px,1fr));
+            gap: 1.5rem;
+            margin-top: -0.5rem; /* Ajustado para sobrepor um pouco */
+            padding: 1.5rem; /* Ajustado padding */
+            border-bottom-left-radius: 0.75rem;
+            border-bottom-right-radius: 0.75rem;
+            background-color: var(--clr-card-bg); /* Cor de fundo dos cards */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            margin-bottom: 1.5rem;
+        }
+        .category-content.hidden { display: none; }
+
+        .card {
+            background-color: var(--clr-light-gray); /* Fundo dos cards internos */
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05);
+            transition: transform 0.2s ease-in-out;
+            border: 1px solid var(--clr-border); /* Borda sutil */
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+        }
+
+        .card h2 {
+            color: var(--clr-dark-blue);
+        }
+
+        .card p {
+            color: var(--clr-text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Cores dos ícones dos cards */
+        .text-icon-blue { color: var(--clr-light-blue); }
         .text-icon-green { color: var(--clr-success); }
-        @media (max-width: 768px) { .sidebar { width: 100%; height: auto; position: relative; margin-bottom: 1rem; } .main-content { margin-left: 0; } .main-header { flex-direction: column; align-items: flex-start; } }
+        .text-icon-purple { color: var(--clr-purple); }
+        .text-icon-orange { color: var(--clr-orange); }
+        .text-icon-error { color: var(--clr-error); }
+        .text-icon-yellow { color: var(--clr-yellow); }
+        .text-icon-teal { color: var(--clr-teal); }
+        .text-icon-indigo { color: var(--clr-indigo); }
+        .text-icon-pink { color: var(--clr-pink); }
+        .text-icon-gray { color: var(--clr-medium-gray); }
+        .text-icon-attention { color: var(--clr-attention); } /* Adicionado */
+
+
+        .btn-secondary {
+            background-color: var(--clr-medium-gray);
+            color: var(--clr-white);
+        }
+        .btn-secondary:hover {
+            background-color: color-mix(in srgb, var(--clr-medium-gray) 80%, black);
+        }
+
+        /* Responsividade básica */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                margin-bottom: 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .main-header .search-bar {
+                width: 100%;
+                margin-top: 1rem;
+            }
+        }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
@@ -58,32 +264,37 @@
         <nav>
             <ul>
                 <li>
-                    <a href="{{ url_for('index') }}" class="sidebar-nav-item">
+                    <a href="#" data-target="dashboard-content" class="sidebar-nav-item">
                         <i class="fas fa-home"></i> Visão Geral
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('listar_funcionarios') }}" class="sidebar-nav-item">
+                    <a href="#" data-target="cadastros-content" class="sidebar-nav-item">
                         <i class="fas fa-edit"></i> Cadastros
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('listar_registros_ponto') }}" class="sidebar-nav-item">
+                    <a href="#" data-target="lancamentos-content" class="sidebar-nav-item">
                         <i class="fas fa-calendar-alt"></i> Lançamentos
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('fardas_epi_menu') }}" class="sidebar-nav-item active">
+                    <a href="{{ url_for('listar_exames_funcionarios') }}" class="sidebar-nav-item">
+                        <i class="fas fa-notes-medical"></i> Exames
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-target="fardas-epi-content" class="sidebar-nav-item active">
                         <i class="fas fa-hard-hat"></i> Fardas e EPIs
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="sidebar-nav-item">
+                    <a href="#" data-target="relatorios-content" class="sidebar-nav-item">
                         <i class="fas fa-chart-bar"></i> Relatórios
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="sidebar-nav-item">
+                    <a href="#" data-target="gerencial-content" class="sidebar-nav-item">
                         <i class="fas fa-cogs"></i> Gerencial
                     </a>
                 </li>
@@ -95,11 +306,29 @@
             </a>
         </div>
     </div>
+
     <div class="main-content">
         <div class="main-header">
             <h1>Fardas e EPIs</h1>
+            <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Pesquisar...">
+            </div>
         </div>
-        <div class="content-section">
+
+        {#
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-6">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        #}
+
+        <div id="fardas-epi-content" class="content-section">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <a href="{{ url_for('alertas_itens_epi') }}" class="card p-6 text-center flex flex-col items-center justify-center">
                     <div class="text-icon-attention mb-4"><i class="fas fa-exclamation-triangle fa-3x"></i></div>
@@ -118,6 +347,63 @@
                 </a>
             </div>
         </div>
+
+        <div id="dashboard-content" class="content-section hidden">
+            </div>
+        <div id="cadastros-content" class="content-section hidden">
+            </div>
+        <div id="lancamentos-content" class="content-section hidden">
+            </div>
+        <div id="relatorios-content" class="content-section hidden">
+            </div>
+        <div id="gerencial-content" class="content-section hidden">
+            </div>
+
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const sidebarItems = document.querySelectorAll('.sidebar-nav-item');
+            const contentSections = document.querySelectorAll('.content-section');
+
+            // Função para esconder todas as seções de conteúdo
+            const hideAllContentSections = () => {
+                contentSections.forEach(section => {
+                    section.classList.add('hidden');
+                });
+            };
+
+            // Função para remover a classe 'active' de todos os itens da sidebar
+            const deactivateAllSidebarItems = () => {
+                sidebarItems.forEach(item => {
+                    item.classList.remove('active');
+                });
+            };
+
+            sidebarItems.forEach(item => {
+                item.addEventListener('click', (event) => {
+                    const targetId = item.dataset.target;
+                    if (targetId) {
+                        event.preventDefault(); // Previne o comportamento padrão do link apenas para itens internos
+
+                        deactivateAllSidebarItems();
+                        item.classList.add('active'); // Ativa o item clicado
+
+                        hideAllContentSections();
+                        const targetSection = document.getElementById(targetId);
+                        if (targetSection) {
+                            targetSection.classList.remove('hidden'); // Mostra a seção de conteúdo correspondente
+                        }
+                    }
+                });
+            });
+
+            // Ativa o item "Fardas e EPIs" e exibe seu conteúdo ao carregar a página
+            const initialSidebarItem = document.querySelector('.sidebar-nav-item[data-target="fardas-epi-content"]');
+            if (initialSidebarItem) {
+                initialSidebarItem.click(); // Simula um clique para ativar e exibir o conteúdo
+            }
+        });
+    </script>
 </body>
 </html>
