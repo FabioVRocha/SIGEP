@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        /* Definição da Paleta de Cores como Variáveis CSS */
         :root {
             --clr-dark-blue: #1F3A5F;
             --clr-light-blue: #4F83CC;
@@ -23,43 +24,216 @@
             --clr-teal: #008080;
             --clr-indigo: #4B0082;
             --clr-pink: #FF69B4;
-            --clr-dashboard-bg: #F0F2F5;
-            --clr-sidebar-bg: #1F3A5F;
-            --clr-card-bg: #FFFFFF;
-            --clr-text-main: #333333;
-            --clr-text-secondary: #666666;
-            --clr-border: #E0E0E0;
+            --clr-dashboard-bg: #F0F2F5; /* Cor de fundo do painel principal, similar à imagem */
+            --clr-sidebar-bg: #1F3A5F; /* Cor de fundo da sidebar, azul escuro */
+            --clr-card-bg: #FFFFFF; /* Cor de fundo dos cards */
+            --clr-text-main: #333333; /* Cor principal do texto */
+            --clr-text-secondary: #666666; /* Cor secundária do texto */
+            --clr-border: #E0E0E0; /* Cor da borda para elementos */
         }
-        body { font-family: 'Inter', sans-serif; background-color: var(--clr-dashboard-bg); }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--clr-dashboard-bg); /* Fundo geral */
+        }
+
         .flash-message { padding: 1rem; margin-bottom: 1rem; border-radius: 0.5rem; font-weight: 600; }
         .flash-message.success { background-color: var(--clr-success); color: var(--clr-white); border: 1px solid var(--clr-success); }
         .flash-message.danger { background-color: var(--clr-error); color: var(--clr-white); border: 1px solid var(--clr-error); }
         .flash-message.warning { background-color: var(--clr-attention); color: var(--clr-dark-blue); border: 1px solid var(--clr-attention); }
-        .sidebar { background-color: var(--clr-sidebar-bg); color: var(--clr-white); width: 280px; padding: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06); position: fixed; height: 100vh; overflow-y: auto; }
-        .sidebar-header { font-size: 1.5rem; font-weight: 700; margin-bottom: 2rem; display: flex; align-items: center; }
-        .sidebar-nav-item { display: flex; align-items: center; padding: 0.75rem 1rem; margin-bottom: 0.5rem; border-radius: 0.5rem; color: var(--clr-white); transition: background-color 0.2s, color 0.2s; }
-        .sidebar-nav-item:hover, .sidebar-nav-item.active { background-color: var(--clr-light-blue); color: var(--clr-white); }
-        .sidebar-nav-item i { margin-right: 1rem; font-size: 1.25rem; }
-        .main-content { margin-left: 280px; padding: 2rem; flex-grow: 1; background-color: var(--clr-dashboard-bg); }
-        .main-header { background-color: var(--clr-card-bg); padding: 1.5rem 2rem; border-radius: 0.75rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; }
-        .main-header h1 { font-size: 1.75rem; font-weight: 700; color: var(--clr-dark-blue); }
-        .content-section { background-color: var(--clr-card-bg); border-radius: 0.75rem; padding: 1.5rem; box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06); margin-bottom: 1.5rem; }
-        .btn-primary { background-color: var(--clr-light-blue); color: var(--clr-white); }
-        .btn-primary:hover { background-color: var(--clr-dark-blue); }
-        .btn-secondary { background-color: var(--clr-medium-gray); color: var(--clr-white); }
-        .btn-secondary:hover { background-color: color-mix(in srgb, var(--clr-medium-gray) 80%, black); }
+
+        /* Estilos da Sidebar */
+        .sidebar {
+            background-color: var(--clr-sidebar-bg);
+            color: var(--clr-white);
+            width: 280px; /* Largura da sidebar */
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -1px rgba(0,0,0,0.06);
+            position: fixed; /* Fixa a sidebar na tela */
+            height: 100vh; /* Altura total da viewport */
+            overflow-y: auto; /* Adiciona scroll se o conteúdo for maior que a tela */
+        }
+
+        .sidebar-header {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-nav-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            color: var(--clr-white);
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .sidebar-nav-item:hover, .sidebar-nav-item.active {
+            background-color: var(--clr-light-blue); /* Cor de hover/ativo */
+            color: var(--clr-white);
+        }
+
+        .sidebar-nav-item i {
+            margin-right: 1rem;
+            font-size: 1.25rem;
+        }
+
+        /* Estilos do Conteúdo Principal */
+        .main-content {
+            margin-left: 280px; /* Margem para acomodar a sidebar */
+            padding: 2rem;
+            flex-grow: 1;
+            background-color: var(--clr-dashboard-bg);
+        }
+
+        .main-header {
+            background-color: var(--clr-card-bg);
+            padding: 1.5rem 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .main-header h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--clr-dark-blue);
+        }
+
+        .main-header .search-bar {
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--clr-border);
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            background-color: var(--clr-light-gray);
+        }
+
+        .main-header .search-bar input {
+            border: none;
+            outline: none;
+            background: transparent;
+            font-size: 1rem;
+            color: var(--clr-text-main);
+        }
+
+        .main-header .search-bar i {
+            color: var(--clr-medium-gray);
+            margin-right: 0.5rem;
+        }
+
+        /* Conteúdo principal de uma seção (o formulário será um content-section) */
+        .content-section {
+            background-color: var(--clr-card-bg);
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px 0 rgba(0,0,0,0.1), 0 1px 2px 0 rgba(0,0,0,0.06);
+            margin-bottom: 1.5rem;
+        }
+
+        /* Cores para os botões e links */
+        .btn-primary {
+            background-color: var(--clr-light-blue);
+            color: var(--clr-white);
+            transition: all 0.3s ease; /* Transição para hover */
+        }
+        .btn-primary:hover {
+            background-color: var(--clr-dark-blue); /* Mais escuro no hover */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Sombra no hover */
+            transform: translateY(-2px); /* Leve elevação no hover */
+        }
+        .btn-secondary {
+            background-color: var(--clr-medium-gray);
+            color: var(--clr-white);
+            transition: all 0.3s ease; /* Transição para hover */
+        }
+        .btn-secondary:hover {
+            background-color: color-mix(in srgb, var(--clr-medium-gray) 80%, black); /* Um pouco mais escuro no hover */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Sombra no hover */
+            transform: translateY(-2px); /* Leve elevação no hover */
+        }
+        .btn-add {
+            background-color: var(--clr-success);
+            color: var(--clr-white);
+            transition: all 0.3s ease; /* Transição para hover */
+        }
+        .btn-add:hover {
+            background-color: color-mix(in srgb, var(--clr-success) 90%, black);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2); /* Sombra no hover */
+            transform: translateY(-2px); /* Leve elevação no hover */
+        }
+
+        /* Estilos de input/select/textarea para consistência e tamanho maior */
+        input[type="text"], input[type="number"], select, textarea {
+            @apply mt-1 block w-full rounded-lg shadow-none px-4 py-2.5
+                    focus:ring-blue-500 focus:border-blue-500 text-base;
+            color: var(--clr-dark-blue);
+            background-color: var(--clr-white);
+            transition: all 0.3s ease;
+            border: 1px solid var(--clr-dark-blue);
+        }
+        /* Textarea specific */
+        textarea {
+            @apply resize-y; /* Keep resize-y for textarea */
+        }
+
+        input[type="text"]:focus, input[type="number"]:focus, select:focus, textarea:focus {
+            border-color: var(--clr-dark-blue); /* Borda no foco */
+            box-shadow: 0 0 0 1px rgba(31, 58, 95, 0.4); /* Sombra azul suave no foco, usando clr-dark-blue */
+        }
+
+        input[type="text"]:read-only {
+            background-color: var(--clr-medium-gray);
+            cursor: not-allowed;
+        }
+
+        label {
+            color: var(--clr-text-main); /* Cor do label */
+            font-weight: 600; /* Labels mais fortes */
+            margin-bottom: 0.5rem; /* Espaçamento abaixo do label */
+            display: block; /* Garante que o label ocupe sua própria linha */
+        }
+
+        /* Responsividade básica */
         @media (max-width: 768px) {
-            .sidebar { width: 100%; height: auto; position: relative; margin-bottom: 1rem; }
-            .main-content { margin-left: 0; }
-            .main-header { flex-direction: column; align-items: flex-start; }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                margin-bottom: 1rem;
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .main-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .main-header .search-bar {
+                width: 100%;
+                margin-top: 1rem;
+            }
+            .grid-cols-1.md\:grid-cols-3 > div { /* Ajuste para colunas em telas menores */
+                grid-column: span 1 / span 1;
+            }
+            .md\:col-span-1.flex-col.items-center { /* Centraliza a foto em telas menores */
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
+    <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
             <i class="fas fa-cubes mr-3 text-2xl"></i> SIGEP
-
         </div>
         <nav>
             <ul>
@@ -106,47 +280,71 @@
             </a>
         </div>
     </div>
+
+    <!-- Main Content -->
     <div class="main-content">
+        <!-- Main Header -->
         <div class="main-header">
             <h1 class="text-2xl font-bold text-dark-blue">{% if item %}Editar{% else %}Adicionar{% endif %} Item</h1>
             <div class="flex space-x-3">
-                <a href="{{ url_for('listar_itens_epi') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md flex items-center" title="Voltar">
-                    <i class="fas fa-arrow-left"></i>
+                <a href="{{ url_for('listar_itens_epi') }}" class="btn-secondary text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300 ease-in-out flex items-center justify-center" title="Voltar">
+                    <i class="fas fa-arrow-left mr-2"></i> Voltar
                 </a>
             </div>
         </div>
+
+        <!-- Mensagens Flash (Adicionado para consistência) -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-6">
+                    {% for category, message in messages %}
+                        <div class="flash-message {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
         <div class="content-section">
             <form method="post" class="space-y-4">
-                <label class="block">
-                    <span>Tipo</span>
-                    <select name="tipo_item" class="border p-2 w-full">
-                        <option value="Farda" {% if item and item.tipo_item=='Farda' %}selected{% endif %}>Farda</option>
-                        <option value="EPI" {% if item and item.tipo_item=='EPI' %}selected{% endif %}>EPI</option>
-                    </select>
-                </label>
-                <label class="block">Descrição
-                    <input type="text" name="descricao" value="{{ item.descricao if item else '' }}" class="border p-2 w-full">
-                </label>
-                <label class="block">Código
-                    <input type="text" name="codigo" value="{{ item.codigo if item else '' }}" class="border p-2 w-full">
-                </label>
-                <label class="block">Funções/Setores Permitidos
-                    <input type="text" name="funcoes_permitidas" value="{{ item.funcoes_permitidas if item else '' }}" class="border p-2 w-full">
-                </label>
-                <label class="block">Periodicidade (dias)
-                    <input type="number" name="periodicidade_dias" value="{{ item.periodicidade_dias if item else '' }}" class="border p-2 w-full">
-                </label>
-                <label class="block">Fornecedor
-                    <input type="text" name="fornecedor" value="{{ item.fornecedor if item else '' }}" class="border p-2 w-full">
-                </label>
-                <label class="block">Observações
-                    <textarea name="observacoes" class="border p-2 w-full">{{ item.observacoes if item else '' }}</textarea>
-                </label>
-                <div class="flex justify-end space-x-3">
-                    <button type="submit" class="btn-primary py-2 px-4 rounded-lg shadow-md flex items-center">
-                        <i class="fas fa-save mr-2"></i> Salvar
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="tipo_item" class="block text-sm font-medium text-gray-700">Tipo <span class="text-red-500">*</span></label>
+                        <select id="tipo_item" name="tipo_item" required>
+                            <option value="Farda" {% if item and item.tipo_item=='Farda' %}selected{% endif %}>Farda</option>
+                            <option value="EPI" {% if item and item.tipo_item=='EPI' %}selected{% endif %}>EPI</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="descricao" class="block text-sm font-medium text-gray-700">Descrição <span class="text-red-500">*</span></label>
+                        <input type="text" id="descricao" name="descricao" value="{{ item.descricao if item else '' }}" required>
+                    </div>
+                    <div>
+                        <label for="codigo" class="block text-sm font-medium text-gray-700">Código <span class="text-red-500">*</span></label>
+                        <input type="text" id="codigo" name="codigo" value="{{ item.codigo if item else '' }}" required>
+                    </div>
+                    <div>
+                        <label for="funcoes_permitidas" class="block text-sm font-medium text-gray-700">Funções/Setores Permitidos</label>
+                        <input type="text" id="funcoes_permitidas" name="funcoes_permitidas" value="{{ item.funcoes_permitidas if item else '' }}">
+                    </div>
+                    <div>
+                        <label for="periodicidade_dias" class="block text-sm font-medium text-gray-700">Periodicidade (dias)</label>
+                        <input type="number" id="periodicidade_dias" name="periodicidade_dias" value="{{ item.periodicidade_dias if item else '' }}">
+                    </div>
+                    <div>
+                        <label for="fornecedor" class="block text-sm font-medium text-gray-700">Fornecedor</label>
+                        <input type="text" id="fornecedor" name="fornecedor" value="{{ item.fornecedor if item else '' }}">
+                    </div>
+                </div>
+                <div class="md:col-span-2">
+                    <label for="observacoes" class="block text-sm font-medium text-gray-700">Observações</label>
+                    <textarea id="observacoes" name="observacoes" cols="100" rows="6" class="resize-y">{{ item.observacoes if item else '' }}</textarea>
+                </div>
+
+                <div class="flex justify-end space-x-4 mt-8">
+                    <button type="submit" class="btn-primary py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
+                        <i class="fas fa-save mr-2"></i> Salvar Item
                     </button>
-                    <a href="{{ url_for('listar_itens_epi') }}" class="btn-secondary py-2 px-4 rounded-lg shadow-md flex items-center">
+                    <a href="{{ url_for('listar_itens_epi') }}" class="btn-secondary py-3 px-6 rounded-lg shadow-lg transition duration-300 ease-in-out flex items-center justify-center">
                         <i class="fas fa-times mr-2"></i> Cancelar
                     </a>
                 </div>
