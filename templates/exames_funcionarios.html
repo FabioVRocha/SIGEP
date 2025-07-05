@@ -250,19 +250,23 @@
                     </a>
                 </li>
                 <li>
-                    {# Assumindo que 'Exames de Funcionários' está sob 'Lançamentos' #}
                     <a href="{{ url_for('listar_funcionarios') }}" class="sidebar-nav-item">
                         <i class="fas fa-edit"></i> Cadastros
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('fardas_epi_menu') }}" class="sidebar-nav-item">
-                        <i class="fas fa-hard-hat"></i> Fardas e EPIs
+                    <a href="{{ url_for('adicionar_exame_funcionario') }}" class="sidebar-nav-item active">
+                        <i class="fas fa-calendar-alt"></i> Lançamentos
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('adicionar_exame_funcionario') }}" class="sidebar-nav-item active">
-                        <i class="fas fa-calendar-alt"></i> Lançamentos
+                    <a href="{{ url_for('listar_exames_funcionarios') }}" class="sidebar-nav-item">
+                        <i class="fas fa-notes-medical"></i> Exames
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('fardas_epi_menu') }}" class="sidebar-nav-item">
+                        <i class="fas fa-hard-hat"></i> Fardas e EPIs
                     </a>
                 </li>
                 <li>
