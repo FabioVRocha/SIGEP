@@ -2850,6 +2850,12 @@ def create_app():
 
         return redirect(url_for('listar_exames_funcionarios'))
 
+    # --- Menu Exames ---
+    @app.route('/exames')
+    def exames_menu():
+        """Página inicial do módulo de Exames"""
+        return render_template('exames_menu.html')
+
     # --- Menu Fardas e EPIs ---
     @app.route('/fardas_epi')
     def fardas_epi_menu():

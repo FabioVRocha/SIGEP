@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SIGEP - Dashboard</title>
+    <title>Exames - SIGEP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Font Awesome para ícones -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         /* Definição da Paleta de Cores como Variáveis CSS */
@@ -224,6 +223,8 @@
         .text-icon-indigo { color: var(--clr-indigo); }
         .text-icon-pink { color: var(--clr-pink); }
         .text-icon-gray { color: var(--clr-medium-gray); }
+        .text-icon-attention { color: var(--clr-attention); } /* Adicionado */
+
 
         .btn-secondary {
             background-color: var(--clr-medium-gray);
@@ -256,7 +257,6 @@
     </style>
 </head>
 <body class="flex flex-col md:flex-row min-h-screen">
-    <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-header">
             <i class="fas fa-cubes mr-3 text-2xl"></i> SIGEP
@@ -264,22 +264,22 @@
         <nav>
             <ul>
                 <li>
-                    <a href="#" data-target="dashboard-content" class="sidebar-nav-item active">
+                    <a href="{{ url_for('index', section='dashboard-content') }}" class="sidebar-nav-item">
                         <i class="fas fa-home"></i> Visão Geral
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-target="cadastros-content" class="sidebar-nav-item">
+                    <a href="{{ url_for('index', section='cadastros-content') }}" class="sidebar-nav-item">
                         <i class="fas fa-edit"></i> Cadastros
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-target="lancamentos-content" class="sidebar-nav-item">
+                    <a href="{{ url_for('index', section='lancamentos-content') }}" class="sidebar-nav-item">
                         <i class="fas fa-calendar-alt"></i> Lançamentos
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('exames_menu') }}" class="sidebar-nav-item">
+                    <a href="#" data-target="exames-content" class="sidebar-nav-item active">
                         <i class="fas fa-notes-medical"></i> Exames
                     </a>
                 </li>
@@ -289,7 +289,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" data-target="relatorios-content" class="sidebar-nav-item">
+                    <a href="{{ url_for('index', section='relatorios-content') }}" class="sidebar-nav-item">
                         <i class="fas fa-chart-bar"></i> Relatórios
                     </a>
                 </li>
@@ -307,18 +307,16 @@
         </div>
     </div>
 
-    <!-- Main Content -->
     <div class="main-content">
-        <!-- Main Header -->
         <div class="main-header">
-            <h1>SETOR PESSOAL</h1>
+            <h1>Exames</h1>
             <div class="search-bar">
                 <i class="fas fa-search"></i>
                 <input type="text" placeholder="Pesquisar...">
             </div>
         </div>
 
-        <!-- Mensagens Flash -->
+        {#
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="mb-6">
@@ -328,97 +326,10 @@
                 </div>
             {% endif %}
         {% endwith %}
+        #}
 
-        <!-- Conteúdo do Dashboard (Visão Geral) -->
-        <div id="dashboard-content" class="content-section">
+        <div id="exames-content" class="content-section">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="dashboard-card alert-card">
-                    <div class="dashboard-card-header">
-                        <i class="fas fa-exclamation-triangle"></i> Alertas
-                    </div>
-                    <p class="text-sm text-gray-700">
-                        Exames vencidos: {{ exames_vencidos }}<br>
-                        Exames a vencer em até 7 dias: {{ exames_proximos }}
-                    </p>
-                </div>
-
-                <div class="dashboard-card notice-card">
-                    <div class="dashboard-card-header">
-                        <i class="fas fa-info-circle"></i> Avisos
-                    </div>
-                    <ul class="text-sm text-gray-700 space-y-2">
-                        <li class="flex items-center">
-                            <span class="w-2 h-2 bg-gray-500 rounded-full mr-2"></span> Há 10 minutos: Atualização da política de férias
-                        </li>
-                        <li class="flex items-center">
-                            <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span> Há 2 horas: Relatório de desempenho disponível
-                        </li>
-                    </ul>
-                </div>
-
-                <div class="dashboard-card new-enrollment-card">
-                    <div class="dashboard-card-header">
-                        <i class="fas fa-user-plus"></i> Novas Inscrições
-                    </div>
-                    <!-- Simulação de um gráfico simples com classes Tailwind, como na imagem -->
-                    <div class="flex items-end h-32 mt-4 space-x-1">
-                        <div class="flex-1 bg-blue-200 rounded-sm h-1/4"></div>
-                        <div class="flex-1 bg-blue-200 rounded-sm h-1/2"></div>
-                        <div class="flex-1 bg-blue-200 rounded-sm h-3/4"></div>
-                        <div class="flex-1 bg-blue-200 rounded-sm h-1/3"></div>
-                        <div class="flex-1 bg-blue-200 rounded-sm h-2/3"></div>
-                        <div class="flex-1 bg-blue-200 rounded-sm h-full"></div>
-                    </div>
-                    <div class="flex justify-between text-xs text-gray-500 mt-2">
-                        <span>J</span><span>F</span><span>M</span><span>A</span><span>M</span><span>J</span><span>J</span><span>A</span><span>S</span>
-                    </div>
-                </div>
-
-                <!-- Novo Card: Funcionários Ativos -->
-                <div class="dashboard-card active-employees-card">
-                    <div class="dashboard-card-header">
-                        <i class="fas fa-user-check"></i> Funcionários Ativos
-                    </div>
-                    <p class="text-3xl font-bold text-dark-blue">{{ total_funcionarios_ativos }}</p>
-                    <p class="text-sm text-gray-700">Total de funcionários ativos no sistema.</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- Conteúdo de Cadastros (Mantido, mas oculto por padrão) -->
-        <div id="cadastros-content" class="content-section hidden">
-            <h2 class="text-2xl font-semibold text-dark-blue mb-6">Cadastros</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <a href="{{ url_for('listar_funcionarios') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                    <div class="text-icon-blue mb-4"><i class="fas fa-users fa-3x"></i></div>
-                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Funcionários</h2>
-                    <p class="text-medium-gray">Gerencie informações e cadastros de funcionários.</p>
-                </a>
-                <a href="{{ url_for('listar_dependentes') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                    <div class="text-icon-green mb-4"><i class="fas fa-child fa-3x"></i></div>
-                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Dependentes</h2>
-                    <p class="text-medium-gray">Cadastre e acompanhe os dependentes dos funcionários.</p>
-                </a>
-                <a href="{{ url_for('listar_cidades') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                    <div class="text-icon-yellow mb-4"><i class="fas fa-city fa-3x"></i></div>
-                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Cidades</h2>
-                    <p class="text-medium-gray">Gerencie o cadastro de cidades.</p>
-                </a>
-                <a href="{{ url_for('listar_setores') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                    <div class="text-icon-teal mb-4"><i class="fas fa-building fa-3x"></i></div>
-                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Setores</h2>
-                    <p class="text-medium-gray">Cadastre e organize os setores da empresa.</p>
-                </a>
-                <a href="{{ url_for('listar_funcoes') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                    <div class="text-icon-indigo mb-4"><i class="fas fa-briefcase fa-3x"></i></div>
-                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Funções</h2>
-                    <p class="text-medium-gray">Defina e gerencie as funções dos cargos.</p>
-                </a>
-                <a href="{{ url_for('listar_jornadas') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                    <div class="text-icon-purple mb-4"><i class="fas fa-clock fa-3x"></i></div>
-                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Jornadas</h2>
-                    <p class="text-medium-gray">Configure horários de trabalho.</p>
-                </a>
                 <a href="{{ url_for('listar_entidades_saude') }}" class="card p-6 text-center flex flex-col items-center justify-center">
                     <div class="text-icon-indigo mb-4"><i class="fas fa-clinic-medical fa-3x"></i></div>
                     <h2 class="text-xl font-semibold text-dark-blue mb-2">Entidades de Saúde</h2>
@@ -429,39 +340,7 @@
                     <h2 class="text-xl font-semibold text-dark-blue mb-2">Tipos de Exames</h2>
                     <p class="text-medium-gray">Gerencie os tipos e periodicidade de exames.</p>
                 </a>
-            </div>
-        </div>
-
-        {# Lançamentos #}
-        <div id="lancamentos-content" class="content-section hidden">
-            <h2 class="text-2xl font-semibold text-dark-blue mb-6">Lançamentos</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <a href="{{ url_for('listar_registros_ponto') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                    <div class="text-icon-gray mb-4"><i class="fas fa-clock fa-3x"></i></div>
-                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Registro de Ponto</h2>
-                    <p class="text-medium-gray">Registre o ponto dos funcionários.</p>
-                </a>
-                <a href="{{ url_for('listar_contratos') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                    <div class="text-icon-purple mb-4"><i class="fas fa-file-signature fa-3x"></i></div>
-                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Contratos de Trabalho</h2>
-                    <p class="text-medium-gray">Administre os detalhes de contratação.</p>
-                </a>
-                <a href="{{ url_for('listar_reajustes') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                    <div class="text-icon-orange mb-4"><i class="fas fa-money-bill-wave fa-3x"></i></div>
-                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Reajustes Salariais</h2>
-                    <p class="text-medium-gray">Registre e consulte reajustes de salários e bônus.</p>
-                </a>
-                <a href="{{ url_for('listar_demissoes') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                    <div class="text-icon-error mb-4"><i class="fas fa-user-minus fa-3x"></i></div>
-                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Demissões</h2>
-                    <p class="text-medium-gray">Gerencie o processo de desligamento de funcionários.</p>
-                </a>
-                <a href="{{ url_for('listar_ferias') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                    <div class="text-icon-pink mb-4"><i class="fas fa-plane-departure fa-3x"></i></div>
-                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Controle de Férias</h2>
-                    <p class="text-medium-gray">Gerencie os períodos aquisitivos e de usufruto de férias.</p>
-                </a>
-                <a href="{{ url_for('exames_menu') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                <a href="{{ url_for('listar_exames_funcionarios') }}" class="card p-6 text-center flex flex-col items-center justify-center">
                     <div class="text-icon-green mb-4"><i class="fas fa-notes-medical fa-3x"></i></div>
                     <h2 class="text-xl font-semibold text-dark-blue mb-2">Exames</h2>
                     <p class="text-medium-gray">Registre exames ocupacionais dos funcionários.</p>
@@ -469,39 +348,17 @@
             </div>
         </div>
 
-        {# Relatórios #}
+        <div id="dashboard-content" class="content-section hidden">
+            </div>
+        <div id="cadastros-content" class="content-section hidden">
+            </div>
+        <div id="lancamentos-content" class="content-section hidden">
+            </div>
         <div id="relatorios-content" class="content-section hidden">
-            <h2 class="text-2xl font-semibold text-dark-blue mb-6">Relatórios</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <a href="{{ url_for('listar_funcionarios') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                    <div class="text-icon-blue mb-4"><i class="fas fa-file-pdf fa-3x"></i></div>
-                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Ficha Cadastral (PDF)</h2>
-                    <p class="text-medium-gray">Gere relatórios da ficha cadastral dos funcionários.</p>
-                </a>
-                <a href="#" class="card p-6 text-center flex flex-col items-center justify-center opacity-60 cursor-not-allowed">
-                    <div class="text-icon-gray mb-4"><i class="fas fa-file-alt fa-3x"></i></div>
-                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Relatórios Gerenciais</h2>
-                    <p class="text-medium-gray">Em desenvolvimento...</p>
-                </a>
             </div>
-        </div>
-
-        {# Gerencial #}
         <div id="gerencial-content" class="content-section hidden">
-            <h2 class="text-2xl font-semibold text-dark-blue mb-6">Gerencial</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <a href="{{ url_for('listar_usuarios') }}" class="card p-6 text-center flex flex-col items-center justify-center">
-                    <div class="text-icon-gray mb-4"><i class="fas fa-user-circle fa-3x"></i></div>
-                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Gerenciar Usuários</h2>
-                    <p class="text-medium-gray">Adicionar/editar usuários do sistema.</p>
-                </a>
-                <a href="#" class="card p-6 text-center flex flex-col items-center justify-center opacity-60 cursor-not-allowed">
-                    <div class="text-icon-gray mb-4"><i class="fas fa-clipboard-list fa-3x"></i></div>
-                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Logs de Auditoria</h2>
-                    <p class="text-medium-gray">Acompanhe as ações realizadas no sistema.</p>
-                </a>
             </div>
-        </div>
+
     </div>
 
     <script>
@@ -541,12 +398,10 @@
                 });
             });
 
-            // Verifica parâmetro na URL para selecionar a seção inicial
-            const params = new URLSearchParams(window.location.search);
-            const section = params.get('section') || 'dashboard-content';
-            const initialSidebarItem = document.querySelector(`.sidebar-nav-item[data-target="${section}"]`);
+            // Ativa o item "Exames" e exibe seu conteúdo ao carregar a página
+            const initialSidebarItem = document.querySelector('.sidebar-nav-item[data-target="exames-content"]');
             if (initialSidebarItem) {
-                initialSidebarItem.click();
+                initialSidebarItem.click(); // Simula um clique para ativar e exibir o conteúdo
             }
         });
     </script>
