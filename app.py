@@ -60,7 +60,7 @@ def create_app():
                        RegistroPonto, LogAuditoria, Usuario, Cidade, Setor, Funcao,
                        Demissao, Jornada, EntidadeSaudeOcupacional, TipoExame,
                        ExameFuncao, ExameFuncionario, ItemEPI, DistribuicaoItem,
-                       DevolucaoItem)
+                       DevolucaoItem, Adiantamento, ParcelaAdiantamento)
 
     # Define o diretório de uploads (para planilhas e outros arquivos)
     UPLOAD_FOLDER = 'uploads'
@@ -676,7 +676,20 @@ def create_app():
                 'setor': 'N/A',
                 'data_admissao': 'N/A',
                 'message': 'Nenhum contrato ativo encontrado para este funcionário.'
-            }), 200 # Retorna 200 porque o funcionário foi encontrado, apenas sem contrato ativo
+            }), 200  # Retorna 200 porque o funcionário foi encontrado, apenas sem contrato ativo
+
+    # --- API para buscar salário base do contrato ativo ---
+    @app.route('/api/salario_base/<string:cpf>', methods=['GET'])
+    def api_salario_base(cpf):
+        contrato = (
+            ContratoTrabalho.query
+            .filter_by(cpf_funcionario=cpf, status=True)
+            .order_by(ContratoTrabalho.data_admissao.desc())
+            .first()
+        )
+        if contrato:
+            return jsonify({'salario_base': float(contrato.salario_inicial)})
+        return jsonify({'salario_base': None}), 404
 
     # --- API para buscar cidades por estado ---
     @app.route('/api/cities_by_state/<string:state_uf>', methods=['GET'])
@@ -2074,6 +2087,108 @@ def create_app():
             flash(f'Erro ao deletar registro de férias: {e}', 'danger')
             return redirect(url_for('listar_ferias'))
 
+
+    # --- Módulo de Adiantamentos Salariais ---
+
+    @app.route('/adiantamentos')
+    def listar_adiantamentos():
+        if 'usuario_id' not in session:
+            flash('Você precisa estar logado para acessar esta página.', 'warning')
+            return redirect(url_for('login'))
+
+        registros = db.session.query(Adiantamento).join(Funcionario).order_by(Adiantamento.data_adiantamento.desc()).all()
+        return render_template('adiantamentos.html', adiantamentos=registros)
+
+    @app.route('/adiantamentos/add', methods=['GET', 'POST'])
+    def adicionar_adiantamento():
+        if 'usuario_id' not in session or session['tipo_usuario'] not in ['Master']:
+            flash('Acesso negado. Apenas usuários Master podem adicionar adiantamentos.', 'danger')
+            return redirect(url_for('login'))
+
+        if request.method == 'POST':
+            cpf_funcionario = request.form['cpf_funcionario'].replace('.', '').replace('-', '')
+            valor_total = float(request.form['valor_total'])
+            numero_parcelas = int(request.form['numero_parcelas'])
+            data_adiantamento = datetime.datetime.strptime(request.form['data_adiantamento'], '%Y-%m-%d').date()
+            observacoes = request.form.get('observacoes')
+
+            contrato = (
+                ContratoTrabalho.query
+                .filter_by(cpf_funcionario=cpf_funcionario, status=True)
+                .order_by(ContratoTrabalho.data_admissao.desc())
+                .first()
+            )
+            if not contrato:
+                flash('Funcionário sem contrato ativo.', 'danger')
+                return render_template('adiantamento_form.html', adiantamento=None)
+
+            novo = Adiantamento(
+                cpf_funcionario=cpf_funcionario,
+                salario_base=contrato.salario_inicial,
+                valor_total=valor_total,
+                numero_parcelas=numero_parcelas,
+                data_adiantamento=data_adiantamento,
+                observacoes=observacoes,
+            )
+            db.session.add(novo)
+            db.session.flush()
+
+            valor_parcela = round(valor_total / numero_parcelas, 2)
+            for i in range(numero_parcelas):
+                data_prevista = data_adiantamento + datetime.timedelta(days=30 * i)
+                parcela = ParcelaAdiantamento(
+                    adiantamento_id=novo.id,
+                    numero=i + 1,
+                    data_prevista=data_prevista,
+                    valor=valor_parcela,
+                )
+                db.session.add(parcela)
+
+            db.session.commit()
+            flash('Adiantamento cadastrado com sucesso!', 'success')
+            return redirect(url_for('listar_adiantamentos'))
+
+        return render_template('adiantamento_form.html', adiantamento=None)
+
+    @app.route('/adiantamentos/<int:adiantamento_id>')
+    def visualizar_adiantamento(adiantamento_id):
+        if 'usuario_id' not in session:
+            flash('Você precisa estar logado para acessar esta página.', 'warning')
+            return redirect(url_for('login'))
+
+        adiantamento = Adiantamento.query.get_or_404(adiantamento_id)
+        return render_template('parcelas_adiantamento.html', adiantamento=adiantamento)
+
+    @app.route('/adiantamentos/parcela/<int:parcela_id>/descontar', methods=['POST'])
+    def descontar_parcela(parcela_id):
+        if 'usuario_id' not in session or session['tipo_usuario'] not in ['Master']:
+            flash('Acesso negado.', 'danger')
+            return redirect(url_for('login'))
+
+        parcela = ParcelaAdiantamento.query.get_or_404(parcela_id)
+        parcela.situacao = 'Descontada'
+        db.session.commit()
+        flash('Parcela marcada como descontada.', 'success')
+        return redirect(url_for('visualizar_adiantamento', adiantamento_id=parcela.adiantamento_id))
+
+    @app.route('/integracao/adiantamentos/<int:ano>/<int:mes>')
+    def integracao_adiantamentos(ano, mes):
+        inicio = datetime.date(ano, mes, 1)
+        fim = inicio + datetime.timedelta(days=31)
+        parcelas = ParcelaAdiantamento.query.filter(
+            ParcelaAdiantamento.data_prevista >= inicio,
+            ParcelaAdiantamento.data_prevista < fim,
+        ).all()
+        resultado = [
+            {
+                'cpf_funcionario': p.adiantamento.cpf_funcionario,
+                'valor': float(p.valor),
+                'numero_parcela': p.numero,
+                'total_parcelas': p.adiantamento.numero_parcelas,
+            }
+            for p in parcelas if p.situacao != 'Descontada'
+        ]
+        return jsonify(resultado)
 
     # --- Módulo de Relatórios ---
     @app.route('/relatorios/ficha_cadastral/<string:cpf>')

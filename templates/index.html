@@ -294,7 +294,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ url_for('index', section='gerencial-content') }}" class="sidebar-nav-item">
+                    <a href="#" data-target="gerencial-content" class="sidebar-nav-item">
                         <i class="fas fa-cogs"></i> Gerencial
                     </a>
                 </li>
@@ -450,6 +450,11 @@
                     <div class="text-icon-pink mb-4"><i class="fas fa-plane-departure fa-3x"></i></div>
                     <h2 class="text-xl font-semibold text-dark-blue mb-2">Controle de Férias</h2>
                     <p class="text-medium-gray">Gerencie os períodos aquisitivos e de usufruto de férias.</p>
+                </a>
+                <a href="{{ url_for('listar_adiantamentos') }}" class="card p-6 text-center flex flex-col items-center justify-center">
+                    <div class="text-icon-teal mb-4"><i class="fas fa-hand-holding-usd fa-3x"></i></div>
+                    <h2 class="text-xl font-semibold text-dark-blue mb-2">Adiantamentos</h2>
+                    <p class="text-medium-gray">Controle adiantamentos salariais.</p>
                 </a>
             </div>
         </div>

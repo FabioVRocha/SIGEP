@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adiantamentos - SIGEP</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <h1 class="text-2xl font-bold mb-4">Adiantamentos</h1>
+    <div class="mb-4">
+        <a href="{{ url_for('adicionar_adiantamento') }}" class="bg-blue-600 text-white px-4 py-2 rounded">Novo Adiantamento</a>
+    </div>
+    <table class="min-w-full bg-white rounded shadow">
+        <thead>
+            <tr class="bg-gray-200 text-left">
+                <th class="px-4 py-2">Funcionário</th>
+                <th class="px-4 py-2">Valor</th>
+                <th class="px-4 py-2">Parcelas Pagas</th>
+                <th class="px-4 py-2">Parcelas em Aberto</th>
+                <th class="px-4 py-2">Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ad in adiantamentos %}
+            <tr class="border-t">
+                <td class="px-4 py-2">{{ ad.funcionario.nome if ad.funcionario else ad.cpf_funcionario }}</td>
+                <td class="px-4 py-2">R$ {{ '%.2f'|format(ad.valor_total) }}</td>
+                <td class="px-4 py-2">{{ ad.parcelas|selectattr('situacao', 'equalto', 'Descontada')|list|length }}</td>
+                <td class="px-4 py-2">{{ ad.numero_parcelas - (ad.parcelas|selectattr('situacao', 'equalto', 'Descontada')|list|length) }}</td>
+                <td class="px-4 py-2">
+                    <a href="{{ url_for('visualizar_adiantamento', adiantamento_id=ad.id) }}" class="text-blue-600">Ver Parcelas</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="px-4 py-2 text-center">Nenhum registro.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

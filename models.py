@@ -387,3 +387,32 @@ class DevolucaoItem(db.Model):
 
     def __repr__(self):
         return f"<DevolucaoItem {self.id} dist={self.distribuicao_id}>"
+
+class Adiantamento(db.Model):
+    __tablename__ = 'adiantamentos'
+    id = db.Column(db.Integer, primary_key=True)
+    cpf_funcionario = db.Column(db.String(14), db.ForeignKey('funcionarios.cpf'), nullable=False)
+    salario_base = db.Column(db.Numeric(10, 2), nullable=False)
+    valor_total = db.Column(db.Numeric(10, 2), nullable=False)
+    numero_parcelas = db.Column(db.Integer, nullable=False)
+    data_adiantamento = db.Column(db.Date, nullable=False)
+    observacoes = db.Column(db.Text)
+    aprovado = db.Column(db.Boolean, default=True)
+
+    funcionario = db.relationship('Funcionario', backref='adiantamentos', lazy=True)
+    parcelas = db.relationship('ParcelaAdiantamento', backref='adiantamento', lazy=True, cascade="all, delete-orphan")
+
+    def __repr__(self):
+        return f"<Adiantamento {self.id} func={self.cpf_funcionario}>"
+
+class ParcelaAdiantamento(db.Model):
+    __tablename__ = 'parcelas_adiantamento'
+    id = db.Column(db.Integer, primary_key=True)
+    adiantamento_id = db.Column(db.Integer, db.ForeignKey('adiantamentos.id'), nullable=False)
+    numero = db.Column(db.Integer, nullable=False)
+    data_prevista = db.Column(db.Date, nullable=False)
+    valor = db.Column(db.Numeric(10, 2), nullable=False)
+    situacao = db.Column(db.String(20), default='Prevista')
+
+    def __repr__(self):
+        return f"<ParcelaAdiantamento {self.id} adiantamento={self.adiantamento_id}>"
