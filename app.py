@@ -416,19 +416,19 @@ def create_app():
                 'foto_base64': funcionario.foto_base64 # O CustomType já retornou a string Base64 para o objeto
             }
 
-        log_entry = LogAuditoria(
-            usuario_id=session['usuario_id'],
-            acao=f"Funcionário {funcionario.nome} ({cpf}) editado.",
-            tabela_afetada="funcionarios",
-            registro_id=cpf,
-            dados_antigos=dados_antigos,
-            dados_novos=dados_novos
-        )
-        db.session.add(log_entry)
-        db.session.commit()
+            log_entry = LogAuditoria(
+                usuario_id=session['usuario_id'],
+                acao=f"Funcionário {funcionario.nome} ({cpf}) editado.",
+                tabela_afetada="funcionarios",
+                registro_id=cpf,
+                dados_antigos=dados_antigos,
+                dados_novos=dados_novos
+            )
+            db.session.add(log_entry)
+            db.session.commit()
 
-        flash('Funcionário atualizado com sucesso!', 'success')
-        return redirect(url_for('listar_funcionarios'))
+            flash('Funcionário atualizado com sucesso!', 'success')
+            return redirect(url_for('listar_funcionarios'))
 
         return render_template('funcionario_form.html', funcionario=funcionario, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO, sexos=SEXOS)
 
