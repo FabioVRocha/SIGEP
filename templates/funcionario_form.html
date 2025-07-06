@@ -773,19 +773,22 @@
         // Initial check on page load
         document.addEventListener('DOMContentLoaded', () => {
             updatePaymentFieldsState();
-            // Trigger change event on the initially checked radio button to set up correctly
-            const checkedRadio = document.querySelector('input[name="foto_option"]:checked');
-            if (checkedRadio) {
-                handleFotoOptionChange.call(checkedRadio);
-            }
-            // If editing and there's an existing photo, display it
+            
             if (fotoBase64Input.value) {
+                // When editing, preserve and show the existing photo
                 photoPreview.src = fotoBase64Input.value;
                 photoPreview.classList.remove('hidden');
                 webcamVideo.classList.add('hidden');
                 takePhotoBtn.classList.add('hidden');
                 retakePhotoBtn.classList.remove('hidden');
+                // Do not require a new upload when a photo already exists
+                fotoUploadInput.required = false;
             } else {
+                // Trigger change event on the initially checked radio button to set up correctly
+                const checkedRadio = document.querySelector('input[name="foto_option"]:checked');
+                if (checkedRadio) {
+                    handleFotoOptionChange.call(checkedRadio);
+                }
                 // Ensure initial photo is a placeholder if no photo exists
                 photoPreview.src = 'https://placehold.co/224x224/cbd5e0/4a5568?text=Sem+Foto';
                 photoPreview.classList.remove('hidden');
