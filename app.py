@@ -427,10 +427,19 @@ def create_app():
             db.session.add(log_entry)
             db.session.commit()
 
-            flash('Funcionário atualizado com sucesso!', 'success')
-            return redirect(url_for('listar_funcionarios'))
+        flash('Funcionário atualizado com sucesso!', 'success')
+        return redirect(url_for('listar_funcionarios'))
 
         return render_template('funcionario_form.html', funcionario=funcionario, estados_uf=estados_uf, graus_instrucao=GRAUS_INSTRUCAO, sexos=SEXOS)
+
+    @app.route('/funcionarios/view/<string:cpf>')
+    def ver_funcionario(cpf):
+        """Exibe os detalhes de um funcionário sem permitir edição."""
+        if 'usuario_id' not in session:
+            flash('Você precisa estar logado para acessar esta página.', 'warning')
+            return redirect(url_for('login'))
+        funcionario = Funcionario.query.get_or_404(cpf)
+        return render_template('funcionario_detalhes.html', funcionario=funcionario)
 
     @app.route('/funcionarios/delete/<string:cpf>', methods=['POST'])
     def deletar_funcionario(cpf):

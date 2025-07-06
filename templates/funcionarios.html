@@ -364,6 +364,9 @@
                                         <a href="{{ url_for('relatorios_ficha_cadastral', cpf=funcionario.cpf) }}" class="text-error hover:text-dark-blue font-medium" title="Gerar Ficha Cadastral (PDF)" target="_blank">
                                             <i class="fas fa-file-pdf"></i>
                                         </a>
+                                        <a href="{{ url_for('ver_funcionario', cpf=funcionario.cpf) }}" class="text-dark-blue hover:text-light-blue font-medium" title="Consultar">
+                                            <i class="fas fa-search"></i>
+                                        </a>
                                         <a href="{{ url_for('editar_funcionario', cpf=funcionario.cpf) }}" class="text-light-blue hover:text-dark-blue font-medium" title="Editar">
                                             <i class="fas fa-edit"></i>
                                         </a>
